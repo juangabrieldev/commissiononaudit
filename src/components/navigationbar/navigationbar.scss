@@ -1,0 +1,120 @@
+@import "../layout/mixins";
+
+.navigationBar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+  height: 38px;
+  transition: .1s ease;
+
+  .inside {
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+
+    .logo {
+      display: inline-block;
+      margin-right: 12px;
+
+      p {
+        font-weight: 700;
+        font-size: 20px;
+        margin: 5px 0;
+
+        a {
+          text-decoration: none;
+          color: white;
+        }
+      }
+    }
+
+    p, a {
+      color: darken(white, 50);
+      text-decoration: none;
+    }
+
+    .right {
+      display: inline-block;
+      height: 100%;
+      margin-right: 0;
+      margin-left: auto;
+
+      .tabs {
+        .tab {
+          display: inline-block;
+          margin-right: 12px;
+          position: relative;
+
+          p {
+            display: inline;
+            font-size: 14px;
+          }
+
+          &:after {
+            content: '';
+            width: 0;
+            height: 3px;
+            position: absolute;
+            bottom: -12px;
+            margin: 0 auto;
+            left: 0;
+            right: 0;
+            transition: .1s
+          }
+
+          &.active {
+            p a {
+              color: white;
+            }
+
+            &:after {
+              content: '';
+              width: 20px;
+              height: 3px;
+              background-color: white;
+              position: absolute;
+              bottom: -12px;
+              margin: 0 auto;
+              left: 0;
+              right: 0;
+            }
+          }
+        }
+
+        .tab:last-child {
+          margin-right: 0;
+        }
+      }
+    }
+  }
+
+  &.white {
+    background-color: white;
+    @include box-shadow-navbar;
+
+    .inside {
+      .logo {
+        p a {
+          color: black
+        }
+      }
+
+      .right {
+        .tabs {
+          .tab {
+            &.active {
+              p a {
+                color: black
+              }
+
+              &:after {
+                background: black
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,80 @@
+@import "../layout/variables";
+
+.bg {
+  height: 100vh;
+  background-color: #000000;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25' viewBox='0 0 800 800'%3E%3Cg %3E%3Ccircle fill='%23000000' cx='400' cy='400' r='600'/%3E%3Ccircle fill='%230b0b0b' cx='400' cy='400' r='500'/%3E%3Ccircle fill='%23141414' cx='400' cy='400' r='400'/%3E%3Ccircle fill='%231a1a1a' cx='400' cy='400' r='300'/%3E%3Ccircle fill='%23212121' cx='400' cy='400' r='200'/%3E%3Ccircle fill='%23272727' cx='400' cy='400' r='100'/%3E%3C/g%3E%3C/svg%3E");
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+}
+
+.landingPage {
+  position: absolute;
+  top: 0;
+  box-sizing: border-box;
+  width: 100%;
+  text-align: center;
+
+  p {
+    color: white
+  }
+
+  .welcome {
+    box-sizing: border-box;
+    height: 100vh;
+    padding-top: 39px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    p {
+      font-size: 60px;
+    }
+
+    .main {
+      p {
+        margin: 0;
+        line-height: 1.2em;
+      }
+
+      .w {
+        font-weight: 300;
+      }
+
+      .description {
+        margin: 20px;
+        font-size: 16px;
+        font-weight: 300;
+        opacity: 0.8;
+      }
+
+      .getStarted {
+        margin: 28px 0;
+        line-height: 35px;
+
+        .getStartedButton {
+          border-radius: 1px;
+          cursor: pointer;
+          line-height: 1.8;
+          color: white;
+          padding: 2px 0;
+          border: none;
+          background: $primary-color;
+          width: 150px;
+
+          &:hover {
+            background: lighten($primary-color, 5);
+          }
+        }
+      }
+    }
+  }
+}
+
+.section2 {
+  color: white;
+  background: $primary-color;
+  height: 100vh;
+}

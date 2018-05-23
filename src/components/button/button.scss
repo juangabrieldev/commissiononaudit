@@ -1,0 +1,36 @@
+@import '../layout/variables';
+
+@mixin modifier($color, $amount: 25) {
+  background: $color;
+
+  &:hover {
+    background: lighten($color, 5)
+  }
+
+  &:active {
+    background: darken($color, 5);
+  }
+
+  &:disabled {
+    background: lighten($color, $amount);
+    cursor: auto;
+  }
+}
+
+.btn {
+  border-radius: 1px;
+  cursor: pointer;
+  line-height: 1.8;
+  color: white;
+  padding: 2px 0;
+  border: none;
+  transition: .05s;
+  @include modifier($button-border-color, 65);
+
+
+
+  &.primary {
+    @include modifier(#d65d5a);
+  }
+}
+
