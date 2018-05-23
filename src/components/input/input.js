@@ -8,7 +8,8 @@ class Input extends Component {
   state = {
     value: '',
     borderColor: '#cdcdcd',
-    didFocus: false
+    didFocus: false,
+    onFocus: false
   };
 
   onChangeHandler = e => {
@@ -17,11 +18,11 @@ class Input extends Component {
   };
 
   onFocus = () => {
-    this.setState({borderColor: '#9b9b9b'});
+    this.setState({borderColor: '#9b9b9b', onFocus: true});
   };
 
   onBlur = () => {
-    this.setState({borderColor: '#cdcdcd', didFocus: true})
+    this.setState({borderColor: '#cdcdcd', didFocus: true, onFocus: false})
   };
 
   render() {
@@ -36,13 +37,16 @@ class Input extends Component {
             className={(this.props.error || (this.state.didFocus && this.state.value.length < this.props.requiredChar) ? styles.labelError : '') +
                        (this.props.isValid ? styles.labelValid : '')
             }
-            htmlFor={this.props.name}>{this.props.name}</label>
+            htmlFor={this.props.name}>
+            {this.props.name}
+          </label>
           <input
             className={(this.props.error || (this.state.didFocus && this.state.value.length < this.props.requiredChar) ? styles.error : '') +
                        (this.props.valid ? styles.valid : '')
             }
             onFocus={this.onFocus}
             onBlur={this.onBlur}
+            onKeyUp={this.props.onKeyUp}
             autoFocus={this.props.autofocus}
             onChange={e => this.onChangeHandler(e)}
             name={this.props.name}

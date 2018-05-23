@@ -43,8 +43,17 @@
       padding: 30px;
       @include box-shadow;
 
-      p.forgot, p.helper, p.switchToLogIn {
-        font-size: 14px;
+      p.helper, p.switchToLogIn, .remember p {
+        font-size: .8em
+      }
+
+      .remember {
+        display: flex;
+        margin-bottom: 20px;
+
+        p {
+          margin: 0 0 0 6px;
+        }
       }
 
       p.forgot {

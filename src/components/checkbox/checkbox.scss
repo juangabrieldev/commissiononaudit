@@ -1,0 +1,26 @@
+@import "../layout/variables";
+
+.checkbox {
+  width: 16px;
+  height: 16px;
+  background: $input-border-color;
+  cursor: pointer;
+  border-radius: 1px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: .05s;
+
+  &.selected {
+    background: $primary-color
+  }
+
+  .check {
+    width: 6px;
+    height: 3px;
+    border-left: 2px solid white;
+    border-bottom: 2px solid white;
+    transform: rotate(-45deg);
+    margin-bottom: 2px;
+  }
+}

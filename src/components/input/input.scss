@@ -7,6 +7,7 @@
   border-radius: 1px;
   display: flex;
   justify-content: center;
+  align-items: center;
   transition: .1s;
 
   &.valid {
@@ -67,7 +68,8 @@
   .validLabel {
     display: flex;
     align-items: center;
-    margin-right: 10px;
+    position: absolute;
+    right: 10px;
 
     p {
       font-size: 12px;
@@ -85,8 +87,7 @@
 
     p {
       margin: 0;
-      font-size: 12px;
-      font-weight: 700;
+      font-weight: 400;
       background: $error;
       padding: 4px;
       border-radius: 1px;
@@ -94,6 +95,10 @@
       color: white;
       position: relative;
       box-shadow: 0 2px 1px 0 rgba(0,0,0,0.08);
+
+      &.error {
+        font-size: 12px
+      }
 
       &:after {
         content: '';

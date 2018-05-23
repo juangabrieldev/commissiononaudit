@@ -5,7 +5,9 @@ import Link from 'react-router-dom/es/Link';
 import Redirect from "react-router-dom/es/Redirect";
 
 import Button from '../button/button';
+import Checkbox from '../checkbox/checkbox';
 import Input from '../input/input';
+import LoadingButton from '../loadingbutton/loadingbutton';
 
 import styles from './getstarted.scss';
 
@@ -128,33 +130,45 @@ class Getstarted extends Component {
     }, 500)
   };
 
-  onSubmit = e => {
-    if(e.which === 13) {
-      if(this.state.disabled) {
-
+  onSubmit = (e, s, click) => {
+    if(e.which === 13 || click) {
+      switch (s) {
+        case 1:
+          if(this.state.login.username.length >= 1 && this.state.login.password.length >= 1) {
+            this.setState({...{...this.state}, authenticating: true});
+            setTimeout(() => {
+              this.setState({...{...this.state}, doneAuthenticating: true})
+            }, 2000)
+          }
       }
     }
   };
 
   render() {
+
     if(this.props.location.pathname === '/get-started/' || this.props.location.pathname === '/get-started') {
       return <Redirect to={`${this.props.match.path}/login`}/>
     }
 
     const login =
-      <div className={styles.form} onKeyPress={e => this.onSubmit(e)}>
+      <div className={styles.form} onKeyPress={e => this.onSubmit(e, 1)}>
         <Input onChangeHandler={e => this.onChangeUsernameHandler(e, 1)} autofocus={true} width={350} name="Username" type="text"/>
         <Input onChangeHandler={e => this.onChangePasswordHandler(e, 1)} width={350} name="Password" type="password"/>
-        <p className={styles.forgot}><Link to="">Forgot your password?</Link></p>
+        {/*<p className={styles.forgot}><Link to="">Forgot your password?</Link></p>*/}
+        <div className={styles.remember}><Checkbox /><p>Keep me logged in</p></div>
         <div style={{display: 'flex', justifyContent: 'center'}}>
-          <Button disabled={!(this.state.login.username.length >= 1 && this.state.login.password.length >= 1)} type="submit" width={150} name="Continue" classNames={['primary', 'secondary']} />
+          {
+            this.state.authenticating ?
+              <LoadingButton width={150} complete={this.state.doneAuthenticating} completeMessage="Welcome back" /> :
+              <Button onClick={e => this.onSubmit(e, 1, true)} disabled={!(this.state.login.username.length >= 1 && this.state.login.password.length >= 1)} type="submit" width={150} name="Continue" classNames={['primary', 'secondary']} />
+          }
         </div>
         <p className={styles.helper}>or <Link to="register">create an account.</Link></p>
         <p className={styles.helper}>Need help? Click <a href="">here.</a></p>
       </div>;
 
     const register =
-      <div className={styles.form} onKeyPress={e => this.onSubmit(e)}>
+      <div className={styles.form} onKeyPress={e => this.onSubmit(e, 2)}>
         <Input
           onChangeHandler={e => this.onChangeEmployeeIDHandler(e)}
           isValid={this.state.registration.employeeID.length >= 8 ? true : null}
