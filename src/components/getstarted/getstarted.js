@@ -14,7 +14,8 @@ class Getstarted extends Component {
     username: '',
     password: '',
     employeeID: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    disabled: ''
   };
 
   onChangeUsernameHandler = e => {
