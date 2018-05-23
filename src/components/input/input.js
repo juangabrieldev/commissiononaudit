@@ -31,14 +31,23 @@ class Input extends Component {
           style={{width: this.props.width, borderColor: this.state.borderColor}}
           className={`${styles.div} ` +
             (this.state.value.length >= 1 ? `${styles.hasValue} ` : ' ') +
-            (this.props.error || (this.state.didFocus && this.state.value.length < this.props.requiredChar) ? styles.error : '') +
             (this.props.isValid ? styles.valid : '')}>
           <label
             className={(this.props.error || (this.state.didFocus && this.state.value.length < this.props.requiredChar) ? styles.labelError : '') +
                        (this.props.isValid ? styles.labelValid : '')
             }
             htmlFor={this.props.name}>{this.props.name}</label>
-          <input className={this.props.error || (this.state.didFocus && this.state.value.length < this.props.requiredChar) ? styles.error : ''} onFocus={this.onFocus} onBlur={this.onBlur} autoFocus={this.props.autofocus} onChange={e => this.onChangeHandler(e)} name={this.props.name} type={this.props.type} placeholder={this.props.name}/>
+          <input
+            className={(this.props.error || (this.state.didFocus && this.state.value.length < this.props.requiredChar) ? styles.error : '') +
+                       (this.props.valid ? styles.valid : '')
+            }
+            onFocus={this.onFocus}
+            onBlur={this.onBlur}
+            autoFocus={this.props.autofocus}
+            onChange={e => this.onChangeHandler(e)}
+            name={this.props.name}
+            type={this.props.type}
+            placeholder={this.props.name}/>
           {
             this.props.error || (this.state.didFocus && this.state.value.length < this.props.requiredChar) ?
               <div className={styles.message} style={{left: this.props.width + 8}}>
