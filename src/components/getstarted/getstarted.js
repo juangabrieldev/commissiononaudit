@@ -20,8 +20,14 @@ class Getstarted extends Component {
       username: '',
       password: '',
       confirmPassword: '',
-    }
+    },
+    authenticating: false,
+    usernameIsValid: false,
+    passwordsMatch: false,
+    error: false
   };
+
+  timeout = null;
 
   onChangeUsernameHandler = (e, s) => {
     const prevState = {...this.state};
@@ -29,11 +35,11 @@ class Getstarted extends Component {
     switch (s) {
       case 1:
         this.setState({
+          ...prevState,
           login: {
             ...prevState.login,
             username: e.target.value
-          },
-          ...prevState
+          }
         });
         break;
       case 2:
@@ -79,13 +85,47 @@ class Getstarted extends Component {
       ...prevState,
       registration: {
         ...prevState.registration,
-        confirmPassword: e.target.value
-      }
+      confirmPassword: e.target.value
+    }
     })
   };
 
   onChangeEmployeeIDHandler = e => {
-    this.setState({registration: {employeeID: e.target.value}});
+    const prevState = {...this.state};
+
+    this.setState({
+      ...prevState,
+      registration: {
+        ...prevState.registration,
+        employeeID: e.target.value
+      }
+    })
+  };
+
+  onKeyUpUsernameHandler = () => {
+    clearTimeout(this.timeout);
+
+    this.timeout = setTimeout(() => {
+      if(this.state.registration.username.length >= 8) {
+        this.setState({...{...this.state}, usernameIsValid: true});
+      }
+    }, 500)
+  };
+
+  onKeyUpConfirmPassword = () => {
+    clearTimeout(this.timeout);
+
+    this.timeout = setTimeout(() => {
+      if(this.state.registration.password.length >= 8 && (this.state.registration.password === this.state.registration.confirmPassword)) {
+        this.setState({...{...this.state}, passwordsMatch: true, error: false});
+      } else {
+        if(this.state.registration.confirmPassword.length > 0) {
+          this.setState({...{...this.state}, passwordsMatch: false, error: true});
+        }
+      }
+
+
+    }, 500)
   };
 
   onSubmit = e => {
@@ -97,7 +137,6 @@ class Getstarted extends Component {
   };
 
   render() {
-
     if(this.props.location.pathname === '/get-started/' || this.props.location.pathname === '/get-started') {
       return <Redirect to={`${this.props.match.path}/login`}/>
     }
@@ -116,10 +155,44 @@ class Getstarted extends Component {
 
     const register =
       <div className={styles.form} onKeyPress={e => this.onSubmit(e)}>
-        <Input onChangeHandler={e => this.onChangeEmployeeIDHandler(e)} requiredChar={8} autofocus={true} width={350} name="Employee ID" type="text"/>
-        <Input onChangeHandler={e => this.onChangeUsernameHandler(e, 2)} width={350} name="Username" type="text"/>
-        <Input onChangeHandler={e => this.onChangePasswordHandler(e, 2)} width={350} name="Password" type="password"/>
-        <Input onChangeHandler={e => this.onChangeConfirmPasswordHandler(e)} width={350} name="Confirm password" type="password"/>
+        <Input
+          onChangeHandler={e => this.onChangeEmployeeIDHandler(e)}
+          isValid={this.state.registration.employeeID.length >= 8 ? true : null}
+          requiredChar={8}
+          errorMessage="Invalid Employee ID"
+          autofocus={true}
+          width={350}
+          name="Employee ID" type="text"
+          validMessage="Employee ID is valid"/>
+        <Input
+          onChangeHandler={e => this.onChangeUsernameHandler(e, 2)}
+          onKeyUp={this.onKeyUpUsernameHandler}
+          isValid={this.state.usernameIsValid}
+          requiredChar={8}
+          errorMessage="Should be at least 8 characters"
+          width={350}
+          name="Username"
+          type="text"
+          validMessage="Username is valid"/>
+        <Input
+          onChangeHandler={e => this.onChangePasswordHandler(e, 2)}
+          isValid={this.state.passwordsMatch}
+          requiredChar={8}
+          errorMessage="Should be at least 8 characters"
+          width={350}
+          name="Password"
+          type="password"
+          validMessage="Passwords match"/>
+        <Input
+          onChangeHandler={e => this.onChangeConfirmPasswordHandler(e)}
+          onKeyUp={this.onKeyUpConfirmPassword}
+          error={this.state.error}
+          isValid={this.state.passwordsMatch}
+          errorMessage="Passwords do not match"
+          width={350}
+          name="Confirm password"
+          type="password"
+          validMessage="Passwords match"/>
         <div style={{display: 'flex', justifyContent: 'center'}}>
           <Button onClick={() => console.log(this.state)} type="submit" width={120} name="Next" classNames={['primary', 'secondary']} />
         </div>
