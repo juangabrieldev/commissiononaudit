@@ -13,7 +13,8 @@ class Getstarted extends Component {
   state = {
     username: '',
     password: '',
-    employeeID: ''
+    employeeID: '',
+    confirmPassword: ''
   };
 
   onChangeUsernameHandler = e => {
