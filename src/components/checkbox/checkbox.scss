@@ -3,16 +3,22 @@
 .checkbox {
   width: 16px;
   height: 16px;
-  background: $input-border-color;
+  border: $input-border-color 2px solid;
+  box-sizing: border-box;
   cursor: pointer;
   border-radius: 1px;
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: .05s;
+  transition: .02s;
 
   &.selected {
-    background: $primary-color
+    background: $primary-color;
+    border-color: $primary-color;
+
+    .check {
+      opacity: 1;
+    }
   }
 
   .check {
@@ -22,5 +28,6 @@
     border-bottom: 2px solid white;
     transform: rotate(-45deg);
     margin-bottom: 2px;
+    opacity: 0;
   }
 }
