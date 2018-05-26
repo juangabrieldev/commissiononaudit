@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Provider } from 'react-redux';
+import { createStore } from 'redux';
 
 import Aux from '../auxillary/auxillary';
 import Getstarted from '../getstarted/getstarted';
@@ -18,8 +19,13 @@ class Layout extends Component {
         <Router>
           <Aux>
             <Route path="/" component={Nav} />
-            <Route path="/" exact component={Landing}/>
-            <Route path="/get-started" component={Getstarted}/>
+            <Switch>
+              <Route path="/" exact component={Landing}/>
+              <Route path="/get-started" component={Getstarted}/>
+              <Route component={() => {
+
+              }}/>
+            </Switch>
           </Aux>
         </Router>
       </Provider>
