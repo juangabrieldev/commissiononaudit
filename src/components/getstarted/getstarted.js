@@ -36,22 +36,12 @@ class Getstarted extends Component {
 
     switch (s) {
       case 1:
-        this.setState({
-          ...prevState,
-          login: {
-            ...prevState.login,
-            username: e.target.value
-          }
-        });
+        prevState.login.username = e.target.value;
+        this.setState(prevState);
         break;
       case 2:
-        this.setState({
-          ...prevState,
-          registration: {
-            ...prevState.registration,
-            username: e.target.value
-          }
-        })
+        prevState.registration.username = e.target.value;
+        this.setState(prevState)
     }
   };
 
@@ -60,22 +50,12 @@ class Getstarted extends Component {
 
     switch (s) {
       case 1:
-        this.setState({
-          ...prevState,
-          login: {
-            ...prevState.login,
-            password: e.target.value
-          }
-        });
+        prevState.login.password = e.target.value;
+        this.setState(prevState);
         break;
       case 2:
-        this.setState({
-          ...prevState,
-          registration: {
-            ...prevState.registration,
-            password: e.target.value
-          }
-        });
+        prevState.registration.password = e.target.value;
+        this.setState(prevState);
         break;
     }
   };
@@ -83,13 +63,8 @@ class Getstarted extends Component {
   onChangeConfirmPasswordHandler = e => {
     const prevState = {...this.state};
 
-    this.setState({
-      ...prevState,
-      registration: {
-        ...prevState.registration,
-      confirmPassword: e.target.value
-    }
-    })
+    prevState.registration.confirmPassword = e.target.value;
+    this.setState(prevState)
   };
 
   onChangeEmployeeIDHandler = e => {
@@ -109,7 +84,7 @@ class Getstarted extends Component {
 
     this.timeout = setTimeout(() => {
       if(this.state.registration.username.length >= 8) {
-        this.setState({...{...this.state}, usernameIsValid: true});
+        this.setState({usernameIsValid: true});
       }
     }, 500)
   };
@@ -119,14 +94,12 @@ class Getstarted extends Component {
 
     this.timeout = setTimeout(() => {
       if(this.state.registration.password.length >= 8 && (this.state.registration.password === this.state.registration.confirmPassword)) {
-        this.setState({...{...this.state}, passwordsMatch: true, error: false});
+        this.setState({passwordsMatch: true, error: false});
       } else {
         if(this.state.registration.confirmPassword.length > 0) {
-          this.setState({...{...this.state}, passwordsMatch: false, error: true});
+          this.setState({passwordsMatch: false, error: true});
         }
       }
-
-
     }, 500)
   };
 
@@ -135,9 +108,9 @@ class Getstarted extends Component {
       switch (s) {
         case 1:
           if(this.state.login.username.length >= 1 && this.state.login.password.length >= 1) {
-            this.setState({...{...this.state}, authenticating: true});
+            this.setState({authenticating: true});
             setTimeout(() => {
-              this.setState({...{...this.state}, doneAuthenticating: true})
+              this.setState({doneAuthenticating: true});
             }, 2000)
           }
       }
