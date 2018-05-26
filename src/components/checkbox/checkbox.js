@@ -10,7 +10,7 @@ class Checkbox extends Component {
   render() {
     return (
       <div
-        onClick={() => {this.setState({value: !this.state.value})}}
+        onClick={() => {this.setState({value: !this.state.value});}}
         className={`${styles.checkbox} ` + (this.state.value ? `${styles.selected}` : '')}>
         <div className={styles.check}/>
       </div>
