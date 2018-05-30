@@ -7,11 +7,19 @@ class Checkbox extends Component {
     value: false
   };
 
+  onKeyPress = e => {
+    if (e.key === 'Enter') {
+      this.setState({value: !this.state.value})
+    }
+  };
+
   render() {
     return (
       <div
-        onClick={() => {this.setState({value: !this.state.value});}}
-        className={`${styles.checkbox} ` + (this.state.value ? `${styles.selected}` : '')}>
+        onClick={() => {this.setState({value: !this.state.value})}}
+        onKeyPress={e => this.onKeyPress(e)}
+        className={`${styles.checkbox} ` + (this.state.value ? `${styles.selected}` : '')}
+        tabIndex={0}>
         <div className={styles.check}/>
       </div>
     );
