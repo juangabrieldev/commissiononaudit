@@ -1,9 +1,8 @@
-@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,200i,300,300i,400,400i,600,600i,700,700i,900,900i');
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,900');
 
 body {
   margin: 0;
   font-family: 'Source Sans Pro', sans-serif;
-  overflow-x: hidden;
   background: #fafafa
 }
 
@@ -240,6 +239,10 @@ fieldset {
  * 3. Remove the padding so developers are not caught out when they zero out
  *    `fieldset` elements in all browsers.
  */
+
+input:focus {
+  outline: none
+}
 
 legend {
   box-sizing: border-box; /* 1 */
