@@ -30,7 +30,9 @@ class Getstarted extends Component {
 
   handleClickOutside = e => {
     if (this.wrapperRef && !this.wrapperRef.contains(e.target)) {
-      this.props.toggle();
+      if(!this.state.authenticating) {
+        this.props.toggle();
+      }
     }
   };
 
@@ -98,7 +100,6 @@ class Getstarted extends Component {
   render() {
     const login =
       <div className={styles.getStarted} onKeyPress={e => this.onSubmit(e, 1)}>
-        <Prompt when={this.state.login.username.length > 0} message="Are you sure you want to leave?"/>
         <div ref={this.setWrapperRef} className={styles.form}>
           <div className={styles.title}>
             <p><strong>Log in</strong><br/> to enter PMS</p>
