@@ -1,24 +1,23 @@
 import React, {Component} from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 import Aux from '../auxillary/auxillary';
-import Getstarted from '../getstarted/getstarted';
 import Landing from '../landingpage/landingpage';
-import Nav from '../navigationbar/navigationbar';
+import Not from '../notfound/notfound';
 
 import './layout.scss';
 
 class Layout extends Component {
-  state = {};
-
   render() {
     return (
       <Router>
         <Aux>
-          <Route path="/" component={Nav} />
           <Switch>
             <Route path="/" exact component={Landing}/>
-            <Route path="/get-started" component={Getstarted}/>
+            <Route path="/get-started/login" exact component={Landing}/>
+            <Route path="/get-started/register" exact component={Landing}/>
+            <Route component={Not}/>
           </Switch>
         </Aux>
       </Router>
@@ -26,4 +25,10 @@ class Layout extends Component {
   }
 }
 
-export default Layout;
+const mapStateToProps = state => {
+  return {
+    token: state.token
+  }
+};
+
+export default connect(mapStateToProps)(Layout);
