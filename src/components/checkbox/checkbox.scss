@@ -1,9 +1,9 @@
 @import "../layout/variables";
 
 .checkbox {
-  width: 16px;
-  height: 16px;
-  border: $input-border-color 2px solid;
+  width: 14px;
+  height: 14px;
+  border: $input-border-color 1px solid;
   box-sizing: border-box;
   cursor: pointer;
   border-radius: 1px;
@@ -19,6 +19,10 @@
     .check {
       opacity: 1;
     }
+  }
+
+  &:not(.selected):hover {
+    background: #ebebeb;
   }
 
   .check {
