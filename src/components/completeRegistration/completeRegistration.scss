@@ -1,0 +1,36 @@
+@import "../layout/mixins";
+
+.top {
+  position: fixed;
+  height: 90px;
+  width: 100%;
+  @include box-shadow-navbar;
+  background: white;
+  z-index: 1;
+}
+
+.middle {
+  position: absolute;
+  height: calc(100vh - 90px);
+  top: 90px;
+  width: 100%;
+
+  .container {
+    max-width: 1000px;
+    display: flex;
+    margin: 0 auto;
+    padding-top: 35px;
+
+    .sideBar {
+      position: fixed;
+      margin: 0;
+      width: 280px;
+    }
+
+    .form {
+      width: 680px;
+      margin-left: auto;
+      margin-right: 0
+    }
+  }
+}

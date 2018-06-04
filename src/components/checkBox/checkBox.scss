@@ -1,0 +1,37 @@
+@import "../layout/variables";
+
+.checkbox {
+  width: 14px;
+  height: 14px;
+  border: $input-border-color 1px solid;
+  box-sizing: border-box;
+  cursor: pointer;
+  border-radius: 1px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: .02s;
+
+  &.selected {
+    background: $primary-color;
+    border-color: $primary-color;
+
+    .check {
+      opacity: 1;
+    }
+  }
+
+  &:not(.selected):hover {
+    background: #ebebeb;
+  }
+
+  .check {
+    width: 6px;
+    height: 3px;
+    border-left: 2px solid white;
+    border-bottom: 2px solid white;
+    transform: rotate(-45deg);
+    margin-bottom: 2px;
+    opacity: 0;
+  }
+}

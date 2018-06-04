@@ -1,9 +1,9 @@
 import React from 'react';
 import DocumentTitle from 'react-document-title';
 
-import styles from './notfound.scss';
+import styles from './notFound.scss';
 
-const notfound = () =>
+const notFound = () =>
   <DocumentTitle title="Page not found">
     <div className={styles.main}>
       <p>404</p>
@@ -12,4 +12,4 @@ const notfound = () =>
   </DocumentTitle>;
 
 
-export default notfound;
+export default notFound;

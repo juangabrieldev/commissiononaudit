@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import { Link } from 'react-router-dom';
 
-import styles from './navigationbar.scss';
+import styles from './navigationBar.scss';
 
-class Navigationbar extends Component {
+class NavigationBar extends Component {
   state = {
     n: styles.navigationBar,
     activeTab: this.props.location.pathname + this.props.location.hash,
@@ -71,4 +71,4 @@ class Navigationbar extends Component {
   }
 }
 
-export default Navigationbar;
+export default NavigationBar;

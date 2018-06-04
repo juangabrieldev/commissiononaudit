@@ -13,7 +13,13 @@ const button = props => {
   };
 
   return (
-    <input onClick={e => props.onClick(e)} disabled={props.disabled} type={props.type || 'button'} style={{width: props.width}} className={`${styles.btn} ${classNames()}`} value={props.name}/>
+    <input
+      onClick={e => props.onClick(e)}
+      disabled={props.disabled}
+      type={props.type || 'button'}
+      style={{width: props.width}}
+      className={`${styles.btn} ${classNames()}`}
+      value={props.name}/>
   )
 };
 
