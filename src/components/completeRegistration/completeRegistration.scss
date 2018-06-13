@@ -14,6 +14,8 @@
   height: calc(100vh - 90px);
   top: 90px;
   width: 100%;
+  min-width: 1200px;
+  z-index: 0;
 
   .container {
     max-width: 1000px;
@@ -21,11 +23,19 @@
     margin: 0 auto;
     padding-top: 35px;
 
-    .sideBar {
-      position: fixed;
-      margin: 0;
-      width: 280px;
+    .sideBarContainer {
+      display: block;
+      height: auto;
+      min-width: 320px;
+
+      .sideBar {
+        position: fixed;
+        margin: 0;
+        width: 280px;
+      }
     }
+
+
 
     .form {
       width: 680px;

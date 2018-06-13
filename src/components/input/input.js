@@ -1,8 +1,12 @@
 import React, {Component} from 'react';
+import Tooltip from 'react-tooltip';
 
 import Aux from '../auxillary/auxillary';
 
 import styles from './input.scss';
+
+import checked from '../../assets/ui/checked.svg';
+import warning from '../../assets/ui/warning.svg';
 
 class Input extends Component {
   state = {
@@ -14,7 +18,11 @@ class Input extends Component {
   };
 
   onChangeHandler = e => {
-    this.setState({value: e.target.value});
+    this.setState({value: e.target.value}, () => {
+      if(this.props.type === 'password' && this.state.value.length === 0) {
+        this.setState({show: false})
+      }
+    });
     this.props.onChangeHandler(e);
   };
 
@@ -27,69 +35,72 @@ class Input extends Component {
   };
 
   render() {
-    let border = '';
+    let border = 'solid 1px ' + this.state.borderColor;
+    let style = styles.input + (this.props.hideSpin ? ' ' + styles.hideSpin : '');
 
     if(this.props.valid) {
-      border = 'solid 1px #30AF60'
-    } else if(this.props.error) {
-      border = 'solid 1px #ff6975'
-    } else {
-      border = 'solid 1px ' + this.state.borderColor
+      border = 'solid 1px #30AF60';
+      style = style + ' ' + styles.valid
+    } else if(this.props.valid === false) {
+      border = 'solid 1px #ff6975';
+      style = style + ' ' + styles.error
     }
 
     return (
-      <Aux>
-        <div
-          className={styles.input}
+      <div
+        className={style}
+        style={{
+          border, //checks if the input is valid
+          width: this.props.width
+        }}>
+        <label
+          className={this.state.value.length > 0 ? styles.shown : ''}
+          htmlFor={this.props.name}>
+            {this.props.name}
+        </label>
+        <input
           style={{
-            border, //checks if the input is valid
-            width: this.props.width
-          }}>
-          <label
-            className={this.state.value.length > 0 ? styles.shown : ''}
-            style={{color: this.props.valid ? '#30AF60' : null}}
-            htmlFor={this.props.name}>
-              {this.props.name}
-          </label>
-          <input
-            style={{
-              width: (this.props.type === 'password' && this.state.value.length > 0 ?
-                      this.props.width - 48 : ''
-              )
-            }}
-            autoFocus={this.props.autofocus}
-            onChange={e => this.onChangeHandler(e)}
-            onFocus={this.onFocus}
-            onBlur={this.onBlur}
-            type={this.state.show ? 'text' : this.props.type}
-            id={this.props.name}
-            placeholder={this.props.name}
-            value={this.state.value}/>
-          {
-            this.props.type === 'password' && this.state.value.length > 0 ?
-              <div
-                className={styles.show}
-                onMouseDown={() => this.setState({show: !this.state.show})}
-                onMouseUp={() => this.setState({show: !this.state.show})}>
-                <p style={{
-                  transition: '.1s',
-                  color: this.state.show ? '#3268f0' : '',
-                  opacity: this.state.show ? 1 : ''
-                }}>SHOW</p>
-              </div> :
-              null
-          }
-          {/*{*/}
-            {/*this.props.valid ?*/}
-              {/*<div className={`${styles.validationLabel} ${styles.valid}`}>*/}
-                {/*<p>{this.props.validationMessage}</p>*/}
-              {/*</div> :*/}
-              {/*<div className={`${styles.validationLabel} ${styles.error}`}>*/}
-                {/*<p>{this.props.validationMessage}</p>*/}
-              {/*</div>*/}
-          {/*}*/}
-        </div>
-      </Aux>
+            width: (this.props.type === 'password' && this.state.value.length > 0 ?
+                    this.props.width - 48 : ''
+            )
+          }}
+          autoFocus={this.props.autofocus}
+          onChange={e => this.onChangeHandler(e)}
+          onFocus={this.onFocus}
+          onBlur={this.onBlur}
+          type={this.state.show ? 'text' : this.props.type}
+          maxLength={this.props.maxLength}
+          id={this.props.name}
+          placeholder={this.props.name}
+          pattern={this.props.pattern}
+          value={this.props.value}/>
+        {
+          this.props.type === 'password' && this.state.value.length > 0 ?
+            <div
+              className={styles.show + (this.props.valid || this.props.valid === false ? ' ' + styles.valid : '')}
+              onClick={() => this.setState({show: !this.state.show})}>
+              <p>{this.state.show ? 'HIDE' : 'SHOW'}</p>
+            </div> :
+            null
+        }
+        {
+          this.props.valid && this.state.value.length > 0 ?
+            <div className={styles.validationLabel}>
+              <Tooltip place="top" effect="solid"/>
+              <img data-tip={this.props.validationMessage} src={checked} alt=""/>
+            </div> :
+            <Aux>
+              {
+                this.props.valid === false && this.state.value.length > 0 ?
+                  <div className={styles.validationLabel}>
+                    <Tooltip place="top" effect="solid"/>
+                    <img data-tip={this.props.validationMessage} src={warning} alt=""/>
+                  </div> :
+                  null
+              }
+            </Aux>
+        }
+      </div>
     );
   }
 }

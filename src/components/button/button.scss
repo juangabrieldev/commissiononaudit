@@ -16,5 +16,10 @@
   &.primary {
     @include modifier(#d65d5a);
   }
+
+  &.tertiary {
+    @include modifier(#d7d7d7);
+    color: black;
+  }
 }
 

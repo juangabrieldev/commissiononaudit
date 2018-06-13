@@ -23,6 +23,10 @@
   }
 
   .container {
+    img {
+      border-radius: 50%;
+    }
+
     p {
       text-align: center;
 
@@ -31,6 +35,10 @@
         font-weight: 600;
         cursor: pointer
       }
+    }
+
+    input {
+      display: none;
     }
   }
 
@@ -46,7 +54,7 @@
       margin-right: auto;
 
       p {
-        margin: 0;
+        margin: 5px 0;
         font-size: 14px;
         color: $text-secondary
       }

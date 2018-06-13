@@ -9,15 +9,11 @@ class ProgressBar extends Component {
     new: 0
   };
 
-  componentDidMount = () => {
-    setTimeout(() => {
-      setInterval(() => {
-        if(this.state.new <= 99) {
-          this.setState({old: this.state.new});
-          this.setState({new: this.state.new + 10});
-        }
-      }, 1000)
-    }, 2000)
+  componentWillReceiveProps = props => {
+    this.setState({
+      old: this.state.new,
+      new: props.progress
+    })
   };
 
   render() {

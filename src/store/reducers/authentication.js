@@ -1,19 +1,33 @@
 import * as actions from '../actions/authentication/actions';
 
 const initialState = {
-  token: '',
-  loggedIn: false,
-  firstName: '',
-  lastName: '',
-  userType: ''
+  user: {
+    token: '',
+    loggedIn: false,
+    firstName: '',
+    lastName: '',
+    userType: ''
+  },
+  isAuthenticating: false,
+  authenticationSuccessful: null,
+  doneAuthenticating: false
 };
 
 const reducer = (state = initialState, action) => {
   switch(action.type) {
     case actions.LOG_IN:
       return {
-        token: action.payload.token
+        ...state,
+        isAuthenticating: true
       };
+
+    case actions.AUTHENTICATION_DONE: {
+
+      return {
+        ...state,
+        doneAuthenticating: true
+      };
+    }
 
     default:
       return state;

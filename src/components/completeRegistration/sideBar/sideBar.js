@@ -12,7 +12,7 @@ class SideBar extends Component {
       <div className={styles.sidebar}>
         <div className={styles.registrationTitle}>
           <p className={styles.title}>Complete your registration</p>
-          <p className={styles.details}>Lorem ipsum dolor sit amet, consectetur adipisicing </p>
+          <p className={styles.details}>Hello, <strong>Juan Gabriel!</strong> Complete your registration by providing picture and filling up your data sheet.</p>
         </div>
         <div className={styles.tabs}>
           <div className={`${styles.tab} ${styles.active}`}>

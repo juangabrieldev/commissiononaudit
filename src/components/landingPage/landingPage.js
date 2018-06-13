@@ -21,7 +21,10 @@ class LandingPage extends Component {
             <div className={styles.inside}>
               <div className={styles.logo}>
                 <img src={appIcon} height={40} alt=""/>
-                <p className={styles.pms}>PROMOTION MANAGEMENT SYSTEM</p>
+                <div className={styles.text}>
+                  <p className={styles.com}>Commission on Audit</p>
+                  <p className={styles.pms}>PROMOTION MANAGEMENT SYSTEM</p>
+                </div>
               </div>
               <div className={styles.rightSide}>
                 <div className={styles.li}>

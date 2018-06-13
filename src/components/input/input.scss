@@ -6,6 +6,24 @@
   transition: .1s;
   border-radius: 1px;
 
+  &.hideSpin {
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+  }
+
+  &.valid {
+    label {
+      color: $valid-color
+    }
+  }
+
+  &.error {
+    label {
+      color: $error
+    }
+  }
+
   label {
     position: absolute;
     margin-left: 5px;
@@ -13,6 +31,7 @@
     top: 6px;
     opacity: 0;
     transition: .1s;
+    color: #7d7d7d;
     z-index: -1;
 
     &.shown {
@@ -20,7 +39,6 @@
       top: -8px;
       opacity: 1;
       background: white;
-      color: #7d7d7d;
       z-index: 0;
     }
   }
@@ -58,31 +76,25 @@
       padding: 0 8px;
       -moz-user-select: none;
     }
+
+    &.valid {
+      right: 18px;
+    }
   }
 
   .validationLabel {
     position: absolute;
-    bottom: 0;
-    top: -8px;
+    top: 0;
+    height: 100%;
     right: 8px;
-    padding: 0 2px;
     background: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 10px;
 
-    p {
-      margin: 0;
-      font-size: 13px;
-    }
-
-    &.valid {
-      p {
-        color: $valid-color
-      }
-    }
-
-    &.error {
-      p {
-        color: $error
-      }
+    img {
+        height: 12px
     }
   }
 }

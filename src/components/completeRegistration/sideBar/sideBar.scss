@@ -24,26 +24,37 @@
 
   .tabs {
     .tab {
-      padding: 10px 0;
+      padding: 8px 0;
       align-items: center;
       position: relative;
       display: flex;
       cursor: pointer;
       -moz-user-select: none;
 
-
       &.active {
-        //.selector {
-        //  height: 25px;
-        //  width: 3px;
-        //  background: $primary-color;
-        //  margin-left: -15px;
-        //  margin-right: 12px;
-        //}
+        .selector {
+          height: 22px;
+          width: 3px;
+          background: $primary-color;
+          margin-left: -15px;
+          margin-right: 12px;
+        }
 
         p {
           font-weight: 600;
           color: $text-primary
+        }
+      }
+
+      &:not(.active) {
+        p {
+          transition: .1s;
+        }
+
+        &:hover {
+          p {
+            color: darken($text-secondary, 10);
+          }
         }
       }
 

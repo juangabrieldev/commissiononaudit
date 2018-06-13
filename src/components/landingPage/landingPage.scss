@@ -15,15 +15,29 @@
     .logo {
       display: flex;
       align-items: center;
-    }
 
-    .pms {
-      font-weight: 700;
-      font-size: 20px;
-      margin: 0 20px;
-      font-family: 'Segoe UI', sans-serif;
-      color: white;
-      -moz-user-select: none;
+      .text {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-left: 15px;
+
+        .com, .pms {
+          margin: 0;
+          color: white;
+        }
+
+        .com {
+          font-family: 'Cinzel', sans-serif;
+          font-size: 24px;
+        }
+
+        .pms {
+          font-size: 14px;
+          font-family: 'Segoe UI', sans-serif;
+          opacity: .6;
+        }
+      }
     }
 
     .rightSide {

@@ -1,0 +1,93 @@
+@import "../../../layout/mixins";
+@import "../../../layout/variables";
+
+.crop {
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .form {
+    @include form;
+    height: 600px;
+    width: 800px;
+    background: #fafafa;
+    border-radius: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    .title {
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding: 30px;
+      width: calc(100% - 60px);
+      background: white;
+      @include form;
+
+      p {
+        margin: 0;
+        font-size: 25px;
+      }
+    }
+
+    .container {
+      width: 498px;
+
+      .top {
+        display: flex;
+        justify-content: space-between;
+
+        .previewContainer {
+          p {
+            margin-top: 0;
+            margin-bottom: 8px;
+            color: $text-secondary;
+            font-size: 14px;
+          }
+
+          .preview {
+            overflow: hidden;
+            height: 80px;
+            width: 80px;
+            border-radius: 1px;
+            border: 1px solid #d7d7d7;
+            align-self: flex-start;
+          }
+        }
+      }
+    }
+
+    .bottom {
+      position: absolute;
+      display: flex;
+      bottom: 0;
+      left: 0;
+      width: calc(100% - 60px);
+      padding: 30px;
+      background: white;
+      @include form;
+
+      .change {
+        margin-right: auto;
+        margin-left: 0;
+      }
+
+      .right {
+        margin-right: 0;
+        margin-left: auto;
+        display: flex;
+
+        input:last-of-type {
+          margin-left: 12px;
+        }
+      }
+    }
+  }
+}
