@@ -86,7 +86,7 @@ class GetStarted extends Component {
     switch (s) {
       case 1:
         this.setState(produce(draft => {
-          draft.registration.username = value;
+          draft.login.username = value;
         }));
         break;
 
@@ -139,7 +139,7 @@ class GetStarted extends Component {
     switch (s) {
       case 1:
         this.setState(produce(draft => {
-          draft.registration.password = value;
+          draft.login.password = value;
         }));
         break;
 
