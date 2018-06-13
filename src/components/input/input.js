@@ -48,6 +48,7 @@ class Input extends Component {
 
     return (
       <div
+        data-tip={this.props.validationMessage}
         className={style}
         style={{
           border, //checks if the input is valid
@@ -86,15 +87,15 @@ class Input extends Component {
         {
           this.props.valid && this.state.value.length > 0 ?
             <div className={styles.validationLabel}>
-              <Tooltip place="top" effect="solid"/>
-              <img data-tip={this.props.validationMessage} src={checked} alt=""/>
+              <Tooltip place="right" effect="solid"/>
+              <img src={checked} alt=""/>
             </div> :
             <Aux>
               {
                 this.props.valid === false && this.state.value.length > 0 ?
                   <div className={styles.validationLabel}>
-                    <Tooltip place="top" effect="solid"/>
-                    <img data-tip={this.props.validationMessage} src={warning} alt=""/>
+                    <Tooltip place="right" effect="solid"/>
+                    <img src={warning} alt=""/>
                   </div> :
                   null
               }
