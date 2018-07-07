@@ -1,0 +1,25 @@
+@import "../layout/variables";
+
+.alert {
+  border-radius: 2px;
+  border: 1px solid;
+
+  p {
+    font-size: 14px;
+    padding: 10px;
+    margin: 0;
+    text-align: center;
+  }
+
+  &.success {
+    background: #c4ffc4;
+
+    p {
+      color: white;
+    }
+  }
+
+  &.error {
+
+  }
+}

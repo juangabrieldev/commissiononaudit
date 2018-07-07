@@ -6,6 +6,7 @@ import z from 'zxcvbn';
 import {Link, Route, Switch, withRouter, Prompt, Redirect} from 'react-router-dom';
 import { connect } from 'react-redux';
 
+import Alert from '../alert/alert';
 import Button from '../button/button';
 import CheckBox from '../checkBox/checkBox';
 import Input from '../input/input';
@@ -23,7 +24,6 @@ import { authentication } from '../../api';
 
 class GetStarted extends Component {
   state = {
-    redirect: false,
     login: {
       employeeId: '',
       password: ''
@@ -248,8 +248,8 @@ class GetStarted extends Component {
     if(e.which === 13 || click) {
       switch (s) {
         case 1:
-          if(this.state.login.username.length >= 1 && this.state.login.password.length >= 1) {
-            this.props.login(this.state.login.username, this.state.login.password);
+          if(this.state.login.employeeId.length >= 1 && this.state.login.password.length >= 1) {
+            this.props.login(this.state.login.employeeId, this.state.login.password);
           }
         break;
 
@@ -268,6 +268,11 @@ class GetStarted extends Component {
           <div className={styles.title}>
             <p><strong>Log in</strong><br/> to enter PMS</p>
           </div>
+          {
+            this.props.authenticationSuccessful === false ?
+              <Alert type="error" message={this.props.authenticationMessage}/> :
+              null
+          }
           <div className={styles.inside}>
             <Input value={this.state.login.employeeId} onChangeHandler={e => this.onChangeEmployeeIdHandler(e, 1)} autofocus={true} width={350} type="text" name="Employee ID"/>
             <Input value={this.state.login.password} onChangeHandler={e => this.onChangePasswordHandler(e, 1)} width={350} type="password" name="Password"/>
@@ -422,7 +427,8 @@ const mapStateToProps = state => {
     authenticationSuccessful: state.authentication.authenticationSuccessful,
     mode: state.authentication.mode,
     firstName: state.authentication.firstName,
-    email: state.authentication.email
+    email: state.authentication.email,
+    authenticationMessage: state.authentication.authenticationMessage
   }
 };
 

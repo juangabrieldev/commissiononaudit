@@ -12,6 +12,7 @@ let initialState = {
   mode: 1,
   isAuthenticating: false,
   authenticationSuccessful: null,
+  authenticationMessage: null,
   doneAuthenticating: false,
   keepMeLoggedIn: false,
   firstName: null, // null
@@ -44,7 +45,8 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         doneAuthenticating: true,
-        authenticationSuccessful: action.payload.success
+        authenticationSuccessful: action.payload.success,
+        authenticationMessage: action.payload.message
       };
     }
 

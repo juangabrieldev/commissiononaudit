@@ -15,6 +15,7 @@ import './layout.scss';
 
 class Layout extends Component {
   render() {
+    console.log('rerender');
     const rootComponent = this.props.mode === 1 ?
       <PrivateRoute
         exact={true}

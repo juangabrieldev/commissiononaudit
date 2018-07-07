@@ -21,9 +21,15 @@ class Input extends Component {
     if(this.props.disabledTyping) {
       return 0;
     }
-    this.setState({value: e.target.value});
     this.props.onChangeHandler(e);
   };
+
+  componentDidUpdate = prev => {
+    if(prev.value !== this.props.value) {
+      this.setState({value: this.props.value})
+    }
+  };
+
 
   onFocus = () => {
     if(this.props.passwordStrength === null || this.props.passwordStrength === undefined) {
