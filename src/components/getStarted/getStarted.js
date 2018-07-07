@@ -172,65 +172,72 @@ class GetStarted extends Component {
 
     switch(s) {
       case 1: {
-        if(reg.test(value) && value.length > 0) {
+        if(reg.test(value) && value.length < 8) {
           this.setState(produce(draft => {
             draft.login.employeeId = value;
           }))
         }
+        break;
       }
-    }
 
-    this.setState(produce(draft => {
-      draft.registration.employeeId.isValid = null;
-      draft.registration.employeeId.validationMessage = null;
-      if(value.length <= 7) {
-        draft.registration.employeeId.employeeId = value
-      }
-    }), () => {
-      if(reg.test(value) && value.length > 0 ) {
-          clearTimeout(this.timer);
-          this.timer = setTimeout(() => {
-            if(value.length < 7 && value.length !== 0) {
-              this.setState(produce(draft => {
-                draft.registration.employeeId.isValid = false;
-                draft.registration.employeeId.validationMessage = 'Employee ID should be 7 digits'
-              }));
-
-              return 0;
-            }
-            axios.post(authentication.registration, {
-              mode: 1,
-              employeeId: parseInt(this.state.registration.employeeId.employeeId, 10)
-            })
-              .then(res => {
-                if(res.data.status === 200) {
-                  this.setState(produce(draft => {
-                    draft.registration.employeeId.isValid = true;
-                    draft.registration.employeeId.validationMessage = res.data.validationMessage;
-                  }));
-                } else {
-                  this.setState(produce(draft => {
-                    draft.registration.employeeId.isValid = false;
-                    draft.registration.employeeId.validationMessage = res.data.validationMessage
-                  }));
-                }
-              })
-              .catch(e => {
-              })
-          }, 500)
-      } else {
+      case 2: {
         this.setState(produce(draft => {
-          if(value.length > 0) {
-            draft.registration.employeeId.isValid = false;
-            draft.registration.employeeId.validationMessage = 'Employee ID should be a number';
-          } else {
-            draft.registration.employeeId.isValid = null;
-            draft.registration.employeeId.validationMessage = null;
+          draft.registration.employeeId.isValid = null;
+          draft.registration.employeeId.validationMessage = null;
+          if(value.length <= 7) {
+            draft.registration.employeeId.employeeId = value
           }
+        }), () => {
+          if(reg.test(value) && value.length > 0 ) {
+            clearTimeout(this.timer);
+            this.timer = setTimeout(() => {
+              if(value.length < 7 && value.length !== 0) {
+                this.setState(produce(draft => {
+                  draft.registration.employeeId.isValid = false;
+                  draft.registration.employeeId.validationMessage = 'Employee ID should be 7 digits'
+                }));
 
-        }))
+                return 0;
+              }
+              axios.post(authentication.registration, {
+                mode: 1,
+                employeeId: parseInt(this.state.registration.employeeId.employeeId, 10)
+              })
+                .then(res => {
+                  if(res.data.status === 200) {
+                    this.setState(produce(draft => {
+                      draft.registration.employeeId.isValid = true;
+                      draft.registration.employeeId.validationMessage = res.data.validationMessage;
+                    }));
+                  } else {
+                    this.setState(produce(draft => {
+                      draft.registration.employeeId.isValid = false;
+                      draft.registration.employeeId.validationMessage = res.data.validationMessage
+                    }));
+                  }
+                })
+                .catch(e => {
+                })
+            }, 500)
+          } else {
+            this.setState(produce(draft => {
+              if(value.length > 0) {
+                draft.registration.employeeId.isValid = false;
+                draft.registration.employeeId.validationMessage = 'Employee ID should be a number';
+              } else {
+                draft.registration.employeeId.isValid = null;
+                draft.registration.employeeId.validationMessage = null;
+              }
+
+            }))
+          }
+        });
+        break;
       }
-    });
+
+      default:
+        break;
+    }
   };
 
   keepMeLoggedIn = v => {
@@ -310,7 +317,7 @@ class GetStarted extends Component {
               }
               validationMessage={this.state.registration.employeeId.validationMessage}
               value={this.state.registration.employeeId.employeeId}
-              onChangeHandler={e => this.onChangeEmployeeIdHandler(e)}
+              onChangeHandler={e => this.onChangeEmployeeIdHandler(e, 2)}
               autofocus={true}
               maxLength={8}
               width={350}
@@ -400,9 +407,9 @@ class GetStarted extends Component {
 
     return (
       <Switch>
-        <Route exact key="login" path={'/get-started/login'} component={() => login}/>
-        <Route exact key="register" path={'/get-started/register'} component={() => register}/>
-        <Route exact key="verify" path={'/get-started/verify'} component={() => verify}/>
+        <Route exact key="login" path={'/get-started/login'} render={() => login}/>
+        <Route exact key="register" path={'/get-started/register'} render={() => register}/>
+        <Route exact key="verify" path={'/get-started/verify'} render={() => verify}/>
       </Switch>
     );
   }
