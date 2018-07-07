@@ -1,0 +1,83 @@
+@import "../../layout/variables";
+
+.navigationBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  border-bottom: solid 1px $border-color;
+  background: white;
+  display: flex;
+  align-items: center;
+  height: 49px;
+  z-index: 1;
+  min-width: 1000px;
+
+  .logoSection {
+    height: 30px;
+    margin-left: 20px;
+
+    img {
+      height: 30px
+    }
+  }
+
+  .tabs {
+    margin-left: 20px;
+    display: flex;
+
+    .tab {
+      cursor: pointer;
+      margin-right: 15px;
+
+      a {
+        color: #919191;
+        font-size: 14px;
+        font-weight: 400;
+      }
+
+      &.active {
+        a {
+          color: black;
+        }
+      }
+
+      .selector {
+        width: 15px;
+        height: 3px;
+        background: $primary-color;
+        margin: auto;
+        transform: translateY(15px);
+      }
+
+      .enter {
+        opacity: .01;
+      }
+
+      .enterActive {
+        opacity: 1;
+        transition: ease .2s;
+      }
+
+      .exit {
+        opacity: 1;
+      }
+
+      .exitActive {
+        opacity: .01;
+        transition: ease .2s;
+      }
+    }
+  }
+
+  .profileTabs {
+    display: flex;
+    margin-right: 20px;
+    margin-left: auto;
+
+    .profileTab {
+      margin-left: 20px;
+      position: relative;
+    }
+  }
+}

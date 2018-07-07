@@ -53,15 +53,15 @@ class Cropper extends Component {
           <div className={styles.bottom}>
             <div className={styles.change}>
               <Button
-                width={120}
                 classNames={['tertiary']}
+                width={120}
                 name="Change picture"
                 onClick={this.props.clickedUploadImage}/>
             </div>
             <div className={styles.right}>
               <Button
                 width={80}
-                classNames={['tertiary']}
+                classNames={['cancel']}
                 name="Cancel"
                 onClick={this.props.cancel}/>
               <Button

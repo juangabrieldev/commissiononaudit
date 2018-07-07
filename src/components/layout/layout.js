@@ -1,26 +1,80 @@
 import React, {Component} from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import {BrowserRouter as Router, Redirect, Route, Switch} from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import Aux from '../auxillary/auxillary';
 import Landing from '../landingPage/landingPage';
 import Not from '../notFound/notFound';
 import NotificationBar from '../notificationBar/notificationBar';
+import SwitchingRoute from '../switchingRoute/switchingRoute';
+import PrivateRoute from '../privateRoute/privateRoute';
 import CompleteRegistration from '../completeRegistration/completeRegistration';
+import Home from '../home/home';
 
 import './layout.scss';
 
 class Layout extends Component {
-
   render() {
+    const rootComponent = this.props.mode === 1 ?
+      <PrivateRoute
+        exact={true}
+        myMode={1}
+        path="/"
+        secondRedirect="/get-started/verify"
+        thirdRedirect="/complete-registration"
+        fourthRedirect="/"
+        component={Landing}
+      /> :
+      <PrivateRoute
+        myMode={4}
+        path="/"
+        firstRedirect="/"
+        secondRedirect="/get-started/verify"
+        thirdRedirect="/complete-registration"
+        component={Home}
+      />;
+
     return (
       <Router>
         <Aux>
           <Switch>
-            <Route path="/" exact component={Landing}/>
-            <Route path="/get-started/login" exact component={Landing}/>
-            <Route path="/get-started/register" exact component={Landing}/>
-            <Route path="/complete-registration" component={CompleteRegistration}/>
+            <PrivateRoute
+              exact={true}
+              myMode={1}
+              path="/get-started/register"
+              secondRedirect="/get-started/verify"
+              thirdRedirect="/complete-registration"
+              fourthRedirect="/"
+              component={Landing}
+            />
+            <PrivateRoute
+              exact={true}
+              myMode={1}
+              path="/get-started/login"
+              secondRedirect="/get-started/verify"
+              thirdRedirect="/complete-registration"
+              fourthRedirect="/"
+              component={Landing}
+            />
+            <PrivateRoute
+              myMode={2}
+              exact={true}
+              path="/get-started/verify/"
+              firstRedirect="/get-started/login"
+              thirdRedirect="/complete-registration"
+              fourthRedirect="/"
+              component={Landing}
+            />
+            <PrivateRoute
+              exact={true}
+              myMode={3}
+              path="/complete-registration"
+              firstRedirect="/"
+              secondRedirect="/get-started/verify"
+              fourthRedirect="/"
+              component={CompleteRegistration}
+            />
+            {rootComponent}
             <Route component={Not}/>
           </Switch>
         </Aux>
@@ -31,8 +85,9 @@ class Layout extends Component {
 
 const mapStateToProps = state => {
   return {
-    token: state.authentication.token
+    mode: state.authentication.mode,
+    authenticationSuccessful: state.authentication.authenticationSuccessful
   }
 };
 
-export default connect(mapStateToProps, null)(Layout);
+export default connect(mapStateToProps)(Layout);

@@ -6,10 +6,13 @@ const button = props => {
   let style = '';
   const classNames = () => {
     // eslint-disable-next-line
-    props.classNames.map(item => {
-      style += `${styles[item]} `;
-    });
-    return style;
+    if(props.classNames) {
+      props.classNames.map(item => {
+        style += `${styles[item]} `;
+      });
+
+      return style;
+    }
   };
 
   return (

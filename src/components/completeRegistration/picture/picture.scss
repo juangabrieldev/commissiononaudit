@@ -15,6 +15,7 @@
     position: absolute;
     top: 30px;
     left: 30px;
+    margin-right: 30px;
 
     p {
       margin: 0;
@@ -25,6 +26,12 @@
   .container {
     img {
       border-radius: 50%;
+      transition: .2s;
+      cursor: pointer;
+
+      &:hover {
+        border-radius: 2px;
+      }
     }
 
     p {

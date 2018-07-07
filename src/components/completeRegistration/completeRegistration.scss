@@ -1,10 +1,11 @@
 @import "../layout/mixins";
+@import "../layout/variables";
 
 .top {
   position: fixed;
   height: 90px;
   width: 100%;
-  @include box-shadow-navbar;
+  border-bottom: 1px solid #ebebeb;
   background: white;
   z-index: 1;
 }

@@ -1,0 +1,103 @@
+@import "../../layout/variables";
+
+.avatarContainer {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+
+  > img {
+    margin-left: 6px;
+  }
+
+  .avatar {
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e1e1e1;
+    position: relative;
+
+    .online {
+      border: 2px solid white;
+      border-radius: 50%;
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      width: 6px;
+      height: 6px;
+      background: #38cd72;
+    }
+  }
+}
+
+.dropdown {
+  > p {
+    margin: 0;
+    color: #2C2F33;
+    font-weight: 600;
+  }
+
+  .title {
+    padding: 10px;
+    background: white;
+    border-top-left-radius: 1px;
+    border-top-right-radius: 1px;
+    border: solid 1px $border-color;
+    overflow: hidden;
+
+    > p {
+      margin: 4px 0;
+      color: black;
+    }
+
+    p.name {
+      font-weight: 400;
+      font-size: 16px;
+      white-space: nowrap;
+    }
+
+    p.job {
+      opacity: .8;
+      font-size: 14px;
+    }
+  }
+
+  .content {
+    background: white;
+    border: 1px solid $border-color;
+    border-top: none;
+
+    p {
+      padding: 10px 20px;
+      margin: 0;
+      font-size: 14px;
+      color: #919191;
+      cursor: pointer;
+      transition: .2s;
+
+      &:hover {
+        color: black
+      }
+    }
+  }
+}
+
+.enter {
+  opacity: .01;
+}
+
+.enterActive {
+  opacity: 1;
+  transition: ease 30ms;
+}
+
+.exit {
+  opacity: 1;
+}
+
+.exitActive {
+  opacity: .01;
+  transition: ease 30ms;
+}

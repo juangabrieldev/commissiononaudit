@@ -29,7 +29,7 @@
       padding: 30px;
       width: calc(100% - 60px);
       background: white;
-      @include form;
+      border-bottom: 1px solid #ebebeb;
 
       p {
         margin: 0;
@@ -72,7 +72,7 @@
       width: calc(100% - 60px);
       padding: 30px;
       background: white;
-      @include form;
+      border-top: 1px solid #ebebeb;
 
       .change {
         margin-right: auto;

@@ -6,15 +6,15 @@
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0,0,0,0.1);
 }
 
-@mixin modifier($color, $amount: 25) {
+@mixin modifier($color, $mod: 5, $amount: 25) {
   background: $color;
 
   &:hover {
-    background: lighten($color, 5)
+    background: lighten($color, $mod)
   }
 
   &:active {
-    background: darken($color, 5);
+    background: darken($color, $mod);
   }
 
   &:disabled {
@@ -26,5 +26,5 @@
 @mixin form {
   background: white;
   border-radius: 1px;
-  @include box-shadow;
+  border: 1px solid #ebebeb
 }

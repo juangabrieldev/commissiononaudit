@@ -2,24 +2,30 @@
 @import '../layout/mixins';
 
 .btn {
-  border-radius: 1px;
+  border-radius: 2px;
   cursor: pointer;
   line-height: 1.8;
   color: white;
   padding: 2px 0;
   border: none;
   transition: .05s;
-  @include modifier($button-color, 65);
+  @include modifier($button-color, $amount: 65);
+  font-size: 14px;
 
 
 
   &.primary {
-    @include modifier(#d65d5a);
+    @include modifier($primary-color);
   }
 
   &.tertiary {
-    @include modifier(#d7d7d7);
-    color: black;
+    @include modifier(#d65d5a);
+    color: white;
+  }
+
+  &.cancel {
+    @include modifier(#ebebeb);
+    color: #737373
   }
 }
 

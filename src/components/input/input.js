@@ -10,7 +10,7 @@ import warning from '../../assets/ui/warning.svg';
 
 class Input extends Component {
   state = {
-    value: this.props.value,
+    value: '',
     borderColor: '#cdcdcd',
     didFocus: false,
     onFocus: false,
@@ -18,51 +18,94 @@ class Input extends Component {
   };
 
   onChangeHandler = e => {
-    this.setState({value: e.target.value}, () => {
-      if(this.props.type === 'password' && this.state.value.length === 0) {
-        this.setState({show: false})
-      }
-    });
+    if(this.props.disabledTyping) {
+      return 0;
+    }
+    this.setState({value: e.target.value});
     this.props.onChangeHandler(e);
   };
 
   onFocus = () => {
-    this.setState({borderColor: '#9b9b9b', onFocus: true});
+    if(this.props.passwordStrength === null || this.props.passwordStrength === undefined) {
+      this.setState({borderColor: '#9b9b9b', onFocus: true});
+    }
   };
 
   onBlur = () => {
-    this.setState({borderColor: '#cdcdcd', didFocus: true, onFocus: false});
+    if(this.props.passwordStrength === null || this.props.passwordStrength === undefined) {
+      this.setState({borderColor: '#cdcdcd', didFocus: true, onFocus: false});
+    }
   };
 
+  componentWillReceiveProps = next => {
+    switch(next.passwordStrength) {
+      case 0:
+        this.setState({borderColor: '#FF6975'});
+        break;
+      case 1:
+        this.setState({borderColor: '#F38415'});
+        break;
+      case 2:
+        this.setState({borderColor: '#F3C715'});
+        break;
+      case 3:
+        this.setState({borderColor: '#3268F0'});
+        break;
+      case 4:
+        this.setState({borderColor: '#30AF60'});
+        break;
+    }
+
+    if(this.props.name === 'Username') {
+      this.setState({value: next.value}, () => {
+        const event = new Event('change', {bubbles: true});
+          this.refs[this.props.name].value = next.value;
+          this.refs[this.props.name].dispatchEvent(event);
+      });
+    }
+  };
+
+
+
   render() {
+    let { width } = this.props;
     let border = 'solid 1px ' + this.state.borderColor;
     let style = styles.input + (this.props.hideSpin ? ' ' + styles.hideSpin : '');
+    const passwordStrengthWidth = this.props.passwordStrength === 0 ? '20%' : `${((this.props.passwordStrength + 1) * 2) * 10}%`;
 
     if(this.props.valid) {
       border = 'solid 1px #30AF60';
       style = style + ' ' + styles.valid
-    } else if(this.props.valid === false) {
+    } else if(this.props.valid === false && this.state.value.length > 0) {
       border = 'solid 1px #ff6975';
       style = style + ' ' + styles.error
+    }
+
+    if(this.props.type === 'password' && this.state.value.length > 0) {
+      border = 'solid 1px ' + this.state.borderColor
     }
 
     return (
       <div
         data-tip={this.props.validationMessage}
         className={style}
-        style={{
-          border, //checks if the input is valid
-          width: this.props.width
-        }}>
+        style={{border, width}}>
         <label
           className={this.state.value.length > 0 ? styles.shown : ''}
+          style={{
+            color: this.props.type === 'password' && this.props.passwordStrength && this.state.value.length > 0 ?
+              this.state.borderColor :
+              ''
+          }}
           htmlFor={this.props.name}>
             {this.props.name}
         </label>
         <input
+          key={this.props.myKey}
+          ref={this.props.name}
           style={{
             width: (this.props.type === 'password' && this.state.value.length > 0 ?
-                    this.props.width - 48 : ''
+                    this.props.width - 40 : ''
             )
           }}
           autoFocus={this.props.autofocus}
@@ -85,21 +128,45 @@ class Input extends Component {
             null
         }
         {
-          this.props.valid && this.state.value.length > 0 ?
+          this.props.valid && this.state.value.length > 0  ?
             <div className={styles.validationLabel}>
-              <Tooltip place="right" effect="solid"/>
-              <img src={checked} alt=""/>
+              <Tooltip
+                place="right"
+                effect="solid"/>
+              {
+                this.props.type !== 'password' ?
+                  <img src={checked} alt=""/> :
+                  null
+              }
             </div> :
             <Aux>
               {
                 this.props.valid === false && this.state.value.length > 0 ?
                   <div className={styles.validationLabel}>
-                    <Tooltip place="right" effect="solid"/>
-                    <img src={warning} alt=""/>
+                    <Tooltip
+                      place="right"
+                      effect="solid"/>
+                    {
+                      this.props.type !== 'password' ?
+                        <img src={warning} alt=""/> :
+                        null
+                    }
                   </div> :
                   null
               }
             </Aux>
+        }
+        {
+          this.props.type === 'password' ?
+          <div className={styles.passwordStrengthContainer}>
+            <div style={{
+              width: this.state.value && this.props.passwordStrength != null ?
+                passwordStrengthWidth :
+                0,
+              backgroundColor: this.state.borderColor
+            }}/>
+          </div> :
+            null
         }
       </div>
     );

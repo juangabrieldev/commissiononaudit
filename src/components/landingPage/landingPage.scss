@@ -5,6 +5,8 @@
   top: 0;
   left: 0;
   width: 100%;
+  min-width: 1000px;
+  z-index: 2;
 
   .inside {
     display: flex;
@@ -20,11 +22,11 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
-        margin-left: 15px;
+        margin-left: 10px;
 
         .com, .pms {
           margin: 0;
-          color: white;
+          color: $text-primary;
         }
 
         .com {
@@ -43,19 +45,20 @@
     .rightSide {
       margin-left: 260px;
 
+      a {
+        font-size: 14px;
+        color: $text-primary
+      }
+
       .li, .c {
         padding: 8px 10px;
         display: inline-block;
         margin: 0 5px;
-
-        a {
-          font-size: 14px;
-        }
       }
 
       .li {
         a {
-          color: white
+          color: $text-primary
         }
       }
 
@@ -71,7 +74,7 @@
         }
 
         a {
-          color: $primary-color
+          color: $text-primary
         }
       }
 
@@ -83,9 +86,25 @@
   height: calc(100vh - 20px);
   width: 100%;
   padding-top: 20px;
-  background: radial-gradient(ellipse at center, #3076ff 0%, #122e87 99%);
+  background: radial-gradient(ellipse at center, #f5f5f5 0%, #ebebeb 99%);
   display: flex;
   justify-content: center;
+  position: relative;
+  overflow-x: hidden;
+
+  .topRightLine {
+    position: absolute;
+    top: -150px;
+    right: -30px;
+    width: 200px;
+    height: 500px;
+    transform: rotate(-45deg);
+    background: $primary-color;
+  }
+
+  .middleLine {
+
+  }
 
   .left {
     height: 100%;
@@ -93,13 +112,14 @@
     flex-direction: column;
     justify-content: center;
     margin-right: 50px;
+    z-index: 1;
 
     .title, .desc, .getStarted {
-      margin: 20px;
+      margin: 20px 0
     }
 
     p {
-      color: white;
+      color: $text-primary;
       margin: 0;
     }
 
@@ -131,7 +151,7 @@
         }
 
         p {
-          color: black;
+          color: $text-primary;
           font-size: 14px;
           margin: 10px;
           font-weight: 600;
@@ -142,6 +162,7 @@
   }
 
   .right {
+    z-index: 1;
     margin-left: 50px;
     height: 100%;
     display: flex;

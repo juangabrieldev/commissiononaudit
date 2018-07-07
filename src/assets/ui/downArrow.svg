@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28.263 16.263">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #919191;
+      }
+    </style>
+  </defs>
+  <g id="down_arrow" data-name="down arrow" transform="translate(-282.15 -273.222)">
+    <rect id="Rectangle_8" data-name="Rectangle 8" class="cls-1" width="3" height="20" rx="1" transform="translate(282.15 275.343) rotate(-45)"/>
+    <rect id="Rectangle_9" data-name="Rectangle 9" class="cls-1" width="3" height="20" rx="1" transform="translate(308.292 273.222) rotate(45)"/>
+  </g>
+</svg>
