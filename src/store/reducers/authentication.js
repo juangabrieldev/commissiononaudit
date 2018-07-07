@@ -9,7 +9,7 @@ import * as actions from '../actions/authentication/actions';
 // mode 4 - logged in
 
 let initialState = {
-  mode: 4,
+  mode: 1,
   isAuthenticating: false,
   authenticationSuccessful: null,
   doneAuthenticating: false,
