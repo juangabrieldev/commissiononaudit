@@ -11,6 +11,8 @@ import Dropdown from '../dropdown/dropdown';
 
 import downArrow from '../../../assets/ui/downArrow.svg';
 
+import { logout } from '../../../store/actions/authentication/authentication'
+
 class Avatar extends Component {
   state = {
     showAvatarDropdown: false
@@ -20,6 +22,11 @@ class Avatar extends Component {
     if(next.showAvatarDropdown !== this.props.showAvatarDropdown) {
       this.setState({showAvatarDropdown: next.showAvatarDropdown})
     }
+  };
+
+  logout = () => {
+    this.props.logout();
+    this.props.history.replace('/');
   };
 
   render() {
@@ -52,7 +59,7 @@ class Avatar extends Component {
                     </div>
                     <div className={styles.content}>
                       <p>Settings</p>
-                      <p>Log out</p>
+                      <p onClick={this.logout}>Log out</p>
                     </div>
                   </div>
                 </Dropdown>
@@ -70,4 +77,10 @@ const mapStateToProps = state => {
   }
 };
 
-export default withRouter(connect(mapStateToProps)(Avatar));
+const mapDispatchToProps = dispatch => {
+  return {
+    logout: () => dispatch(logout())
+  }
+};
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Avatar));

@@ -17,9 +17,7 @@ class LandingPage extends Component {
     return(
       <DocumentTitle title="Welcome to Commission on Audit Promotion System">
         <Aux>
-          <TransitionGroup>
-            <Getstarted toggle={() => this.props.history.push('/')} />
-          </TransitionGroup>
+          <Getstarted toggle={() => this.props.history.push('/')} />
           <div className={styles.nav}>
             <div className={styles.inside}>
               <div className={styles.logo}>
@@ -59,11 +57,16 @@ class LandingPage extends Component {
                 </Link>
               </div>
             </div>
-            <div className={styles.right}>
-              <img src={landing} height={320} alt=""/>
-            </div>
+            {
+              localStorage.getItem('recentLogin') != null ?
+                <div className={styles.right}>
+                  <p>yehey</p>
+                </div> :
+                <div className={styles.right}>
+                  <img src={landing} height={320} alt=""/>
+                </div>
+            }
           </div>
-          {/*<CookieInfo />*/}
         </Aux>
       </DocumentTitle>
     )

@@ -1,47 +1,34 @@
 import React, {Component} from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { withRouter, Route, Switch } from 'react-router-dom';
+import Title from 'react-document-title';
 import io from 'socket.io-client';
 
 import Aux from '../auxillary/auxillary';
 import NavigationBar from './navigationBar/navigationBar';
 import Announcements from './announcements/announcements';
+import Jobs from './jobs/jobs';
 
 class Home extends Component {
-  state = {
-    show: false
-  };
-
   componentDidMount = () => {
     const socket = io('http://localhost:4000');
 
-    socket.on('test', () => {
-      this.setState({show: !this.state.show});
-    })
+    if(this.props.location.pathname === '/') {
+      this.props.history.push('/announcements')
+    }
   };
 
   render() {
     return (
       <Aux>
-        {
-          this.state.show ?
-            <div style={{
-              position: 'absolute',
-              bottom: 15,
-              left: 15,
-              width: 400,
-              height: 100,
-              background: 'black',
-              zIndex: 4
-            }}/> : null
-        }
+        <Title title="Commission on Audit Promotion Management System"/>
         <NavigationBar />
         <Switch>
-          <Route path="/announcements" exact component={Announcements}/>
-          <Route path="/announcements/new" exact component={Announcements}/>
+          <Route path="/announcements" component={Announcements}/>
+          <Route path="/jobs" component={Jobs}/>
         </Switch>
       </Aux>
     );
   }
 }
 
-export default Home;
+export default withRouter(Home);

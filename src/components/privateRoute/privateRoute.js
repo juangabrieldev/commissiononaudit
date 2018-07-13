@@ -27,6 +27,10 @@ class PrivateRoute extends Component {
         case 4: {
           return <Redirect to={this.props.fourthRedirect} />
         }
+
+        case 5: {
+          return <Redirect to={this.props.fifthRedirect} />
+        }
       }
 
     }

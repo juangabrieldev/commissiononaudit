@@ -8,4 +8,17 @@
   top: 50px;
   background: white;
   z-index: 1;
+
+  p {
+    margin: 0;
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background 50ms;
+    font-size: 14px;
+    color: #919191;
+
+    &:hover {
+      background: lighten($border-color, 5)
+    }
+  }
 }

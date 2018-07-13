@@ -7,10 +7,6 @@ class CheckBox extends Component {
     value: false
   };
 
-  componentDidMount = () => {
-    console.log(this.state.value)
-  }
-
   onKeyPress = e => {
     if (e.key === 'Enter') {
       this.setState({value: !this.state.value}, () => this.toggle())

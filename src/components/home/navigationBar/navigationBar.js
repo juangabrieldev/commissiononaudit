@@ -18,7 +18,7 @@ class NavigationBar extends Component {
   };
 
   componentDidMount = () => {
-    if(this.props.location.pathname === '/') {
+    if(this.props.location.pathname === '/' && this.props.mode === 4) {
       this.props.history.push('/announcements')
     }
     document.addEventListener('mousedown', this.handleClickOutside);
@@ -84,7 +84,8 @@ class NavigationBar extends Component {
 
 const mapStateToProps = state => {
   return {
-    showAvatarDropdown: state.ui.showAvatarDropdown
+    showAvatarDropdown: state.ui.showAvatarDropdown,
+    mode: state.authentication.mode
   }
 };
 

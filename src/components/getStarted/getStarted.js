@@ -5,6 +5,7 @@ import produce from 'immer';
 import z from 'zxcvbn';
 import {Link, Route, Switch, withRouter, Prompt, Redirect} from 'react-router-dom';
 import { connect } from 'react-redux';
+import queryString from 'query-string';
 
 import Alert from '../alert/alert';
 import Button from '../button/button';
@@ -15,9 +16,10 @@ import Loadingbutton from '../loadingButton/loadingButton';
 import styles from './getStarted.scss';
 
 import email from '../../assets/ui/email.svg';
+import employee from '../../assets/ui/employee.svg';
 
 //import actionCreators
-import { login, register, keepMeLoggedIn } from '../../store/actions/authentication/authentication';
+import { login, register, reset, keepMeLoggedIn } from '../../store/actions/authentication/authentication';
 
 //import routes from api
 import { authentication } from '../../api';
@@ -46,6 +48,7 @@ class GetStarted extends Component {
         validationMessage: null
       },
     },
+    role: null
   };
 
   timer = null;
@@ -74,7 +77,22 @@ class GetStarted extends Component {
         draft.registration.email.email = '';
         draft.login.employeeId = '';
         draft.login.password = '';
-      }))
+      }));
+
+      this.props.reset();
+
+      const { q } = queryString.parse(this.props.location.search);
+
+      let e = {
+        target: {
+          value: ''
+        }
+      };
+
+      if(q != null) {
+        e.target.value = q;
+        this.onChangeEmployeeIdHandler(e, 2);
+      }
     }
   };
 
@@ -270,7 +288,7 @@ class GetStarted extends Component {
           </div>
           {
             this.props.authenticationSuccessful === false ?
-              <Alert type="error" message={this.props.authenticationMessage}/> :
+              <Alert type="error" message={this.props.authenticationMessage} employeeId={this.props.notYetRegisteredEmployeeId}/> :
               null
           }
           <div className={styles.inside}>
@@ -365,7 +383,7 @@ class GetStarted extends Component {
                 this.props.isAuthenticating ?
                   <Loadingbutton
                     width={150}
-                    complete={this.props.doneAuthenticating}
+                    complete={this.props.authenticationSuccessful}
                     completeMessage="Success" /> :
                   <Button
                     onClick={e => this.onSubmit(e, 2, true)}
@@ -388,7 +406,7 @@ class GetStarted extends Component {
       </div>;
 
     const verify =
-      <div className={styles.getStarted} onKeyPress={e => this.onSubmit(e, 2)}>
+      <div className={styles.getStarted}>
         <div className={styles.form}>
           <div className={styles.emailContainer}>
             <div className={styles.left}>
@@ -410,11 +428,40 @@ class GetStarted extends Component {
         </div>
       </div>;
 
+    const chooseRole =
+      <div className={styles.getStarted}>
+        <div className={styles.form}>
+          <div className={styles.loginAsContainer}>
+            <div className={styles.loginAsTitle}>
+              <p>Choose your role</p>
+            </div>
+            <div className={styles.roles}>
+              <div
+                onClick={() => this.setState({role: 'user'})}
+                className={styles.box + (this.state.role === 'user' ? ' ' + styles.roleSelected : '')}>
+                <img src={employee} height={130} alt=""/>
+                <p>User</p>
+              </div>
+              <div
+                onClick={() => this.setState({role: 'admin'})}
+                className={styles.box + (this.state.role === 'admin' ? ' ' + styles.roleSelected : '')}>
+                <img src={employee} height={130} alt=""/>
+                <p>Administrator</p>
+              </div>
+            </div>
+            <div className={styles.button}>
+              <Button classNames={['tertiary']} width={100} name="Proceed"/>
+            </div>
+          </div>
+        </div>
+      </div>;
+
     return (
       <Switch>
         <Route exact key="login" path={'/get-started/login'} render={() => login}/>
         <Route exact key="register" path={'/get-started/register'} render={() => register}/>
         <Route exact key="verify" path={'/get-started/verify'} render={() => verify}/>
+        <Route exact key="chooseRole" path={'/get-started/choose-role'} render={() => chooseRole}/>
       </Switch>
     );
   }
@@ -423,12 +470,12 @@ class GetStarted extends Component {
 const mapStateToProps = state => {
   return {
     isAuthenticating: state.authentication.isAuthenticating,
-    doneAuthenticating: state.authentication.doneAuthenticating,
     authenticationSuccessful: state.authentication.authenticationSuccessful,
     mode: state.authentication.mode,
     firstName: state.authentication.firstName,
     email: state.authentication.email,
-    authenticationMessage: state.authentication.authenticationMessage
+    authenticationMessage: state.authentication.authenticationMessage,
+    notYetRegisteredEmployeeId: state.authentication.notYetRegisteredEmployeeId
   }
 };
 
@@ -436,7 +483,8 @@ const mapDispatchToProps = dispatch => {
   return {
     login: (employeeId, password) => dispatch(login(employeeId, password)),
     register: (employeeid, email, password) => dispatch(register(employeeid, email, password)),
-    keepMeLoggedIn: v => dispatch(keepMeLoggedIn(v))
+    keepMeLoggedIn: v => dispatch(keepMeLoggedIn(v)),
+    reset: () => dispatch(reset())
   }
 };
 

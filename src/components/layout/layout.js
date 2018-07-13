@@ -4,9 +4,9 @@ import { connect } from 'react-redux';
 
 import Aux from '../auxillary/auxillary';
 import Landing from '../landingPage/landingPage';
+import LoginHelper from './loginHelper/loginHelper';
 import Not from '../notFound/notFound';
 import NotificationBar from '../notificationBar/notificationBar';
-import SwitchingRoute from '../switchingRoute/switchingRoute';
 import PrivateRoute from '../privateRoute/privateRoute';
 import CompleteRegistration from '../completeRegistration/completeRegistration';
 import Home from '../home/home';
@@ -15,7 +15,6 @@ import './layout.scss';
 
 class Layout extends Component {
   render() {
-    console.log('rerender');
     const rootComponent = this.props.mode === 1 ?
       <PrivateRoute
         exact={true}
@@ -32,6 +31,7 @@ class Layout extends Component {
         firstRedirect="/"
         secondRedirect="/get-started/verify"
         thirdRedirect="/complete-registration"
+        fifthRedirect="/get-started/choose-role"
         component={Home}
       />;
 
@@ -46,6 +46,7 @@ class Layout extends Component {
               secondRedirect="/get-started/verify"
               thirdRedirect="/complete-registration"
               fourthRedirect="/"
+              fifthRedirect="/get-started/choose-role"
               component={Landing}
             />
             <PrivateRoute
@@ -55,6 +56,7 @@ class Layout extends Component {
               secondRedirect="/get-started/verify"
               thirdRedirect="/complete-registration"
               fourthRedirect="/"
+              fifthRedirect="/get-started/choose-role"
               component={Landing}
             />
             <PrivateRoute
@@ -64,6 +66,17 @@ class Layout extends Component {
               firstRedirect="/get-started/login"
               thirdRedirect="/complete-registration"
               fourthRedirect="/"
+              fifthRedirect="/get-started/choose-role"
+              component={Landing}
+            />
+            <PrivateRoute
+              myMode={5}
+              exact={true}
+              path="/get-started/choose-role/"
+              firstRedirect="/get-started/login"
+              thirdRedirect="/complete-registration"
+              fourthRedirect="/"
+              fifthRedirect="/get-started/choose-role"
               component={Landing}
             />
             <PrivateRoute
@@ -73,11 +86,13 @@ class Layout extends Component {
               firstRedirect="/"
               secondRedirect="/get-started/verify"
               fourthRedirect="/"
+              fifthRedirect="/get-started/choose-role"
               component={CompleteRegistration}
             />
             {rootComponent}
             <Route component={Not}/>
           </Switch>
+          <LoginHelper/>
         </Aux>
       </Router>
     );
