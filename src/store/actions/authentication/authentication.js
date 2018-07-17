@@ -7,6 +7,69 @@ import { authentication } from '../../../api';
 
 const cookies = new Cookies();
 
+export const chooseRole = role => dispatch => {
+  let myCookies, tokenDecoded;
+
+  switch(role) {
+    case 1: {
+      myCookies = cookies.get('session2');
+      tokenDecoded = jwt.decode(myCookies);
+
+      cookies.remove('session', {
+        path: '/'
+      });
+      cookies.remove('session2', {
+        path: '/'
+      });
+      cookies.remove('session3', {
+        path: '/'
+      });
+
+      cookies.set('session', myCookies, {
+        path: '/',
+        expires: 0
+      });
+
+      break;
+    }
+
+    case 3: {
+      myCookies = cookies.get('session3');
+      tokenDecoded = jwt.decode(myCookies);
+
+      cookies.remove('session', {
+        path: '/'
+      });
+      cookies.remove('session2', {
+        path: '/'
+      });
+      cookies.remove('session3', {
+        path: '/'
+      });
+
+      cookies.set('session', myCookies, {
+        path: '/',
+        expires: 0
+      });
+
+      break;
+    }
+  }
+
+  dispatch({
+    type: actions.CHECK_AUTHENTICATION,
+    payload: {
+      firstName: tokenDecoded.firstName,
+      lastName: tokenDecoded.lastName,
+      middleInitial: tokenDecoded.middleInitial,
+      mode: tokenDecoded.mode,
+      email: tokenDecoded.email,
+      role: tokenDecoded.role,
+      employeeId: tokenDecoded.employeeId
+    }
+  });
+};
+
 export const login = (employeeId, password) => dispatch => {
   dispatch({type: actions.LOG_IN});
   axios.post(authentication.login, {
@@ -15,10 +78,27 @@ export const login = (employeeId, password) => dispatch => {
   })
     .then(res => {
       if(res.data.status === 200) {
-        cookies.set('session', res.data.token, {
-          path: '/',
-          expires: 0
-        });
+        if(res.data.mode === 5) {
+          cookies.set('session', res.data.token1, {
+            path: '/',
+            expires: 0
+          });
+
+          cookies.set('session2', res.data.token2, {
+            path: '/',
+            expires: 0
+          });
+
+          cookies.set('session3', res.data.token3, {
+            path: '/',
+            expires: 0
+          });
+        } else {
+          cookies.set('session', res.data.token, {
+            path: '/',
+            expires: 0
+          });
+        }
 
         const myCookies = cookies.get('session');
 
