@@ -24,7 +24,7 @@ class Home extends Component {
         <NavigationBar />
         <Switch>
           <Route path="/announcements" component={Announcements}/>
-          <Route path="/jobs" component={Jobs}/>
+          <Route path="/maintenance" component={Jobs}/>
         </Switch>
       </Aux>
     );

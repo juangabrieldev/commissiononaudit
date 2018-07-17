@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {BrowserRouter as Router, Redirect, Route, Switch} from 'react-router-dom';
 import { connect } from 'react-redux';
+import io from 'socket.io-client';
+import ip from 'ip';
 
 import Aux from '../auxillary/auxillary';
 import Landing from '../landingPage/landingPage';
@@ -14,6 +16,19 @@ import Home from '../home/home';
 import './layout.scss';
 
 class Layout extends Component {
+  componentDidMount = () => {
+    const recent = [
+      {
+        name: "Juan Gabriel",
+        employeeId: 1234567
+      }
+    ];
+
+    localStorage.setItem('recents', JSON.stringify(recent));
+
+    const socket = io('http://localhost:4000');
+  };
+
   render() {
     const rootComponent = this.props.mode === 1 ?
       <PrivateRoute
@@ -93,6 +108,7 @@ class Layout extends Component {
             <Route component={Not}/>
           </Switch>
           <LoginHelper/>
+          <NotificationBar/>
         </Aux>
       </Router>
     );

@@ -1,7 +1,49 @@
+@import "../layout/variables";
+
 .container {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column-reverse;
+
   .notification {
+    width: 250px;
+    cursor: pointer;
+    height: 100px;
+    background: white;
+    border: solid 1px #e1e1e1;
+    transition: border-color .1s;
+
+    &:hover {
+      border-color: darken(#e1e1e1, 5);
+    }
+
+    &:not(:last-of-type) {
+      margin-top: 10px;
+    }
+
     .from {
       font-size: 12px;
     }
+  }
+
+  .enter {
+    opacity: .01;
+  }
+
+  .enterActive {
+    opacity: 1;
+    transition: ease .2s;
+  }
+
+  .exit {
+    opacity: 1;
+  }
+
+  .exitActive {
+    opacity: .01;
+    transition: ease .2s;
   }
 }

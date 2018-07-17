@@ -20,6 +20,7 @@ let initialState = {
   firstName: null,
   lastName: null,
   middleInitial: null,
+  employeeId: null,
   email: null
 };
 
@@ -31,9 +32,12 @@ if(myCookies) {
   const tokenDecoded = jwt.decode(myCookies);
 
   initialState.firstName = tokenDecoded.firstName;
+  initialState.middleInitial = tokenDecoded.middleInitial;
   initialState.lastName = tokenDecoded.lastName;
   initialState.mode = tokenDecoded.mode;
   initialState.email = tokenDecoded.email;
+  initialState.role = tokenDecoded.role;
+  initialState.employeeId = tokenDecoded.employeeId;
 }
 
 const reducer = (state = initialState, action) => {
@@ -53,6 +57,13 @@ const reducer = (state = initialState, action) => {
         notYetRegisteredEmployeeId: action.payload.notYetRegisteredEmployeeId,
         isAuthenticating: false
       };
+    }
+
+    case actions.CHOOSE_ROLE: {
+      return {
+        ...state,
+        role: action.payload.role
+      }
     }
 
     case actions.CHECK_AUTHENTICATION: {
@@ -100,6 +111,7 @@ const reducer = (state = initialState, action) => {
     case actions.LOG_OUT: {
       return {
         mode: 1,
+        role: null,
         isAuthenticating: false,
         authenticationSuccessful: null,
         authenticationMessage: null,
@@ -107,6 +119,8 @@ const reducer = (state = initialState, action) => {
         keepMeLoggedIn: false,
         firstName: null,
         lastName: null,
+        middleInitial: null,
+        employeeId: null,
         email: null
       }
     }

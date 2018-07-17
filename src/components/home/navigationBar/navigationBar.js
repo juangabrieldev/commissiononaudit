@@ -13,14 +13,19 @@ import logo from '../../../assets/landingPage/appIcon.svg';
 import * as actions from '../../../store/actions/ui/actions';
 
 class NavigationBar extends Component {
-  state = {
-    tabs: ['Announcements', 'Applications', 'Jobs'],
-  };
+  constructor(props) {
+    super(props);
+
+    if(props.role === 1) {
+      this.state = {tabs: ['Announcements', 'Maintenance']}
+    }
+  }
 
   componentDidMount = () => {
     if(this.props.location.pathname === '/' && this.props.mode === 4) {
       this.props.history.push('/announcements')
     }
+
     document.addEventListener('mousedown', this.handleClickOutside);
   };
 
@@ -85,7 +90,8 @@ class NavigationBar extends Component {
 const mapStateToProps = state => {
   return {
     showAvatarDropdown: state.ui.showAvatarDropdown,
-    mode: state.authentication.mode
+    mode: state.authentication.mode,
+    role: state.authentication.role
   }
 };
 

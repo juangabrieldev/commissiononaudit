@@ -1,7 +1,5 @@
 import React, {Component} from 'react';
 import { withRouter, Link, Switch, Route } from 'react-router-dom';
-import { TransitionGroup, CSSTransition } from 'react-transition-group';
-import Title from 'react-document-title';
 
 import styles from './announcements.scss';
 

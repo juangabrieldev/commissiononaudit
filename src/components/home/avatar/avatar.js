@@ -25,6 +25,13 @@ class Avatar extends Component {
   };
 
   logout = () => {
+    const recents = JSON.parse(localStorage.getItem('recent'));
+    let recentsNew = [];
+    if(recents != null) {
+      for(let i = 0; i < recents.length; i++) {
+
+      }
+    }
     this.props.logout();
     this.props.history.replace('/');
   };

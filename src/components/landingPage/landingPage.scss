@@ -1,4 +1,5 @@
 @import "../layout/variables";
+@import "../layout/mixins";
 
 .nav {
   position: absolute;
@@ -91,6 +92,7 @@
   justify-content: center;
   position: relative;
   overflow-x: hidden;
+  min-height: calc(600px);
 
   .topRightLine {
     position: absolute;
@@ -167,5 +169,87 @@
     height: 100%;
     display: flex;
     align-items: center;
+
+    .recentContainer {
+      margin-right: 75px;
+
+      p {
+        margin: 0;
+      }
+
+      .recentTitle {
+        font-size: 35px;
+        font-weight: 600;
+      }
+
+      .recentDesc {
+        font-size: 20px;
+        margin-top: 10px;
+      }
+
+      .recents {
+        display: flex;
+        margin-top: 20px;
+
+        .recent {
+          position: relative;
+          border-radius: 2px;
+          border: solid 1px $border-color;
+          cursor: pointer;
+          transition: border-color .1s;
+
+          &:not(:last-of-type) {
+            margin-right: 20px;
+          }
+
+          &:hover {
+            border-color: darken($border-color, 10);
+
+            .recentClose {
+              opacity: 1;
+
+              &:hover {
+                border-color: darken($border-color, 10);
+
+                > img {
+                  opacity: .6
+                }
+              }
+            }
+          }
+
+          .recentClose {
+            position: absolute;
+            display: flex;
+            background: #f5f5f5;
+            border-radius: 2px;
+            top: 5px;
+            right: 5px;
+            padding: 4px;
+            border: solid 1px $border-color;
+            opacity: 0;
+            transition: .1s;
+
+            > img {
+              opacity: .3;
+            }
+          }
+
+          .recentAvatar {
+            height: 155px;
+            width: 155px;
+            display: flex;
+            justify-content: center;
+          }
+
+          .recentName {
+            padding: 15px;
+            font-weight: 600;
+            transition: border-color .1s;
+            text-align: center;
+          }
+        }
+      }
+    }
   }
 }

@@ -11,9 +11,28 @@ import styles from './landingPage.scss';
 import Getstarted from '../getStarted/getStarted';
 import landing from '../../assets/landingPage/landing.svg';
 import appIcon from '../../assets/landingPage/appIcon.svg';
+import close from '../../assets/ui/close.svg';
+import id from '../../assets/ui/ID Picture.png';
 
 class LandingPage extends Component {
   render() {
+    const recents = JSON.parse(localStorage.getItem('recents'));
+    let recentsComponent;
+
+    if(recents != null) {
+      recentsComponent = recents.map((recent, i) => (
+        <div key={i} className={styles.recent}>
+          <div className={styles.recentClose}>
+            <img src={close} height={8} alt=""/>
+          </div>
+          <div className={styles.recentAvatar}>
+            <img src="http://localhost:4000/images/2x2.png" onError={() => console.log('image error')} height={155} alt=""/>
+          </div>
+          <p className={styles.recentName}>{recent.name}</p>
+        </div>
+      ));
+    }
+
     return(
       <DocumentTitle title="Welcome to Commission on Audit Promotion System">
         <Aux>
@@ -58,9 +77,15 @@ class LandingPage extends Component {
               </div>
             </div>
             {
-              localStorage.getItem('recentLogin') != null ?
+              recents != null ?
                 <div className={styles.right}>
-                  <p>yehey</p>
+                  <div className={styles.recentContainer}>
+                    <p className={styles.recentTitle}>Quick login</p>
+                    <p className={styles.recentDesc}>Click your picture or add an account.</p>
+                    <div className={styles.recents}>
+                      {recentsComponent}
+                    </div>
+                  </div>
                 </div> :
                 <div className={styles.right}>
                   <img src={landing} height={320} alt=""/>

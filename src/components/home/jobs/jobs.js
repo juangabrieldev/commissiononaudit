@@ -10,7 +10,7 @@ import SideBar from '../sideBar/sideBar';
 
 class Jobs extends Component {
   state = {
-    tabs: ['Jobs', 'Employees', 'Departments'],
+    tabs: ['Employees', 'Jobs', 'Departments'],
     jobs: [{
       jobTitle: 'State Auditor V',
       jobDepartment: 'Human Resource',

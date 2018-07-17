@@ -5,7 +5,7 @@ import produce from 'immer';
 import z from 'zxcvbn';
 import {Link, Route, Switch, withRouter, Prompt, Redirect} from 'react-router-dom';
 import { connect } from 'react-redux';
-import queryString from 'query-string';
+import stringquery from 'stringquery';
 
 import Alert from '../alert/alert';
 import Button from '../button/button';
@@ -19,7 +19,7 @@ import email from '../../assets/ui/email.svg';
 import employee from '../../assets/ui/employee.svg';
 
 //import actionCreators
-import { login, register, reset, keepMeLoggedIn } from '../../store/actions/authentication/authentication';
+import { login, register, reset, keepMeLoggedIn, chooseRole } from '../../store/actions/authentication/authentication';
 
 //import routes from api
 import { authentication } from '../../api';
@@ -63,6 +63,18 @@ class GetStarted extends Component {
 
   componentDidMount = () => {
     document.addEventListener('mousedown', this.handleClickOutside);
+
+    const { q } = stringquery(this.props.location.search);
+
+    if(q != null) {
+      const e = {
+        target: {
+          value: ''
+        }
+      };
+      e.target.value = q;
+      this.onChangeEmployeeIdHandler(e, 2);
+    }
   };
 
   componentWillUnmount = () => {
@@ -81,15 +93,15 @@ class GetStarted extends Component {
 
       this.props.reset();
 
-      const { q } = queryString.parse(this.props.location.search);
 
-      let e = {
-        target: {
-          value: ''
-        }
-      };
+      const { q } = stringquery(this.props.location.search);
 
       if(q != null) {
+        const e = {
+          target: {
+            value: ''
+          }
+        };
         e.target.value = q;
         this.onChangeEmployeeIdHandler(e, 2);
       }
@@ -279,50 +291,58 @@ class GetStarted extends Component {
     }
   };
 
+  chooseRole = () => {
+    this.props.chooseRole(this.state.role);
+  };
+
   render() {
     const login =
-      <div className={styles.getStarted} onKeyPress={e => this.onSubmit(e, 1)}>
-        <div ref="form" className={styles.form}>
-          <div className={styles.title}>
-            <p><strong>Log in</strong><br/> to enter PMS</p>
-          </div>
-          {
-            this.props.authenticationSuccessful === false ?
-              <Alert type="error" message={this.props.authenticationMessage} employeeId={this.props.notYetRegisteredEmployeeId}/> :
-              null
-          }
-          <div className={styles.inside}>
-            <Input value={this.state.login.employeeId} onChangeHandler={e => this.onChangeEmployeeIdHandler(e, 1)} autofocus={true} width={350} type="text" name="Employee ID"/>
-            <Input value={this.state.login.password} onChangeHandler={e => this.onChangePasswordHandler(e, 1)} width={350} type="password" name="Password"/>
-            <div className={styles.helper}>
-              <CheckBox toggle={v => this.keepMeLoggedIn(v)}/>
-              <p>Keep me logged in.</p>
-              <p><Link to="/">Forgot your password?</Link></p>
-            </div>
-            <div style={{
-              margin: 20,
-              display: 'flex',
-              justifyContent: 'center'
-            }}>
+      <frosted-glass-container>
+        <frosted-glass blur-amount="100px" overlay-color="#ffffff52">
+          <div className={styles.getStarted} onKeyPress={e => this.onSubmit(e, 1)}>
+            <div ref="form" className={styles.form}>
+              <div className={styles.title}>
+                <p><strong>Log in</strong><br/> to enter PMS</p>
+              </div>
               {
-                this.props.isAuthenticating ?
-                  <Loadingbutton
-                    width={150}
-                    complete={this.props.doneAuthenticating}
-                    completeMessage="Welcome back" /> :
-                  <Button
-                    onClick={e => this.onSubmit(e, 1, true)}
-                    disabled={!(this.state.login.employeeId.length > 0 && this.state.login.password.length > 0)}
-                    type="submit"
-                    width={150}
-                    name="CONTINUE"
-                    classNames={['tertiary']} />
+                this.props.authenticationSuccessful === false ?
+                  <Alert type="error" message={this.props.authenticationMessage} employeeId={this.props.notYetRegisteredEmployeeId}/> :
+                  null
               }
+              <div className={styles.inside}>
+                <Input value={this.state.login.employeeId} onChangeHandler={e => this.onChangeEmployeeIdHandler(e, 1)} autofocus={true} width={350} type="text" name="Employee ID"/>
+                <Input value={this.state.login.password} onChangeHandler={e => this.onChangePasswordHandler(e, 1)} width={350} type="password" name="Password"/>
+                <div className={styles.helper}>
+                  <CheckBox toggle={v => this.keepMeLoggedIn(v)}/>
+                  <p>Keep me logged in.</p>
+                  <p><Link to="/">Forgot your password?</Link></p>
+                </div>
+                <div style={{
+                  margin: 20,
+                  display: 'flex',
+                  justifyContent: 'center'
+                }}>
+                  {
+                    this.props.isAuthenticating ?
+                      <Loadingbutton
+                        width={150}
+                        complete={this.props.doneAuthenticating}
+                        completeMessage="Welcome back" /> :
+                      <Button
+                        onClick={e => this.onSubmit(e, 1, true)}
+                        disabled={!(this.state.login.employeeId.length > 0 && this.state.login.password.length > 0)}
+                        type="submit"
+                        width={150}
+                        name="CONTINUE"
+                        classNames={['tertiary']} />
+                  }
+                </div>
+                <p className={styles.create}>or you can <Link to={'register'}>create an account.</Link></p>
+              </div>
             </div>
-            <p className={styles.create}>or you can <Link to={'register'}>create an account.</Link></p>
           </div>
-        </div>
-      </div>;
+        </frosted-glass>
+      </frosted-glass-container>;
 
     const register =
       <div className={styles.getStarted} onKeyPress={e => this.onSubmit(e, 2)}>
@@ -433,24 +453,29 @@ class GetStarted extends Component {
         <div className={styles.form}>
           <div className={styles.loginAsContainer}>
             <div className={styles.loginAsTitle}>
-              <p>Choose your role</p>
+              <p>Log in as</p>
             </div>
             <div className={styles.roles}>
               <div
-                onClick={() => this.setState({role: 'user'})}
-                className={styles.box + (this.state.role === 'user' ? ' ' + styles.roleSelected : '')}>
+                onClick={() => this.setState({role: 3})}
+                className={styles.box + (this.state.role === 3 ? ' ' + styles.roleSelected : '')}>
                 <img src={employee} height={130} alt=""/>
                 <p>User</p>
               </div>
               <div
-                onClick={() => this.setState({role: 'admin'})}
-                className={styles.box + (this.state.role === 'admin' ? ' ' + styles.roleSelected : '')}>
+                onClick={() => this.setState({role: 1})}
+                className={styles.box + (this.state.role === 1 ? ' ' + styles.roleSelected : '')}>
                 <img src={employee} height={130} alt=""/>
                 <p>Administrator</p>
               </div>
             </div>
             <div className={styles.button}>
-              <Button classNames={['tertiary']} width={100} name="Proceed"/>
+              <Button
+                onClick={this.chooseRole}
+                disabled={this.state.role == null}
+                classNames={['tertiary']}
+                width={100}
+                name="Proceed"/>
             </div>
           </div>
         </div>
@@ -484,7 +509,8 @@ const mapDispatchToProps = dispatch => {
     login: (employeeId, password) => dispatch(login(employeeId, password)),
     register: (employeeid, email, password) => dispatch(register(employeeid, email, password)),
     keepMeLoggedIn: v => dispatch(keepMeLoggedIn(v)),
-    reset: () => dispatch(reset())
+    reset: () => dispatch(reset()),
+    chooseRole: role => dispatch(chooseRole(role))
   }
 };
 
