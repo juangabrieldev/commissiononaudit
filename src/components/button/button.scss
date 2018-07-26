@@ -7,7 +7,7 @@
   line-height: 1.8;
   color: white;
   padding: 2px 0;
-  border: none;
+  border: solid 1px transparent;
   transition: .05s;
   @include modifier($button-color, $amount: 65);
   font-size: 14px;
@@ -24,8 +24,22 @@
   }
 
   &.cancel {
-    @include modifier(#ebebeb);
-    color: #737373
+    background-color: lighten(#ebebeb, 5);
+    border-color: $border-color;
+    color: #393b4c;
+
+    &:hover {
+      background-color: #ebebeb;
+    }
+
+    &:active {
+      background: darken(#e6e6e6, 4);
+    }
+
+    &:disabled {
+      background: lighten(#ebebeb, 25);
+      cursor: auto;
+    }
   }
 }
 

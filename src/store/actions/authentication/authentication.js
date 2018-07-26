@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 
 import * as actions from './actions';
 import { authentication } from '../../../api';
+import { initializeSocket } from "../../../socket";
 
 const cookies = new Cookies();
 
@@ -68,6 +69,10 @@ export const chooseRole = role => dispatch => {
       employeeId: tokenDecoded.employeeId
     }
   });
+  const socket = initializeSocket();
+  socket.emit('login', {
+    employeeId: tokenDecoded.employeeId
+  })
 };
 
 export const login = (employeeId, password) => dispatch => {
@@ -112,7 +117,8 @@ export const login = (employeeId, password) => dispatch => {
             middleInitial: tokenDecoded.middleInitial,
             mode: tokenDecoded.mode,
             email: tokenDecoded.email,
-            role: tokenDecoded.role
+            role: tokenDecoded.role,
+            employeeId: tokenDecoded.employeeId
           }
         });
         dispatch({

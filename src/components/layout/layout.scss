@@ -7,9 +7,20 @@ body {
   font-family: 'Assistant', sans-serif;
   background: #F5F6FA;
   min-width: 1000px;
+  overflow-x: hidden;
 
   p {
     color: $text-primary;
+
+    &::selection {
+      background-color: $primary-color;
+      color: white
+    }
+
+    &::-moz-selection {
+      background-color: $primary-color;
+      color: white
+    }
   }
 }
 

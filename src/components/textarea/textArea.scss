@@ -1,0 +1,65 @@
+@import "../layout/variables";
+
+.textAreaDiv {
+  transition: .1s;
+  border-radius: 2px;
+  border: solid 1px;
+  padding: 10px 8px;
+  position: relative;
+
+  > label {
+    position: absolute;
+    padding: 0 2px;
+    top: 6px;
+    left: 5px;
+    opacity: 0;
+    transition: .1s;
+    color: #7d7d7d;
+    z-index: -1;
+
+    &.shown {
+      font-size: 13px;
+      top: -8px;
+      opacity: 1;
+      background: white;
+      z-index: 0;
+    }
+  }
+
+  .characterLimit {
+    position: absolute;
+    top: 12px;
+    right: 0;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+
+    &.characterLimitRed p {
+      color: $error
+    }
+
+    &.move {
+      right: 22px;
+    }
+
+    p {
+      margin: 0;
+      color: $valid-color;
+      font-size: 12px;
+    }
+  }
+
+  > textarea {
+    width: 100%;
+    box-sizing: border-box;
+    resize: vertical;
+    border: none;
+    min-height: 130px;
+    max-height: calc(100vh - 275px);
+
+    &::placeholder {
+      font-size: 14px;
+      opacity: 0.3
+    }
+  }
+}

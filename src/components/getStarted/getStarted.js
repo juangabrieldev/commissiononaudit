@@ -17,6 +17,7 @@ import styles from './getStarted.scss';
 
 import email from '../../assets/ui/email.svg';
 import employee from '../../assets/ui/employee.svg';
+import administrator from '../../assets/ui/administrator.svg';
 
 //import actionCreators
 import { login, register, reset, keepMeLoggedIn, chooseRole } from '../../store/actions/authentication/authentication';
@@ -459,13 +460,13 @@ class GetStarted extends Component {
               <div
                 onClick={() => this.setState({role: 3})}
                 className={styles.box + (this.state.role === 3 ? ' ' + styles.roleSelected : '')}>
-                <img src={employee} height={130} alt=""/>
+                <img src={employee} height={80} alt=""/>
                 <p>User</p>
               </div>
               <div
                 onClick={() => this.setState({role: 1})}
                 className={styles.box + (this.state.role === 1 ? ' ' + styles.roleSelected : '')}>
-                <img src={employee} height={130} alt=""/>
+                <img src={administrator} height={80} alt=""/>
                 <p>Administrator</p>
               </div>
             </div>

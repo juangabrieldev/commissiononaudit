@@ -74,7 +74,8 @@ const reducer = (state = initialState, action) => {
         middleInitial: action.payload.middleInitial,
         mode: action.payload.mode,
         role: action.payload.role,
-        email: action.payload.email
+        email: action.payload.email,
+        employeeId: action.payload.employeeId
       };
     }
 

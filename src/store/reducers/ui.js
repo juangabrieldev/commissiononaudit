@@ -4,7 +4,9 @@ import { store } from '../../index';
 import * as actions from '../actions/ui/actions';
 
 const initialState = {
-  showAvatarDropdown: false
+  showAvatarDropdown: false,
+  blockNavigation: false,
+  blockNavigationMessage: ''
 };
 
 const reducer = (state = initialState, action) => {
@@ -13,6 +15,14 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         showAvatarDropdown: !state.showAvatarDropdown
+      }
+    }
+
+    case actions.BLOCK_NAVIGATION: {
+      return {
+        ...state,
+        blockNavigation: action.payload.value,
+        blockNavigationMessage: action.payload.message
       }
     }
 

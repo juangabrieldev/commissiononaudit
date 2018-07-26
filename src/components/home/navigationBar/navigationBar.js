@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
-import uuid from 'uuid/v1';
 import { connect } from 'react-redux';
 
 import styles from './navigationBar.scss';
@@ -17,16 +16,13 @@ class NavigationBar extends Component {
     super(props);
 
     if(props.role === 1) {
-      this.state = {tabs: ['Announcements', 'Maintenance']}
+      this.state = {tabs: ['Maintenance']}
     }
   }
 
   componentDidMount = () => {
-    if(this.props.location.pathname === '/' && this.props.mode === 4) {
-      this.props.history.push('/announcements')
-    }
-
     document.addEventListener('mousedown', this.handleClickOutside);
+    this.forceUpdate(); //unsafe
   };
 
   componentWillUnmount = () => {
@@ -47,9 +43,9 @@ class NavigationBar extends Component {
     const tabs =
       <TransitionGroup component={null}>
         {
-          this.state.tabs.map((tab) => (
-            <div className={styles.tab + (this.props.location.pathname.includes('/' + tab.toLowerCase()) || (tab === 'Announcements' && this.props.location.pathname === '/') ? ' ' + styles.active : '')}>
-              <Link to={`/${tab.toLowerCase()}`}>{tab}</Link>
+          this.state.tabs.map((tab, index) => (
+            <div key={index} className={styles.tab + (this.props.location.pathname.includes('/' + tab.toLowerCase()) ? ' ' + styles.active : '')}>
+              <Link to={tab === 'Maintenance' ? `/${tab.toLowerCase()}/employees` : ''}>{tab}</Link>
               {
                 this.props.location.pathname.includes('/' + tab.toLowerCase()) || (tab === 'Announcements' && this.props.location.pathname === '/') ?
                   <CSSTransition
@@ -91,7 +87,8 @@ const mapStateToProps = state => {
   return {
     showAvatarDropdown: state.ui.showAvatarDropdown,
     mode: state.authentication.mode,
-    role: state.authentication.role
+    role: state.authentication.role,
+    employeeId: state.authentication.employeeId
   }
 };
 

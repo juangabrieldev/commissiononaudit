@@ -1,0 +1,274 @@
+@import "../../../layout/variables";
+
+.summary {
+  display: flex;
+  align-items: center;
+  height: 80px;
+
+  .tab {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    position: relative;
+
+    &:not(:last-of-type) {
+      margin-right: 15px;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .icon {
+      width: 80px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-top-left-radius: 2px;
+      border-bottom-left-radius: 2px;
+
+      div {
+        height: 30px;
+      }
+    }
+
+    .meta {
+      height: 78px;
+      border: solid 1px $border-color;
+      border-left: none;
+      border-top-right-radius: 2px;
+      border-bottom-right-radius: 2px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      background: white;
+
+      .inside {
+        display: flex;
+        flex-direction: column;
+        padding: 0 20px;
+
+        .number {
+          font-size: 30px;
+          font-weight: 600;
+          color: $text-primary;
+          line-height: .65;
+          margin-bottom: 8px;
+        }
+
+        .sub {
+          font-size: 12px;
+          color: #969da5;
+        }
+      }
+    }
+  }
+}
+
+.rowHeader {
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0 5px;
+  height: 30px;
+  align-items: center;
+  background-color: lighten($border-color, 9);
+  border-bottom: solid 1px lighten($border-color, 5);
+
+  p {
+    margin: 0;
+    font-size: 13px;
+    color: #969da5
+  }
+
+  .departmentName {
+    min-width: 240px;
+    box-sizing: border-box;
+    margin-left: 35px;
+  }
+
+  .departmentHead {
+    margin-right: 0;
+    margin-left: auto;
+    min-width: 210px;
+    width: 240px;
+  }
+
+  .dateAdded {
+    width: 200px;
+    margin-right: 0;
+  }
+
+  .numberOfEmployees {
+    min-width: 150px;
+    margin-right: 0;
+  }
+}
+
+.tableBody {
+  display: flex;
+  flex-direction: column;
+
+  > div > div {
+    max-height: calc(100vh - 285px) !important;
+  }
+
+  .row {
+    transform: translateY(-1px);
+    height: 49px;
+    display: flex;
+    align-items: center;
+    padding: 0 5px;
+    transition: background-color .05s;
+    border-top: solid 1px lighten($border-color, 5);
+    box-sizing: content-box;
+
+    p {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    &:not(.selected):hover {
+      background-color: lighten($border-color, 6) !important;
+
+      .select {
+        visibility: visible;
+      }
+
+      .options {
+        visibility: visible;
+      }
+    }
+
+    &.selected {
+      background-color: lighten($border-color, 2) !important;
+      border-color: lighten($border-color, 2);
+
+      .select {
+        visibility: visible;
+      }
+    }
+
+    &:last-of-type {
+      border-bottom: solid 1px lighten($border-color, 5);
+    }
+
+    &:nth-child(even) {
+      background-color: lighten($border-color, 8);
+    }
+
+    .select {
+      min-width: 35px;
+      display: flex;
+      justify-content: center;
+      visibility: hidden;
+    }
+
+    .departmentNameRow {
+      min-width: 240px;
+
+      > a {
+        display: inline;
+        margin-right: 6px;
+        color: #393b4c;
+        font-weight: 400;
+        font-size: 14px;
+      }
+
+      > span {
+        background: $primary-color;
+        color: white;
+        font-size: 9px;
+        padding: 0 4px;
+        border-radius: 2px;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+      }
+
+      > a:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .departmentHeadRow {
+      width: 240px;
+      min-width: 210px;
+      margin-right: 0;
+      margin-left: auto;
+
+      > p {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .dateAddedRow {
+      width: 200px;
+      margin-right: 0;
+    }
+
+    .numberOfEmployeesRow {
+      min-width: 150px;
+      margin-right: 0;
+      display: flex;
+      align-items: center;
+
+      .options {
+        display: flex;
+        flex-direction: column;
+        margin-right: 21px;
+        margin-left: auto;
+        visibility: hidden;
+
+        > div {
+          margin: 1px;
+          width: 3px;
+          height: 3px;
+          border-radius: 50%;
+          background: #969da5
+        }
+      }
+    }
+  }
+
+  .end {
+    font-size: 14px;
+    font-style: italic;
+    text-align: center;
+    color: #969da5;
+  }
+}
+
+.newBody {
+  padding: 12px;
+
+  .input {
+    &:not(:first-child) {
+      margin-top: 12px;
+    }
+
+    > div {
+      margin: 0
+    }
+  }
+}
+
+.departmentPicture {
+  height: 150px;
+  width: 150px;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  p {
+    margin: 0;
+    font-size: 80px;
+    font-weight: 600;
+    color: white;
+  }
+}

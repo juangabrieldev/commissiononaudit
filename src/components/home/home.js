@@ -1,34 +1,72 @@
 import React, {Component} from 'react';
 import { withRouter, Route, Switch } from 'react-router-dom';
 import Title from 'react-document-title';
-import io from 'socket.io-client';
+import NavigationPrompt from 'react-router-navigation-prompt';
+import { connect } from 'react-redux';
 
-import Aux from '../auxillary/auxillary';
 import NavigationBar from './navigationBar/navigationBar';
 import Announcements from './announcements/announcements';
-import Jobs from './jobs/jobs';
+import Maintenance from './maintenance/maintenance';
+import NavigationModal from '../navigationModal/navigationModal';
+import SideBarRight from './sideBarRight/sideBarRight';
+
+import * as actions from '../../store/actions/ui/actions';
 
 class Home extends Component {
   componentDidMount = () => {
-    const socket = io('http://localhost:4000');
-
     if(this.props.location.pathname === '/') {
-      this.props.history.push('/announcements')
+      this.props.history.push('/maintenance/departments');
+      this.setState(this.state);
     }
+  };
+
+  componentWillReceiveProps = next => {
+    if(this.props.blockNavigation !== next.blockNavigation) {
+      this.setState(this.state);
+    }
+  };
+
+  afterConfirm = () => {
+    this.props.blockNavigationDispatch(false);
   };
 
   render() {
     return (
-      <Aux>
+      <React.Fragment>
+        <NavigationPrompt afterConfirm={this.afterConfirm} when={this.props.blockNavigation}>
+          {({onConfirm, onCancel}) => (
+            <NavigationModal onConfirm={onConfirm} onCancel={onCancel} message={this.props.blockNavigationMessage} />
+          )}
+        </NavigationPrompt>
         <Title title="Commission on Audit Promotion Management System"/>
         <NavigationBar />
         <Switch>
           <Route path="/announcements" component={Announcements}/>
-          <Route path="/maintenance" component={Jobs}/>
+          <Route path="/maintenance" component={Maintenance}/>
         </Switch>
-      </Aux>
+        <SideBarRight />
+      </React.Fragment>
     );
   }
 }
 
-export default withRouter(Home);
+const mapStateToProps = state => {
+  return {
+    blockNavigation: state.ui.blockNavigation,
+    blockNavigationMessage: state.ui.blockNavigationMessage
+  }
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    blockNavigationDispatch:
+        value => dispatch({
+          type: actions.BLOCK_NAVIGATION,
+          payload: {
+            value
+          }
+        }),
+  }
+};
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Home));

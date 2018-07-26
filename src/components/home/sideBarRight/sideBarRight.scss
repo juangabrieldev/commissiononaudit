@@ -1,0 +1,91 @@
+@import "../../layout/variables";
+
+.sideBar {
+  position: fixed;
+  border-left: solid 1px $border-color;
+  top: 50px;
+  right: 0;
+  width: 200px;
+  height: calc(100vh - 50px);
+  box-sizing: border-box;
+  z-index: 1;
+  
+  @media (max-width: 1200px) {
+    left: 1000px
+  }
+
+  .systemLogs {
+    .header {
+      height: 30px;
+      display: flex;
+      align-items: center;
+
+      > p {
+        font-size: 12px;
+        font-weight: 400;
+        margin: 0 0 0 12px;
+        color: #969da5
+      }
+    }
+
+    .systemLogsItems {
+      .systemLogsItem {
+        padding: 0 12px;
+        height: 60px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        transition: background 50ms;
+        cursor: pointer;
+        position: relative;
+        border-bottom: solid 1px lighten($border-color, 8);
+
+        &:first-of-type {
+          border-top: solid 1px lighten($border-color, 8);
+        }
+
+        .event {
+          position: absolute;
+          top: 5px;
+
+          p {
+            margin: 0;
+            font-size: 14px;
+            -moz-user-select: none;
+            user-select: none;
+            color: #667379;
+
+            span:first-of-type {
+              font-weight: 700;
+            }
+
+            span:not(:first-of-type) {
+              font-weight: 600;
+            }
+          }
+        }
+
+        .time {
+          position: absolute;
+          bottom: 8px;
+
+          p {
+            margin: 0;
+            color: #b9b9b9;
+            font-size: 12px;
+          }
+        }
+
+        &:hover {
+          background-color: lighten($border-color, 6);
+
+          .event {
+            p {
+              color: #5f5f5f
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -12,7 +12,6 @@ import Getstarted from '../getStarted/getStarted';
 import landing from '../../assets/landingPage/landing.svg';
 import appIcon from '../../assets/landingPage/appIcon.svg';
 import close from '../../assets/ui/close.svg';
-import id from '../../assets/ui/ID Picture.png';
 
 class LandingPage extends Component {
   render() {

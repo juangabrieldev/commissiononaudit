@@ -9,16 +9,36 @@
   background: white;
   z-index: 1;
 
+  .header {
+    height: 30px;
+    display: flex;
+    align-items: center;
+
+    > p {
+      font-size: 12px;
+      font-weight: 400;
+      margin: 0 0 0 12px;
+      color: #b9b9b9;
+      padding: 0;
+      cursor: auto;
+    }
+  }
+
+  > div:not(.header) {
+    padding-left: 20px;
+
+    &:hover {
+      background: lighten($border-color, 7)
+    }
+  }
+
   p {
     margin: 0;
-    padding: 12px 20px;
+    padding: 12px 10px;
     cursor: pointer;
     transition: background 50ms;
     font-size: 14px;
-    color: #919191;
-
-    &:hover {
-      background: lighten($border-color, 5)
-    }
+    color: #667379;
+    width: 100%;
   }
 }

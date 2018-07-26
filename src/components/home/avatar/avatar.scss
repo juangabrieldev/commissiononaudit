@@ -5,8 +5,26 @@
   align-items: center;
   cursor: pointer;
 
+  &:hover {
+    .username p {
+      color: black
+    }
+  }
+
   > img {
     margin-left: 6px;
+    -moz-user-select: none;
+  }
+
+  .username {
+    padding-left: 10px;
+
+    > p {
+      font-size: 14px;
+      margin: 0;
+      color: #919191;
+      -moz-user-select: none;
+    }
   }
 
   .avatar {
@@ -16,8 +34,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #e1e1e1;
+    background: #e67e22;
     position: relative;
+
+    > p {
+      font-weight: 600;
+      font-size: 16px;
+      -moz-user-select: none;
+      color: white;
+      margin: 0
+    }
 
     .online {
       border: 2px solid white;
@@ -42,25 +68,81 @@
   .title {
     padding: 10px;
     background: white;
-    border-top-left-radius: 1px;
-    border-top-right-radius: 1px;
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
     border: solid 1px $border-color;
     overflow: hidden;
+    display: flex;
 
-    > p {
-      margin: 4px 0;
-      color: black;
+    .left {
+      display: flex;
+      align-items: center;
+      padding-right: 10px;
+
+      .avatarBig {
+        border-radius: 50%;
+        height: 60px;
+        width: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #e67e22;
+        position: relative;
+
+        .change {
+          background: rgba(0, 0, 0, 0.6);
+          position: absolute;
+          opacity: 0;
+          top: 0;
+          left: 0;
+          height: 60px;
+          width: 60px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: .1s ease;
+
+          p {
+            color: white;
+            font-size: 10px;
+            text-align: center;
+            margin: 0;
+          }
+        }
+
+        > p {
+          font-weight: 600;
+          font-size: 32px;
+          -moz-user-select: none;
+          color: white;
+          margin: 0
+        }
+
+        &:hover {
+          .change {
+            opacity: 1;
+          }
+        }
+      }
     }
 
-    p.name {
-      font-weight: 400;
-      font-size: 16px;
-      white-space: nowrap;
-    }
+    .right {
+      > p {
+        margin: 4px 0;
+      }
 
-    p.job {
-      opacity: .8;
-      font-size: 14px;
+      p.name {
+        font-weight: 400;
+        font-size: 16px;
+        white-space: nowrap;
+      }
+
+      p.job {
+        opacity: .6;
+        font-size: 14px;
+      }
     }
   }
 
@@ -68,6 +150,9 @@
     background: white;
     border: 1px solid $border-color;
     border-top: none;
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+    overflow: hidden;
 
     p {
       padding: 10px 20px;

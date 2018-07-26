@@ -10,7 +10,7 @@ class Dropdown extends Component {
         style={{
           right: this.props.offset
         }}>
-        <div className={styles.triangle}/>
+        <div className={styles.triangle} style={{right: this.props.triangleOffset}}/>
         {this.props.children}
       </div>
     )

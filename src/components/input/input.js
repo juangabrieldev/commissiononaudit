@@ -11,14 +11,15 @@ import warning from '../../assets/ui/warning.svg';
 class Input extends Component {
   state = {
     value: '',
-    borderColor: '#cdcdcd',
+    borderColor: '#e1e1e1',
     didFocus: false,
     onFocus: false,
-    show: false
+    show: false,
+    characterLimit: this.props.characterLimit
   };
 
   onChangeHandler = e => {
-    if(this.props.disabledTyping) {
+    if(this.props.disabledTyping || e.target.value.length > this.props.characterLimit) {
       return 0;
     }
     this.props.onChangeHandler(e);
@@ -26,20 +27,23 @@ class Input extends Component {
 
   componentDidUpdate = prev => {
     if(prev.value !== this.props.value) {
-      this.setState({value: this.props.value})
+      this.setState({
+        value: this.props.value,
+        characterLimit: this.props.characterLimit - this.props.value.length
+      })
     }
   };
 
 
   onFocus = () => {
     if(this.props.passwordStrength === null || this.props.passwordStrength === undefined) {
-      this.setState({borderColor: '#9b9b9b', onFocus: true});
+      this.setState({borderColor: '#aaaaaa', onFocus: true});
     }
   };
 
   onBlur = () => {
     if(this.props.passwordStrength === null || this.props.passwordStrength === undefined) {
-      this.setState({borderColor: '#cdcdcd', didFocus: true, onFocus: false});
+      this.setState({borderColor: '#e1e1e1', didFocus: true, onFocus: false});
     }
   };
 
@@ -70,8 +74,6 @@ class Input extends Component {
       });
     }
   };
-
-
 
   render() {
     let { width } = this.props;
@@ -106,6 +108,13 @@ class Input extends Component {
           htmlFor={this.props.name}>
             {this.props.name}
         </label>
+        {
+          this.state.value.length > 0 && this.state.onFocus && this.props.characterLimit != null ?
+            <div title={this.state.characterLimit + ' characters left.'} className={styles.characterLimit + (this.state.characterLimit === 0 ? ' ' + styles.characterLimitRed : '')}>
+              <p>{this.state.characterLimit}</p>
+            </div> :
+            null
+        }
         <input
           key={this.props.myKey}
           ref={this.props.name}

@@ -20,7 +20,7 @@ const button = props => {
       onClick={e => props.onClick(e)}
       disabled={props.disabled}
       type={props.type || 'button'}
-      style={{width: props.width, padding: props.width ? '' : '0 10px'}}
+      style={{width: props.width, padding: props.width ? '0 5px' : '0 10px'}}
       className={`${styles.btn} ${classNames()}`}
       value={props.name}/>
   )

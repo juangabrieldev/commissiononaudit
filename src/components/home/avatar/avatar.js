@@ -41,8 +41,11 @@ class Avatar extends Component {
       <Aux>
         <div onClick={e => this.props.onClick(e)} className={styles.avatarContainer}>
           <div className={styles.avatar}>
-            <p>J</p>
+            <p>{this.props.firstName.charAt(0) + this.props.lastName.charAt(0)}</p>
             <div className={styles.online}/>
+          </div>
+          <div className={styles.username}>
+            <p>{this.props.firstName}</p>
           </div>
           <img src={downArrow} height={4} alt=""/>
         </div>
@@ -57,12 +60,22 @@ class Avatar extends Component {
                   exit: styles.exit,
                   exitActive: styles.exitActive
                 }}>
-                <Dropdown offset={12}>
+                <Dropdown triangleOffset={10} offset={0}>
                   <div className={styles.dropdown}>
                     <div className={styles.title}>
-                      <p className={styles.name}>Juan Gabriel Palarpalar</p>
-                      <p className={styles.job}>Administrator</p>
-                      <p className={styles.job}>juangabrielpalarpalar@gmail.com</p>
+                      <div className={styles.left}>
+                        <div className={styles.avatarBig}>
+                          <div className={styles.change}>
+                            <p>Change picture</p>
+                          </div>
+                          <p>{this.props.firstName.charAt(0) + this.props.lastName.charAt(0)}</p>
+                        </div>
+                      </div>
+                      <div className={styles.right}>
+                        <p className={styles.name}>{`${this.props.firstName} ${this.props.middleInitial} ${this.props.lastName}`}</p>
+                        <p className={styles.job}>Administrator</p>
+                        <p className={styles.job}>juangabrielpalarpalar@gmail.com</p>
+                      </div>
                     </div>
                     <div className={styles.content}>
                       <p>Settings</p>
@@ -80,7 +93,10 @@ class Avatar extends Component {
 
 const mapStateToProps = state => {
   return {
-    showAvatarDropdown: state.ui.showAvatarDropdown
+    showAvatarDropdown: state.ui.showAvatarDropdown,
+    firstName: state.authentication.firstName,
+    middleInitial: state.authentication.middleInitial,
+    lastName: state.authentication.lastName
   }
 };
 

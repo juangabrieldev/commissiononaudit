@@ -1,0 +1,151 @@
+@import "../layout/variables";
+@import "../layout/mixins";
+
+.page {
+  position: relative;
+  top: 50px;
+  height: calc(100vh - 50px);
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 1200px !important;
+
+  &.overflowHidden {
+    overflow-y: hidden;
+  }
+
+  .sideBarTabs {
+    display: flex;
+    align-items: center;
+
+    > div {
+      height: 16px;
+    }
+
+    .icon {
+      height: 16px;
+    }
+  }
+
+  .active {
+    color: $primary-color;
+  }
+
+  .container {
+    position: absolute;
+    left: 200px;
+    right: 0;
+    top: 50px;
+    width: calc((100vw - 400px) - (100vw - 100%));
+    min-width: 800px;
+
+    &.zeroTop {
+      top: 0
+    }
+
+    .titleBar {
+      border-top: 1px solid $border-color;
+      border-bottom: 1px solid $border-color;
+      transform: translateY(-1px);
+      height: 48px;
+      transition: transform cubic-bezier(.23,1,.32,1) 0.2s;
+      display: flex;
+      align-items: center;
+      min-width: 800px;
+      background: white;
+      position: fixed;
+      top: 50px;
+      left: 200px;
+      width: calc(100vw - 400px - (100vw - 100%));
+      z-index: 1;
+
+      &.bottom {
+        transform: translateY(calc((100vh - 100px)));
+
+        > input {
+          margin-right: 20px;
+          margin-left: 0;
+        }
+      }
+
+      p {
+        margin: 0 0 0 20px;
+        font-size: 20px;
+        font-weight: 600;
+      }
+
+      > a {
+        color: #667379;
+        font-weight: 400;
+      }
+
+      > input, a {
+        margin-right: 20px;
+        margin-left: auto;
+        cursor: pointer
+      }
+    }
+
+    .main {
+      padding: 15px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+
+      .pageMain, .pageMainNew {
+        transition: transform cubic-bezier(.23,1,.32,1) .2s;
+
+        &.bottom {
+          transform: translateY(calc(100vh - (100px)));
+        }
+
+        &.top {
+          transform: translateY(calc((100vh - (100px)) / -1));
+        }
+      }
+    }
+
+    .form {
+      background: white;
+
+      &:not(:first-child) {
+        margin-top: 15px;
+      }
+
+      .header {
+        border: 1px solid $border-color;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        border-top-left-radius: 2px;
+        border-top-right-radius: 2px;
+
+        > p {
+          font-weight: 600;
+          font-size: 18px;
+          margin: 0 0 0 12px;
+        }
+
+        .formControl {
+          font-size: 13px;
+          font-weight: 400;
+          margin-left: auto;
+          margin-right: 12px;
+          cursor: pointer;
+          color: $primary-color;
+
+          &.delete {
+            color: #ff4839
+          }
+        }
+      }
+
+      .formBody {
+        border: 1px solid $border-color;
+        border-top: none;
+        border-bottom-left-radius: 2px;
+        border-bottom-right-radius: 2px;
+      }
+    }
+  }
+}
+

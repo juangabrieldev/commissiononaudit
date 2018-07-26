@@ -43,6 +43,25 @@
     }
   }
 
+  .characterLimit {
+    position: absolute;
+    top: 12px;
+    right: 0;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+
+    &.characterLimitRed p {
+      color: $error
+    }
+
+    p {
+      margin: 0;
+      color: $valid-color;
+      font-size: 12px;
+    }
+  }
+
   input {
     height: 40px;
     width: 100%;
