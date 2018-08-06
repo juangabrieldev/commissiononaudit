@@ -1,7 +1,11 @@
 import io from 'socket.io-client';
+import { rootUrl } from "./api";
 
 export const initializeSocket = () => {
-  const socket = io('http://192.168.1.5:4000');
+  return io(rootUrl);
+};
 
-  return socket;
+export const events = {
+  departments: 'DEPARTMENTS',
+  systemLogs: 'SYSTEM_LOGS'
 };

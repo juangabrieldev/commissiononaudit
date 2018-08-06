@@ -36,7 +36,11 @@
     right: 0;
     top: 50px;
     width: calc((100vw - 400px) - (100vw - 100%));
-    min-width: 800px;
+    min-width: 800px !important;
+
+    &.fullWidth {
+      width: calc((100vw - 200px) - (100vw - 100%));
+    }
 
     &.zeroTop {
       top: 0
@@ -57,6 +61,10 @@
       left: 200px;
       width: calc(100vw - 400px - (100vw - 100%));
       z-index: 1;
+
+      &.fullWidth {
+        width: calc(100vw - 200px - (100vw - 100%))
+      }
 
       &.bottom {
         transform: translateY(calc((100vh - 100px)));
@@ -144,6 +152,24 @@
         border-top: none;
         border-bottom-left-radius: 2px;
         border-bottom-right-radius: 2px;
+
+        .fields {
+          p {
+            margin: 0;
+            font-size: 14px;
+
+            &:first-child {
+              font-size: 12px;
+              font-weight: 400;
+              color: #969da5;
+              margin-bottom: 10px;
+            }
+          }
+        }
+
+        .section:not(:last-child) {
+          margin-bottom: 20px;
+        }
       }
     }
   }

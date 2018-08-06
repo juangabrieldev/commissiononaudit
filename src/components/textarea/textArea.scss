@@ -55,11 +55,15 @@
     resize: vertical;
     border: none;
     min-height: 130px;
-    max-height: calc(100vh - 275px);
+    max-height: calc(100vh - 285px);
 
     &::placeholder {
       font-size: 14px;
       opacity: 0.3
+    }
+
+    &:focus {
+      outline: none
     }
   }
 }

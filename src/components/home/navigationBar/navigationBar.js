@@ -15,14 +15,37 @@ class NavigationBar extends Component {
   constructor(props) {
     super(props);
 
-    if(props.role === 1) {
-      this.state = {tabs: ['Maintenance']}
+    switch(this.props.role) {
+      case 1: {
+        this.state = {tabs: ['Maintenance']};
+        break;
+      }
+
+      case 3: {
+        this.state = {tabs: ['Announcements']}
+      }
     }
   }
 
   componentDidMount = () => {
+    if(this.props.location.pathname === '/') {
+
+      switch(this.props.role) {
+        case 1: {
+          this.props.history.push('/maintenance/departments');
+          break;
+        }
+
+        case 3: {
+          this.props.history.push('/announcements');
+          break;
+        }
+      }
+
+      this.setState(this.state);
+    }
+
     document.addEventListener('mousedown', this.handleClickOutside);
-    this.forceUpdate(); //unsafe
   };
 
   componentWillUnmount = () => {

@@ -13,13 +13,6 @@ import SideBarRight from './sideBarRight/sideBarRight';
 import * as actions from '../../store/actions/ui/actions';
 
 class Home extends Component {
-  componentDidMount = () => {
-    if(this.props.location.pathname === '/') {
-      this.props.history.push('/maintenance/departments');
-      this.setState(this.state);
-    }
-  };
-
   componentWillReceiveProps = next => {
     if(this.props.blockNavigation !== next.blockNavigation) {
       this.setState(this.state);
@@ -44,7 +37,12 @@ class Home extends Component {
           <Route path="/announcements" component={Announcements}/>
           <Route path="/maintenance" component={Maintenance}/>
         </Switch>
-        <SideBarRight />
+        {
+          this.props.role === 1 ?
+            <SideBarRight employeeId={this.props.employeeId}/> :
+            null
+        }
+
       </React.Fragment>
     );
   }
@@ -53,7 +51,9 @@ class Home extends Component {
 const mapStateToProps = state => {
   return {
     blockNavigation: state.ui.blockNavigation,
-    blockNavigationMessage: state.ui.blockNavigationMessage
+    blockNavigationMessage: state.ui.blockNavigationMessage,
+    employeeId: state.authentication.employeeId,
+    role: state.authentication.role
   }
 };
 

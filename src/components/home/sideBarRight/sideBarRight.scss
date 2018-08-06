@@ -8,10 +8,13 @@
   width: 200px;
   height: calc(100vh - 50px);
   box-sizing: border-box;
-  z-index: 1;
   
   @media (max-width: 1200px) {
     left: 1000px
+  }
+
+  &.zIndex {
+    z-index: 3;
   }
 
   .systemLogs {
@@ -29,7 +32,11 @@
     }
 
     .systemLogsItems {
+      display: flex;
+      flex-direction: column-reverse;
+
       .systemLogsItem {
+        position: relative;
         padding: 0 12px;
         height: 60px;
         display: flex;
@@ -39,6 +46,11 @@
         cursor: pointer;
         position: relative;
         border-bottom: solid 1px lighten($border-color, 8);
+        border-top: solid 1px transparent;
+
+        &.selected {
+          background-color: darken($border-color, 2) !important;
+        }
 
         &:first-of-type {
           border-top: solid 1px lighten($border-color, 8);
@@ -54,6 +66,7 @@
             -moz-user-select: none;
             user-select: none;
             color: #667379;
+            max-width: 180px;
 
             span:first-of-type {
               font-weight: 700;
@@ -73,6 +86,7 @@
             margin: 0;
             color: #b9b9b9;
             font-size: 12px;
+            -moz-user-select: none;
           }
         }
 
@@ -85,6 +99,45 @@
             }
           }
         }
+
+        .popup {
+          position: absolute;
+          left: -315px;
+          height: 300px;
+          width: 270px;
+          cursor: auto;
+          background: white;
+          border-radius: 2px;
+          border: solid 1px $border-color;
+          box-shadow: 0 2px 4px 0 rgba(0,0,0,0.05);
+          z-index: 1;
+
+          .triangle {
+            width: 10px;
+            height: 10px;
+            transform: rotate(45deg);
+            position: absolute;
+            right: -6px;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+            border-radius: 2px;
+            background: white;
+            border-top: solid 1px $border-color;
+            border-right: solid 1px $border-color
+          }
+        }
+      }
+
+      .enter {
+        opacity: 0;
+        background: #ffedb7;
+      }
+
+      .enterActive {
+        opacity: 1;
+        background: none;
+        transition: opacity ease .1s, background ease 4s;
       }
     }
   }

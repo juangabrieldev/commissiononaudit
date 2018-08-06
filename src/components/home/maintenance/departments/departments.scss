@@ -241,34 +241,29 @@
     text-align: center;
     color: #969da5;
   }
+
+  .enter {
+    opacity: 0;
+    background-color: #ffedb7 !important;
+  }
+
+  .enterActive {
+    opacity: 1;
+    background-color: transparent !important;
+    transition: opacity ease .1s, background ease 4s;
+  }
 }
 
 .newBody {
-  padding: 12px;
+  padding: 15px;
 
   .input {
     &:not(:first-child) {
-      margin-top: 12px;
+      margin-top: 15px;
     }
 
     > div {
       margin: 0
     }
-  }
-}
-
-.departmentPicture {
-  height: 150px;
-  width: 150px;
-  border-radius: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  p {
-    margin: 0;
-    font-size: 80px;
-    font-weight: 600;
-    color: white;
   }
 }

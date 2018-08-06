@@ -16,7 +16,7 @@ import jobs from '../../../assets/ui/jobs.svg';
 class Maintenance extends Component {
   componentDidMount = () => {
     if(this.props.location.pathname === '/maintenance' || this.props.location.pathname === '/maintenance/') {
-      this.props.history.push('/maintenance/employees');
+      this.props.history.push('/maintenance/departments');
     }
 
     if(this.props.location.pathname.includes('/new')) {
@@ -83,17 +83,19 @@ class Maintenance extends Component {
       </React.Fragment>;
 
     return (
-      <div className={styles.page + (this.state.overflowHidden ? ' ' + styles.overflowHidden : '')}>
-        <SideBar>
-          {sideBarTabs}
-        </SideBar>
-        <div className={styles.container + (this.state.zeroTop ? ' ' + styles.zeroTop : '')}>
-          <Switch>
-            <Route path={this.props.match.path + '/jobs'} component={Jobs}/>
-            <Route path={this.props.match.path + '/departments'} component={Departments}/>
-          </Switch>
+      <React.Fragment>
+        <div className={styles.page + (this.state.overflowHidden ? ' ' + styles.overflowHidden : '')}>
+          <SideBar>
+            {sideBarTabs}
+          </SideBar>
+          <div className={styles.container + (this.state.zeroTop ? ' ' + styles.zeroTop : '')}>
+            <Switch>
+              <Route path={this.props.match.path + '/jobs'} component={Jobs}/>
+              <Route path={this.props.match.path + '/departments'} component={Departments}/>
+            </Switch>
+          </div>
         </div>
-      </div>
+      </React.Fragment>
     );
   }
 }

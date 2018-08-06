@@ -461,7 +461,7 @@ class GetStarted extends Component {
                 onClick={() => this.setState({role: 3})}
                 className={styles.box + (this.state.role === 3 ? ' ' + styles.roleSelected : '')}>
                 <img src={employee} height={80} alt=""/>
-                <p>User</p>
+                <p>Applicant</p>
               </div>
               <div
                 onClick={() => this.setState({role: 1})}

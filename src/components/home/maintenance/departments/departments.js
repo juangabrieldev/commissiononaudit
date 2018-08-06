@@ -8,6 +8,7 @@ import produce from 'immer';
 import axios from 'axios';
 import moment from 'moment';
 import Parser from 'html-react-parser';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
 import styles from './departments.scss';
 import univStyles from '../../styles.scss';
@@ -25,7 +26,7 @@ import * as actions from '../../../../store/actions/ui/actions';
 
 import { departments } from "../../../../api";
 
-import { initializeSocket } from "../../../../socket";
+import { initializeSocket, events } from "../../../../socket";
 import ViewDepartment from "./viewDepartment";
 
 class Jobs extends Component {
@@ -37,14 +38,15 @@ class Jobs extends Component {
     selectedDepartments: [],
     previousLink: '',
     departmentViewed: false,
-    slug: ''
+    slug: '',
+    showTransition: false
   };
 
   fetch = () => {
     axios.get(departments.get)
       .then(res => {
         if(res.data.status === 200) {
-          this.setState({departments: [...res.data.data], selectedDepartments: [], previousLink: '/maintenance/departments'})
+          this.setState({departments: [...res.data.data], selectedDepartments: [], previousLink: '/maintenance/departments'}, () => this.setState({showTransition: true}))
         }
       });
   };
@@ -63,8 +65,8 @@ class Jobs extends Component {
 
     const socket = initializeSocket();
 
-    socket.on('system_log', () => {
-      this.fetch();
+    socket.on(events.departments, () => {
+      setTimeout(() => this.fetch(), 50) //compensation
     })
   };
 
@@ -73,13 +75,11 @@ class Jobs extends Component {
 
     this.setState({departmentName: departmentName.target.value}, () => {
       if(departmentName.target.value.length > 0) {
-        if(!this.state.blockedNavigation) {
+        if(!this.props.blockedNavigation) {
           this.props.blockNavigation(true, `You haven't finished your post yet. Are you sure you want to leave?`);
-          this.setState({blockedNavigation: true});
         }
       } else {
         this.props.blockNavigation(false);
-        this.setState({blockedNavigation: false});
       }
     })
   };
@@ -119,7 +119,9 @@ class Jobs extends Component {
     axios.post(departments.create, {
       departmentName: this.state.departmentName,
       departmentDescription: this.state.departmentDescription,
-      slug: Slug(this.state.departmentName.toLowerCase())
+      slug: Slug(this.state.departmentName.toLowerCase()),
+      employeeId: this.props.employeeId,
+      firstName: this.props.firstName
     })
       .then(res => {
         if(res.data.status === 200) {
@@ -127,11 +129,7 @@ class Jobs extends Component {
           axios.get(departments.get)
             .then(res => {
               if(res.data.status === 200) {
-                this.setState({departments: [...res.data.data]}, () => {
-                  setTimeout(() => {
-                    this.props.history.push('/maintenance/departments/');
-                  }, 0);
-                })
+                this.props.history.push('/maintenance/departments/');
               }
             });
         }
@@ -140,7 +138,9 @@ class Jobs extends Component {
 
   onDelete = () => {
     axios.post(departments.delete, {
-      id: [...this.state.selectedDepartments]
+      id: [...this.state.selectedDepartments],
+      employeeId: this.props.employeeId,
+      firstName: this.props.firstName
     })
       .then(res => {
         console.log(res.data);
@@ -150,11 +150,9 @@ class Jobs extends Component {
       })
   };
 
-  viewDepartment = slug => {
-    this.setState({slug, departmentViewed: true})
-  };
-
   render() {
+    let newDepartments = 0;
+
     const departmentsTitleBar =
       <div className={univStyles.titleBar + (this.props.location.pathname.includes('/new') ? ' ' + univStyles.bottom : '')}>
         {
@@ -175,34 +173,47 @@ class Jobs extends Component {
       const selected = this.state.selectedDepartments.find(element => {
         return element === department.id;
       });
+
+      if(department.newDepartment) {
+        newDepartments++;
+      }
+
       return (
-        <div key={department.key} className={styles.row + (selected ? ' ' + styles.selected : '')}>
-          <div className={styles.select}>
-            <Checkbox toggle={value => this.onSelect(department.id, value)} />
-          </div>
-          <div className={styles.departmentNameRow}>
-            <Link to={'/maintenance/departments/' + department.slug}>{department.departmentName}</Link>
-            {
-              department.newDepartment ?
-                <span>NEW</span> :
-                null
-            }
-          </div>
-          <div className={styles.departmentHeadRow}>
-            <p>{department.departmentHead}</p>
-          </div>
-          <div className={styles.dateAddedRow}>
-            <p title={'Created on ' + moment(department.dateCreated).format('dddd, MMMM D, YYYY') + ' at ' + moment(department.dateCreated).format('h:mm A')}>{moment(department.dateCreated).format('MMMM D, YYYY')}</p>
-          </div>
-          <div className={styles.numberOfEmployeesRow}>
-            <p>46</p>
-            <div className={styles.options}>
-              <div/>
-              <div/>
-              <div/>
+        <CSSTransition
+          key={department.key}
+          timeout={4000}
+          classNames={{
+            enter: styles.enter,
+            enterActive: styles.enterActive,
+          }}>
+          <div className={styles.row + (selected ? ' ' + styles.selected : '')}>
+            <div className={styles.select}>
+              <Checkbox toggle={value => this.onSelect(department.id, value)} />
+            </div>
+            <div className={styles.departmentNameRow}>
+              <Link to={'/maintenance/departments/' + department.slug}>{department.departmentName}</Link>
+              {
+                department.newDepartment ?
+                  <span>NEW</span> :
+                  null
+              }
+            </div>
+            <div className={styles.departmentHeadRow}>
+              <p>{department.departmentHead}</p>
+            </div>
+            <div className={styles.dateAddedRow}>
+              <p title={'Created on ' + moment(department.dateCreated).format('dddd, MMMM D, YYYY') + ' at ' + moment(department.dateCreated).format('h:mm A')}>{moment(department.dateCreated).format('MMMM D, YYYY')}</p>
+            </div>
+            <div className={styles.numberOfEmployeesRow}>
+              <p>46</p>
+              <div className={styles.options}>
+                <div/>
+                <div/>
+                <div/>
+              </div>
             </div>
           </div>
-        </div>
+        </CSSTransition>
       )
     }
     );
@@ -233,7 +244,7 @@ class Jobs extends Component {
                     </div>
                     <div className={styles.meta}>
                       <div className={styles.inside}>
-                        <p className={styles.number}>1</p>
+                        <p className={styles.number}>{newDepartments}</p>
                         <p className={styles.sub}>Newly created departments</p>
                       </div>
                     </div>
@@ -278,7 +289,9 @@ class Jobs extends Component {
                         }}
                         autoHeight
                         autoHide>
-                        {departmentRows}
+                        <TransitionGroup exit={false} component={null} enter={this.state.showTransition}>
+                          {departmentRows}
+                        </TransitionGroup>
                         <p className={styles.end}>end of results</p>
                       </Scrollbars>
                     </div>
@@ -329,6 +342,13 @@ class Jobs extends Component {
   }
 }
 
+const mapStateToProps = state => {
+  return {
+    employeeId: state.authentication.employeeId,
+    firstName: state.authentication.firstName
+  }
+};
+
 const mapDispatchToProps = dispatch => {
   return {
     blockNavigation:
@@ -342,4 +362,4 @@ const mapDispatchToProps = dispatch => {
   }
 };
 
-export default withRouter(connect(null, mapDispatchToProps)(Jobs));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Jobs));
