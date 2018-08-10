@@ -34,7 +34,6 @@ class Input extends Component {
     }
   };
 
-
   onFocus = () => {
     if(this.props.passwordStrength === null || this.props.passwordStrength === undefined) {
       this.setState({borderColor: '#aaaaaa', onFocus: true});
@@ -132,7 +131,7 @@ class Input extends Component {
           id={this.props.name}
           placeholder={this.props.name}
           pattern={this.props.pattern}
-          value={this.props.value}/>
+          value={this.state.value}/>
         {
           this.props.type === 'password' && this.state.value.length > 0 ?
             <div

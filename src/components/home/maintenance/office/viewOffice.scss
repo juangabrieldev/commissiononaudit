@@ -1,0 +1,27 @@
+.main {
+  .view {
+      display: flex;
+      flex-direction: column;
+      min-height: 300px;
+      padding: 15px;
+      flex-wrap: wrap;
+
+      .fields {
+        &:not(:first-child) {
+          margin-top: 15px;
+        }
+
+        p {
+          margin: 0;
+          font-size: 14px;
+
+          &:first-child {
+            font-size: 12px;
+            font-weight: 400;
+            color: #969da5;
+            margin-bottom: 4px;
+          }
+        }
+      }
+    }
+}

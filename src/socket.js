@@ -6,6 +6,6 @@ export const initializeSocket = () => {
 };
 
 export const events = {
-  departments: 'DEPARTMENTS',
+  office: 'OFFICE',
   systemLogs: 'SYSTEM_LOGS'
 };

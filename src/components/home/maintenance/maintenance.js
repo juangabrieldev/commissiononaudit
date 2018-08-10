@@ -5,7 +5,7 @@ import SwitchCSSTransitionGroup from 'switch-css-transition-group'
 
 import styles from '../styles.scss';
 
-import Departments from './departments/departments';
+import Office from './office/office';
 import Jobs from './jobs/jobs';
 import SideBar from '../sideBar/sideBar';
 
@@ -16,7 +16,7 @@ import jobs from '../../../assets/ui/jobs.svg';
 class Maintenance extends Component {
   componentDidMount = () => {
     if(this.props.location.pathname === '/maintenance' || this.props.location.pathname === '/maintenance/') {
-      this.props.history.push('/maintenance/departments');
+      this.props.history.push('/maintenance/office');
     }
 
     if(this.props.location.pathname.includes('/new')) {
@@ -43,7 +43,7 @@ class Maintenance extends Component {
   };
 
   state = {
-    tabs: ['Employees', 'Jobs', 'Departments'],
+    tabs: ['Employees', 'Jobs', 'Office'],
     icons: [employees, jobs, departments],
     overflowHidden: false,
     zeroTop: false
@@ -91,7 +91,7 @@ class Maintenance extends Component {
           <div className={styles.container + (this.state.zeroTop ? ' ' + styles.zeroTop : '')}>
             <Switch>
               <Route path={this.props.match.path + '/jobs'} component={Jobs}/>
-              <Route path={this.props.match.path + '/departments'} component={Departments}/>
+              <Route path={this.props.match.path + '/office'} component={Office}/>
             </Switch>
           </div>
         </div>

@@ -1,0 +1,78 @@
+@import "../layout/variables";
+
+.numeric {
+  border-radius: 2px;
+  border: solid 1px $border-color;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  transition: .1s;
+  position: relative;
+
+  &.focused {
+    border-color: #aaaaaa;
+  }
+
+  label {
+    position: absolute;
+    margin-left: 5px;
+    padding: 0 2px;
+    top: 6px;
+    opacity: 0;
+    transition: .1s;
+    color: #7d7d7d;
+    z-index: -1;
+
+    &.shown {
+      font-size: 13px;
+      top: -8px;
+      opacity: 1;
+      background: white;
+      z-index: 0;
+    }
+  }
+
+  > p {
+    padding: 0 8px;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+
+    &.placeholder {
+      font-size: 14px;
+      opacity: .4;
+    }
+  }
+
+  .buttons {
+    margin-right: 0;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    height: 100%;
+
+    > div {
+      width: 25px;
+      cursor: pointer;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-left: solid 1px lighten($border-color, 5);
+
+      &:hover {
+        background: lighten($border-color, 7)
+      }
+
+      &:active {
+        background: lighten($border-color, 5)
+      }
+
+      > p {
+        margin: 0;
+        color: #9a9a9a;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+      }
+    }
+  }
+}

@@ -32,7 +32,7 @@ class NavigationBar extends Component {
 
       switch(this.props.role) {
         case 1: {
-          this.props.history.push('/maintenance/departments');
+          this.props.history.push('/maintenance/office');
           break;
         }
 

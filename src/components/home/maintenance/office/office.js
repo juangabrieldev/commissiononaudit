@@ -10,7 +10,7 @@ import moment from 'moment';
 import Parser from 'html-react-parser';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
-import styles from './departments.scss';
+import styles from './office.scss';
 import univStyles from '../../styles.scss';
 
 import Button from '../../../button/button';
@@ -24,38 +24,44 @@ import leaf from '../../../../assets/ui/leaf.svg';
 
 import * as actions from '../../../../store/actions/ui/actions';
 
-import { departments } from "../../../../api";
+import { office } from "../../../../api";
 
 import { initializeSocket, events } from "../../../../socket";
-import ViewDepartment from "./viewDepartment";
+import ViewOffice from "./viewOffice";
+import Numeric from "../../../numeric/numeric";
 
-class Jobs extends Component {
+class Office extends Component {
   state = {
-    departmentName: '',
-    departmentDescription: '',
+    officeName: '',
+    numberOfClusters: 0,
+    officeDescription: '',
     blockedNavigation: false,
-    departments: [],
-    selectedDepartments: [],
+    office: [],
+    selectedOffice: [],
     previousLink: '',
-    departmentViewed: false,
     slug: '',
-    showTransition: false
+    showTransition: false,
+    saveDisabled: true
   };
 
   fetch = () => {
-    axios.get(departments.get)
+    axios.get(office.get)
       .then(res => {
-        if(res.data.status === 200) {
-          this.setState({departments: [...res.data.data], selectedDepartments: [], previousLink: '/maintenance/departments'}, () => this.setState({showTransition: true}))
+        if (res.data.status === 200) {
+          this.setState({
+            office: [...res.data.data],
+            selectedOffice: [],
+            previousLink: '/maintenance/office'
+          }, () => this.setState({showTransition: true}))
         }
       });
   };
 
   componentDidUpdate = prev => {
-    if(prev.location.pathname !== this.props.location.pathname) {
+    if (prev.location.pathname !== this.props.location.pathname) {
       this.setState({
-        departmentName: '',
-        departmentDescription: ''
+        officeName: '',
+        officeDescription: ''
       });
     }
   };
@@ -65,71 +71,94 @@ class Jobs extends Component {
 
     const socket = initializeSocket();
 
-    socket.on(events.departments, () => {
-      setTimeout(() => this.fetch(), 50) //compensation
+    socket.on(events.office, this.fetch)
+  };
+
+  onChangeOfficeName = e => {
+    const value = e.target.value;
+
+    this.setState({officeName: value}, () => {
+      this.blockNavigationChecker();
+      this.disabledChecker()
     })
   };
 
-  onChangeDepartmentName = e => {
-    const departmentName = {...e};
-
-    this.setState({departmentName: departmentName.target.value}, () => {
-      if(departmentName.target.value.length > 0) {
-        if(!this.props.blockedNavigation) {
-          this.props.blockNavigation(true, `You haven't finished your post yet. Are you sure you want to leave?`);
-        }
-      } else {
-        this.props.blockNavigation(false);
-      }
+  onChangeNumberOfClusters = v => {
+    this.setState({numberOfClusters: v}, () => {
+      this.blockNavigationChecker();
+      this.disabledChecker()
     })
   };
 
   onChangeDescription = e => {
-    this.setState({departmentDescription: e.target.value})
+    this.setState({officeDescription: e.target.value}, () => {
+      this.blockNavigationChecker();
+      this.disabledChecker()
+    })
+  };
+
+  disabledChecker = () => {
+    if (this.state.officeName.length > 10 && this.state.numberOfClusters > 0) {
+      this.setState({saveDisabled: false})
+    } else {
+      this.setState({saveDisabled: true})
+    }
+  };
+
+  blockNavigationChecker = () => {
+    if (this.state.officeName.length > 0 || this.state.numberOfClusters > 0 || this.state.officeDescription.length > 0) {
+      if (!this.props.blockedNavigation) {
+        this.props.blockNavigation(true, `You haven't finished your post yet. Are you sure you want to leave?`);
+      }
+    } else {
+      this.props.blockNavigation(false);
+    }
   };
 
   onCancel = () => {
     this.props.blockNavigation(false);
     setTimeout(() => {
       this.props.history.push(this.state.previousLink);
-      this.setState({departmentName: ''})
+      this.setState({officeName: ''})
     }, 0);
   };
 
   onSelect = (id, value) => {
     if(value) {
       this.setState(produce(draft => {
-        draft.selectedDepartments.push(id)
+        draft.selectedOffice.push(id)
       }))
     } else {
-      const index = this.state.selectedDepartments.indexOf(id);
+      const index = this.state.selectedOffice.indexOf(id);
 
       this.setState(produce(draft => {
-        draft.selectedDepartments.splice(index, 1)
+        draft.selectedOffice.splice(index, 1)
       }))
     }
   };
 
   onCreate = () => {
     this.setState({previousLink: this.props.location.pathname});
-    this.props.history.push('/maintenance/departments/new')
+    this.props.history.push('/maintenance/office/new')
   };
 
   onSave = () => {
-    axios.post(departments.create, {
-      departmentName: this.state.departmentName,
-      departmentDescription: this.state.departmentDescription,
-      slug: Slug(this.state.departmentName.toLowerCase()),
+    axios.post(office.create, {
+      officeName: this.state.officeName,
+      officeDescription: this.state.officeDescription,
+      slug: Slug(this.state.officeName.toLowerCase()),
       employeeId: this.props.employeeId,
-      firstName: this.props.firstName
+      firstName: this.props.firstName,
+      numberOfClusters: this.state.numberOfClusters
     })
       .then(res => {
+        console.log(res);
         if(res.data.status === 200) {
           this.props.blockNavigation(false);
-          axios.get(departments.get)
+          axios.get(office.get)
             .then(res => {
               if(res.data.status === 200) {
-                this.props.history.push('/maintenance/departments/');
+                this.props.history.push('/maintenance/office/');
               }
             });
         }
@@ -137,46 +166,39 @@ class Jobs extends Component {
   };
 
   onDelete = () => {
-    axios.post(departments.delete, {
-      id: [...this.state.selectedDepartments],
+    axios.post(office.delete, {
+      id: [...this.state.selectedOffice],
       employeeId: this.props.employeeId,
       firstName: this.props.firstName
     })
       .then(res => {
-        console.log(res.data);
         if(res.data.status === 200) {
-          this.setState({selectedDepartments: []});
+          this.setState({selectedOffice: []});
         }
       })
   };
 
   render() {
-    let newDepartments = 0;
-
     const departmentsTitleBar =
       <div className={univStyles.titleBar + (this.props.location.pathname.includes('/new') ? ' ' + univStyles.bottom : '')}>
         {
           this.props.location.pathname.includes('/new') ?
             <React.Fragment>
-              <p>Create new department</p>
+              <p>Create new office</p>
               <a onClick={this.onCancel}>Cancel</a>
-              <Button onClick={this.onSave} width={70} classNames={['tertiary']} name="SAVE"/>
+              <Button disabled={this.state.saveDisabled} onClick={this.onSave} width={70} classNames={['tertiary']} name="SAVE"/>
             </React.Fragment> :
             <React.Fragment>
-              <p>Departments</p>
-              <Button onClick={this.onCreate} classNames={['primary']} name="+  CREATE NEW DEPARTMENT"/>
+              <p>Office</p>
+              <Button onClick={this.onCreate} classNames={['primary']} name="+  CREATE NEW OFFICE"/>
             </React.Fragment>
         }
       </div>;
 
-    const departmentRows = this.state.departments.map(department => {
-      const selected = this.state.selectedDepartments.find(element => {
+    const departmentRows = this.state.office.map(department => {
+      const selected = this.state.selectedOffice.find(element => {
         return element === department.id;
       });
-
-      if(department.newDepartment) {
-        newDepartments++;
-      }
 
       return (
         <CSSTransition
@@ -191,7 +213,7 @@ class Jobs extends Component {
               <Checkbox toggle={value => this.onSelect(department.id, value)} />
             </div>
             <div className={styles.departmentNameRow}>
-              <Link to={'/maintenance/departments/' + department.slug}>{department.departmentName}</Link>
+              <Link to={'/maintenance/office/' + department.slug}>{department.officeName}</Link>
               {
                 department.newDepartment ?
                   <span>NEW</span> :
@@ -222,57 +244,30 @@ class Jobs extends Component {
       <React.Fragment>
         {departmentsTitleBar}
         <Switch>
-          <Route path={'/maintenance/departments'} exact render={() =>
+          <Route path={'/maintenance/office'} exact render={() =>
             <div className={univStyles.main}>
               <div className={univStyles.pageMainNew + ' ' + univStyles.top} />
               <div className={univStyles.pageMain}>
-                <div className={styles.summary}>
-                  <div className={styles.tab}>
-                    <div className={styles.icon} style={{backgroundColor: '#93cc46'}}>
-                      <ReactSVG path={departmentsWidget} svgStyle={{fill: 'white', height: 30}}/>
-                    </div>
-                    <div className={styles.meta}>
-                      <div className={styles.inside}>
-                        <p className={styles.number}>{this.state.departments.length}</p>
-                        <p className={styles.sub}>Total departments</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className={styles.tab}>
-                    <div className={styles.icon} style={{backgroundColor: '#4688ff'}}>
-                      <ReactSVG path={leaf} svgStyle={{fill: 'white', height: 30}}/>
-                    </div>
-                    <div className={styles.meta}>
-                      <div className={styles.inside}>
-                        <p className={styles.number}>{newDepartments}</p>
-                        <p className={styles.sub}>Newly created departments</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
                 <div className={univStyles.form}>
                   <div className={univStyles.header}>
-                    <p>List of Departments</p>
+                    <p>List of Office</p>
                     {
-                      this.state.selectedDepartments.length !== 0 ?
+                      this.state.selectedOffice.length !== 0 ?
                         <p onClick={this.onDelete} className={univStyles.formControl + ' ' + univStyles.delete}>Delete</p> :
                         null
                     }
                     <SearchBar
-                      placeholder="Search Departments"
+                      placeholder="Search Office"
                       style={{
                         width: 170,
                         marginRight: 12,
-                        marginLeft: this.state.selectedDepartments.length === 0 ? 'auto' : ''
+                        marginLeft: this.state.selectedOffice.length === 0 ? 'auto' : ''
                       }}/>
                   </div>
                   <div className={univStyles.formBody}>
                     <div className={styles.rowHeader}>
-                      <div className={styles.departmentName}>
-                        <p>Department Name</p>
-                      </div>
-                      <div className={styles.departmentHead}>
-                        <p>Department Head</p>
+                      <div className={styles.officeName}>
+                        <p>Office Name</p>
                       </div>
                       <div className={styles.dateAdded}>
                         <p>Date added</p>
@@ -300,12 +295,12 @@ class Jobs extends Component {
               </div>
             </div>
           }/>
-          <Route path={'/maintenance/departments/new'} exact render={() =>
+          <Route path={'/maintenance/office/new'} exact render={() =>
             <div className={univStyles.main}>
               <div className={univStyles.pageMainNew}>
                 <div className={univStyles.form}>
                   <div className={univStyles.header}>
-                    <p>Department Details</p>
+                    <p>Office Details</p>
                   </div>
                   <div className={univStyles.formBody}>
                     <div className={styles.newBody}>
@@ -314,12 +309,15 @@ class Jobs extends Component {
                           characterLimit={40}
                           autofocus
                           type="text"
-                          value={this.state.departmentName}
-                          onChangeHandler={e => this.onChangeDepartmentName(e)}
-                          name="* Department Name"/>
+                          value={this.state.officeName}
+                          onChangeHandler={e => this.onChangeOfficeName(e)}
+                          name="* Office Name"/>
                       </div>
                       <div className={styles.input}>
-                        <TextArea characterLimit={300} value={this.state.departmentDescription} onChangeHandler={e => this.onChangeDescription(e)} name="Description"/>
+                        <Numeric onChangeHandler={v => this.onChangeNumberOfClusters(v)} width={200} name="* Number of clusters"/>
+                      </div>
+                      <div className={styles.input}>
+                        <TextArea characterLimit={300} value={this.state.officeDescription} onChangeHandler={e => this.onChangeDescription(e)} name="Description"/>
                       </div>
                     </div>
                   </div>
@@ -328,11 +326,11 @@ class Jobs extends Component {
               <div className={univStyles.pageMain + ' ' + univStyles.bottom} />
             </div>
           }/>
-          <Route path={'/maintenance/departments/:slug'} exact render={() =>
+          <Route path={'/maintenance/office/:slug'} exact render={() =>
             <div className={univStyles.main}>
               <div className={univStyles.pageMainNew + ' ' + univStyles.top} />
               <div className={univStyles.pageMain}>
-                <Route path={'/maintenance/departments/:slug'} exact component={ViewDepartment}/>
+                <Route path={'/maintenance/office/:slug'} exact component={ViewOffice}/>
               </div>
             </div>
           }/>
@@ -362,4 +360,4 @@ const mapDispatchToProps = dispatch => {
   }
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Jobs));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Office));

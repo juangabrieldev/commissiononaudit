@@ -9,11 +9,11 @@ export const announcements = {
   scrape: rootUrl + '/announcements/scrape'
 };
 
-export const departments = {
-  get: rootUrl + '/departments/',
-  create: rootUrl + '/departments/create',
-  delete: rootUrl + '/departments/delete',
-  view: rootUrl + '/departments/view'
+export const office = {
+  get: rootUrl + '/office/',
+  create: rootUrl + '/office/create',
+  delete: rootUrl + '/office/delete',
+  view: rootUrl + '/office/view'
 };
 
 export const systemLogs = {
