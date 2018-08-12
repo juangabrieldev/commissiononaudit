@@ -107,7 +107,7 @@
   flex-direction: column;
 
   > div > div {
-    max-height: calc(100vh - 285px) !important;
+    max-height: calc(100vh - 190px) !important;
   }
 
   .row {
@@ -212,11 +212,18 @@
       align-items: center;
 
       .options {
+        border: solid 1px $border-color;
+        border-radius: 2px;
         display: flex;
-        flex-direction: column;
         margin-right: 21px;
         margin-left: auto;
         visibility: hidden;
+        padding: 10px 8px;
+        cursor: pointer;
+
+        &:hover {
+          border-color: darken($border-color, 7);
+        }
 
         > div {
           margin: 1px;

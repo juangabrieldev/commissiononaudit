@@ -133,6 +133,10 @@
           margin: 0 0 0 12px;
         }
 
+        .subtitle {
+          color: #b8b8b8;
+        }
+
         .formControl {
           font-size: 13px;
           font-weight: 400;
@@ -169,6 +173,16 @@
 
         .section:not(:last-child) {
           margin-bottom: 20px;
+        }
+
+        .input {
+          &:not(:first-child) {
+            margin-top: 15px;
+          }
+
+          > div {
+            margin: 0
+          }
         }
       }
     }

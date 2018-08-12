@@ -13,6 +13,13 @@
   z-index: 3;
 
   .form {
+    position: absolute;
+    right: 0;
+    left: 0;
+    top: 180px;
+    margin: auto;
+    width: 500px;
+
     .header {
       border: 1px solid $border-color;
       height: 42px;

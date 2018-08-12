@@ -41,7 +41,7 @@ class Office extends Component {
     previousLink: '',
     slug: '',
     showTransition: false,
-    saveDisabled: true
+    saveDisabled: true,
   };
 
   fetch = () => {
@@ -55,6 +55,21 @@ class Office extends Component {
           }, () => this.setState({showTransition: true}))
         }
       });
+  };
+
+  reset = () => {
+    this.setState({
+      officeName: '',
+      numberOfClusters: 0,
+      officeDescription: '',
+      blockedNavigation: false,
+      office: [],
+      selectedOffice: [],
+      previousLink: '',
+      slug: '',
+      showTransition: false,
+      saveDisabled: true
+    })
   };
 
   componentDidUpdate = prev => {
@@ -152,7 +167,7 @@ class Office extends Component {
       numberOfClusters: this.state.numberOfClusters
     })
       .then(res => {
-        console.log(res);
+        this.reset();
         if(res.data.status === 200) {
           this.props.blockNavigation(false);
           axios.get(office.get)
@@ -171,11 +186,7 @@ class Office extends Component {
       employeeId: this.props.employeeId,
       firstName: this.props.firstName
     })
-      .then(res => {
-        if(res.data.status === 200) {
-          this.setState({selectedOffice: []});
-        }
-      })
+      .then(res => {})
   };
 
   render() {
@@ -251,6 +262,7 @@ class Office extends Component {
                 <div className={univStyles.form}>
                   <div className={univStyles.header}>
                     <p>List of Office</p>
+                    <p className={univStyles.subtitle}>{this.state.office.length} records</p>
                     {
                       this.state.selectedOffice.length !== 0 ?
                         <p onClick={this.onDelete} className={univStyles.formControl + ' ' + univStyles.delete}>Delete</p> :
@@ -280,7 +292,7 @@ class Office extends Component {
                       <Scrollbars
                         style={{
                           width: '100%',
-                          maxHeight: 'calc(100vh - 300px)',
+                          maxHeight: 'calc(100vh - 190px)',
                         }}
                         autoHeight
                         autoHide>
@@ -304,7 +316,7 @@ class Office extends Component {
                   </div>
                   <div className={univStyles.formBody}>
                     <div className={styles.newBody}>
-                      <div className={styles.input}>
+                      <div className={univStyles.input}>
                         <Input
                           characterLimit={40}
                           autofocus
@@ -313,10 +325,10 @@ class Office extends Component {
                           onChangeHandler={e => this.onChangeOfficeName(e)}
                           name="* Office Name"/>
                       </div>
-                      <div className={styles.input}>
+                      <div className={univStyles.input}>
                         <Numeric onChangeHandler={v => this.onChangeNumberOfClusters(v)} width={200} name="* Number of clusters"/>
                       </div>
-                      <div className={styles.input}>
+                      <div className={univStyles.input}>
                         <TextArea characterLimit={300} value={this.state.officeDescription} onChangeHandler={e => this.onChangeDescription(e)} name="Description"/>
                       </div>
                     </div>

@@ -8,7 +8,6 @@ import univStyles from '../styles.scss';
 
 import Aux from '../../auxillary/auxillary';
 import Button from '../../button/button';
-import NewsLoader from '../newsLoader';
 import SideBar from '../sideBar/sideBar';
 import ReactSVG from "react-svg";
 
