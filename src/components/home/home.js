@@ -13,12 +13,6 @@ import SideBarRight from './sideBarRight/sideBarRight';
 import * as actions from '../../store/actions/ui/actions';
 
 class Home extends Component {
-  componentWillReceiveProps = next => {
-    if(this.props.blockNavigation !== next.blockNavigation) {
-      this.setState(this.state);
-    }
-  };
-
   afterConfirm = () => {
     this.props.blockNavigationDispatch(false);
   };
@@ -42,7 +36,6 @@ class Home extends Component {
             <SideBarRight employeeId={this.props.employeeId}/> :
             null
         }
-
       </React.Fragment>
     );
   }

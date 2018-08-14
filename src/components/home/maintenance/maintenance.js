@@ -2,14 +2,17 @@ import React, {Component} from 'react';
 import { withRouter, Link, Switch, Route } from 'react-router-dom';
 import ReactSVG from 'react-svg';
 import SwitchCSSTransitionGroup from 'switch-css-transition-group'
+import Slug from 'slugify';
 
 import styles from '../styles.scss';
 
 import Office from './office/office';
 import Jobs from './jobs/jobs';
+import QualificationStandards from './qualificationStandards/qualificationStandards';
 import SideBar from '../sideBar/sideBar';
 
 import departments from '../../../assets/ui/departments.svg';
+import documents from '../../../assets/ui/documents.svg';
 import employees from '../../../assets/ui/employees.svg';
 import jobs from '../../../assets/ui/jobs.svg';
 
@@ -43,8 +46,8 @@ class Maintenance extends Component {
   };
 
   state = {
-    tabs: ['Employees', 'Jobs', 'Office'],
-    icons: [employees, jobs, departments],
+    tabs: ['Employees', 'Qualification Standards', 'Jobs', 'Office'],
+    icons: [employees, documents, jobs, departments],
     overflowHidden: false,
     zeroTop: false
   };
@@ -63,7 +66,7 @@ class Maintenance extends Component {
               fill: '#a3abaf'
             };
 
-            if(this.props.location.pathname.includes('/' + tab.toLowerCase())) {
+            if(this.props.location.pathname.includes(Slug(tab.toLowerCase()))) { //bad code
               className = styles.active;
               style.fill = '#4688FF'
             }
@@ -72,7 +75,7 @@ class Maintenance extends Component {
               <div key={index} className={styles.sideBarTabs}>
                 <ReactSVG path={this.state.icons[index]} svgStyle={style} svgClassName={styles.icon}/>
                 <p
-                  onClick={() => this.navigate(tab.toLowerCase())}
+                  onClick={() => this.navigate(Slug(tab.toLowerCase()))}
                   className={className}>
                   {tab}
                 </p>
@@ -92,6 +95,7 @@ class Maintenance extends Component {
             <Switch>
               <Route path={this.props.match.path + '/jobs'} component={Jobs}/>
               <Route path={this.props.match.path + '/office'} component={Office}/>
+              <Route path={this.props.match.path + '/qualification-standards'} component={QualificationStandards}/>
             </Switch>
           </div>
         </div>

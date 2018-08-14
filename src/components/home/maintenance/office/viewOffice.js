@@ -32,7 +32,7 @@ class ViewOffice extends Component {
             description: res.data.data[0].description,
             dateCreated: res.data.data[0].datecreated,
             otherData: res.data.data
-          })
+          }, this.viewMore)
         }
       })
   };
@@ -48,10 +48,47 @@ class ViewOffice extends Component {
     this.fetch();
   };
 
-  render() {
-    const clusters = this.state.otherData.map((data, i, a) => (
-      <Fragment>
-        <Col md={2} key={data.key}>
+  viewMore = () => {
+    if(this.state.otherData.length > 9) {
+      this.clusters = this.state.otherData.slice(0, 9).map((data, i, a) => (
+        <Fragment key={data.key}>
+          <Col xs={2}>
+            <Link to={this.props.location.pathname + '/clusters/' + data.clusternumber}>
+              <div className={viewOfficeStyles.fields}>
+                <p>CLUSTER {data.clusternumber}</p>
+              </div>
+            </Link>
+          </Col>
+          {
+            i === a.length - 1 ?
+              <Fragment>
+                <Col xs={2}>
+                  <div style={{marginTop: 15, padding: 15}}>
+                    <p onClick={this.onClickViewMore} style={{cursor: 'pointer', margin: 0, fontSize: 12, textAlign: 'center', color: '#4688FF'}}>VIEW MORE...</p>
+                  </div>
+                </Col>
+                <Col xs={6} md={4}>
+                  <div className={viewOfficeStyles.fields + ' ' + viewOfficeStyles.add}>
+                    <p>+&nbsp;&nbsp;ADD A <Link to="/heys">SINGLE</Link> OR <Link to="/hey">MULTIPLE CLUSTERS</Link></p>
+                    {
+                      this.forceUpdate() //really really bad code
+                    }
+                  </div>
+                </Col>
+              </Fragment> :
+              null
+          }
+        </Fragment>
+      ));
+    } else {
+      this.onClickViewMore()
+    }
+  };
+
+  onClickViewMore = () => {
+    this.clusters = this.state.otherData.map((data, i, a) => (
+      <Fragment key={data.key}>
+        <Col xs={2}>
           <Link to={this.props.location.pathname + '/clusters/' + data.clusternumber}>
             <div className={viewOfficeStyles.fields}>
               <p>CLUSTER {data.clusternumber}</p>
@@ -60,23 +97,28 @@ class ViewOffice extends Component {
         </Col>
         {
           i === a.length - 1 ?
-            <Col md={4}>
-              <div className={viewOfficeStyles.fields + ' ' + viewOfficeStyles.add}>
-                <p>+&nbsp;&nbsp;ADD A <Link to="/heys">SINGLE</Link> OR <Link to="/hey">MULTIPLE CLUSTERS</Link></p>
-              </div>
-            </Col> :
+            <Fragment>
+              <Col xs={6} md={4}>
+                <div className={viewOfficeStyles.fields + ' ' + viewOfficeStyles.add}>
+                  <p>+&nbsp;&nbsp;ADD A <Link to="/heys">SINGLE</Link> OR <Link to="/hey">MULTIPLE CLUSTERS</Link></p>
+                  {
+                    this.forceUpdate() //really really bad code
+                  }
+                </div>
+              </Col>
+            </Fragment> :
             null
         }
       </Fragment>
     ));
+  };
 
+  render() {
     const description = (
       this.state.description.length > 0 ?
       parse(this.state.description) :
         'No description available'
     );
-
-    console.log(this.state);
 
     return (
       <div className={viewOfficeStyles.main}>
@@ -108,7 +150,7 @@ class ViewOffice extends Component {
                 <div className={viewOfficeStyles.clusters}>
                   <Container fluid style={{padding: 0, marginTop: '-8px'}}>
                     <Row>
-                      {clusters}
+                      {this.clusters}
                     </Row>
                   </Container>
                 </div>

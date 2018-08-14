@@ -34,7 +34,7 @@ class Jobs extends Component {
         items: [
           {
             value: 10,
-            label: `Bachelor's degree in Architecture`
+            label: `Bachelor's degree in Engineering`
           },
           {
             value: 23,

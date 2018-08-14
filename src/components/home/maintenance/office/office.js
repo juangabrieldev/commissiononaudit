@@ -7,7 +7,6 @@ import Slug from 'slugify';
 import produce from 'immer';
 import axios from 'axios';
 import moment from 'moment';
-import Parser from 'html-react-parser';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
 import styles from './office.scss';

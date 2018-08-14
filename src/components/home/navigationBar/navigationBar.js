@@ -42,7 +42,7 @@ class NavigationBar extends Component {
         }
       }
 
-      this.setState(this.state);
+      this.forceUpdate(); //really bad code
     }
 
     document.addEventListener('mousedown', this.handleClickOutside);

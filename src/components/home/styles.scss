@@ -184,6 +184,99 @@
             margin: 0
           }
         }
+
+        .groupOfFields {
+          border: solid 1px lighten($border-color, 3);
+          border-radius: 2px;
+          padding: 15px;
+          position: relative;
+          transition: .05s;
+
+          &:not(:first-child) {
+            margin-top: 15px;
+          }
+
+          > p {
+            margin: 0;
+            transition: .05s;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 0 2px;
+            position: absolute;
+            transform: translate(-8px, -22px);
+            color: #969da5;
+            background: white;
+          }
+
+          .fields {
+            align-self: flex-start;
+            border: solid 1px lighten($border-color, 3);
+            border-radius: 2px;
+            padding: 15px;
+            box-sizing: border-box;
+            transition: .05s;
+
+            &:hover {
+              border-color: darken($border-color, 5);
+            }
+
+            &:not(:first-of-type) {
+              margin-top: 15px;
+            }
+
+            &:first-of-type {
+              margin-top: 8px;
+            }
+
+            > p {
+              margin: 0;
+              font-size: 14px;
+
+              &:first-child {
+                font-size: 12px;
+                font-weight: 400;
+                color: #969da5;
+                margin-bottom: 4px;
+              }
+            }
+
+            .description {
+              margin-top: 6px;
+              line-height: .8
+            }
+          }
+
+          .clusters {
+            .fields {
+              margin-top: 15px;
+
+              &.add {
+                border: dashed 1px $primary-color;;
+
+                > p {
+                  margin: 0;
+                  font-size: 14px;
+                  font-weight: 600;
+                  transition: color .05s;
+                  color: $primary-color;
+
+                  a {
+                    color: $primary-color;
+
+                    &:hover {
+                      text-decoration: underline;
+                    }
+                  }
+                }
+              }
+
+              p {
+                color: $text-primary;
+                text-align: center;
+              }
+            }
+          }
+        }
       }
     }
   }
