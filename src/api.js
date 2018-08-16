@@ -16,6 +16,10 @@ export const office = {
   view: rootUrl + '/office/view'
 };
 
+export const qualificationStandards = {
+  get: rootUrl + '/qualification-standards'
+};
+
 export const systemLogs = {
   get: rootUrl + '/systemlogs'
 };

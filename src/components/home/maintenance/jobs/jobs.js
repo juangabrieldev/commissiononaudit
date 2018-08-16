@@ -30,29 +30,29 @@ class Jobs extends Component {
     education: [
       {
         type: 'group',
-        name: 'COLLECTIVE',
+        name: 'SPECIFIC COURSES',
         items: [
           {
             value: 10,
-            label: `Bachelor's degree in Engineering`
+            label: `Bachelor of Science in Civil Engineering`
           },
           {
             value: 23,
-            label: 'Completion of two-year studies in college'
+            label: 'Bachelor of Science in Electrical Engineering'
           }
         ]
       },
       {
         type: 'group',
-        name: 'INDIVIDUAL',
+        name: 'CUSTOM QUALIFICATION',
         items: [
           {
             value: 10,
-            label: `Bachelor of Science in Computer Engineering`
+            label: `Bachelor's Degree in Engineering`
           },
           {
             value: 23,
-            label: 'Bachelor of Science in Accountancy'
+            label: 'Completion of two-year studies in college'
           }
         ]
       },
@@ -176,6 +176,8 @@ class Jobs extends Component {
                       </div>
                       <div className={univStyles.input}>
                         <Dropdown
+                          isMulti
+                          isSearchable
                           didSelect={this.state.educationDidSelect}
                           onChange={this.onChangeEducation}
                           options={this.state.education}

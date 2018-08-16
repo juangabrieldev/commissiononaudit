@@ -46,19 +46,18 @@
           margin-top: 15px;
         }
 
-        &:first-of-type {
-          margin-top: 8px;
-        }
-
         > p {
           margin: 0;
           font-size: 14px;
 
-          &:first-child {
+          &:first-child, .title {
             font-size: 12px;
             font-weight: 400;
             color: #969da5;
-            margin-bottom: 4px;
+          }
+
+          &.title {
+            margin-bottom: 10px;
           }
         }
 

@@ -130,22 +130,22 @@ class ViewOffice extends Component {
           </div>
           <div className={univStyles.formBody}>
             <div className={viewOfficeStyles.view}>
-              <div className={viewOfficeStyles.groupOfFields}>
-                <p>BASIC INFORMATION</p>
-                <div className={viewOfficeStyles.fields} style={{width: '30%'}}>
-                  <p>OFFICE NAME</p>
+              <div className={univStyles.groupOfFields}>
+                <p className={univStyles.title}>BASIC INFORMATION</p>
+                <div className={univStyles.fields} style={{width: '30%'}}>
+                  <p className={univStyles.title}>OFFICE NAME</p>
                   <p>{this.state.officeName}</p>
                 </div>
-                <div className={viewOfficeStyles.fields} style={{width: '30%'}}>
-                  <p>DATE CREATED</p>
+                <div className={univStyles.fields} style={{width: '30%'}}>
+                  <p className={univStyles.title}>DATE CREATED</p>
                   <p>{moment(this.state.dateCreated).format('MMMM DD, YYYY') + ' at ' + moment(this.state.dateCreated).format('h:mm A')}</p>
                 </div>
-                <div className={viewOfficeStyles.fields} style={{width: '100%'}}>
-                  <p>DESCRIPTION</p>
+                <div className={univStyles.fields} style={{width: '100%'}}>
+                  <p className={univStyles.title}>DESCRIPTION</p>
                   <p className={viewOfficeStyles.description}>{description}</p>
                 </div>
               </div>
-              <div className={viewOfficeStyles.groupOfFields} style={{}}>
+              <div className={viewOfficeStyles.groupOfFields}>
                 <p>CLUSTERS</p>
                 <div className={viewOfficeStyles.clusters}>
                   <Container fluid style={{padding: 0, marginTop: '-8px'}}>
