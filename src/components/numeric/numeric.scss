@@ -43,6 +43,16 @@
     }
   }
 
+  > input {
+    padding: 0 8px;
+    border: none;
+
+    &::placeholder {
+      font-size: 14px;
+      opacity: 0.3
+    }
+  }
+
   .buttons {
     margin-right: 0;
     margin-left: auto;

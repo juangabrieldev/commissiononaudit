@@ -199,7 +199,7 @@
             border-radius: 2px;
             padding: 15px;
             box-sizing: border-box;
-            transition: .05s;
+            transition: .05s border-color;
             position: relative;
             overflow: hidden;
 
@@ -213,12 +213,34 @@
                 transition: color .05s;
                 color: $primary-color !important;
 
-                a {
+                span {
                   color: $primary-color;
+                  cursor: pointer;
 
                   &:hover {
                     text-decoration: underline;
                   }
+                }
+              }
+            }
+
+            &.addActive {
+              padding: 0 8px;
+              display: flex;
+              height: 48.1px;
+              align-items: center;
+              justify-content: center;
+
+              > input {
+                border: solid 1px $input-border-color;
+                border-radius: 2px;
+                height: 25px;
+                width: 100%;
+                padding: 0 6px;
+                font-size: 14px;
+
+                &:focus {
+                  border-color: #aaaaaa;
                 }
               }
             }

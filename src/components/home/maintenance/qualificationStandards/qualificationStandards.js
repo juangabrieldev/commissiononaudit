@@ -3,13 +3,15 @@ import {Switch, Route, Link, withRouter} from 'react-router-dom';
 import axios from 'axios';
 import connect from "react-redux/es/connect/connect";
 import { Container, Row, Col, setConfiguration } from 'react-grid-system';
+import produce from 'immer';
 
 import styles from './qualificationStandards.scss';
 
 import Button from '../../../button/button';
-import Dropdown from '../../../dropdown/dropdown';
+import Select from '../../../select/select';
 
-import {office, qualificationStandards} from "../../../../api";
+import {qualificationStandards} from "../../../../api";
+import {events, initializeSocket} from "../../../../socket";
 import univStyles from "../../styles.scss";
 import SearchBar from "../../searchBar/searchBar";
 import {Scrollbars} from "react-custom-scrollbars";
@@ -25,61 +27,90 @@ setConfiguration({ gutterWidth: 15 });
 
 class QualificationStandards extends Component {
   state = {
-    specificCourses: [],
-    customQualifications: [],
-    trainings: [],
-    eligibilities: []
+    specificCourses: {
+      data: [],
+      add: false
+    },
+    customQualifications: {
+      data: [],
+      add: false
+    },
+    trainings: {
+      data: [],
+      add: false
+    },
+    eligibilities: {
+      data: [],
+      add: false
+    }
   };
 
   componentDidMount = () => {
     this.fetch();
+    document.addEventListener('mousedown', this.handleClickOutside);
+
+    const socket = initializeSocket();
+
+    socket.on(events.qualificationStandards, this.fetch)
+  };
+
+  componentWillUnmount = () => {
+    document.removeEventListener('mousedown', this.handleClickOutside);
   };
 
   fetch = () => {
     axios.get(qualificationStandards.get)
       .then(res => {
         if(res.data.status === 200) {
-          this.setState({
-            specificCourses: res.data.data.educationSpecific,
-            customQualifications: res.data.data.educationCustom,
-            trainings: res.data.data.trainings,
-            eligibilities: res.data.data.eligibilities
-          }, () => console.log(this.state))
+          this.setState(produce(draft => {
+            draft.specificCourses.data = res.data.data.educationSpecific;
+            draft.customQualifications.data = res.data.data.educationCustom;
+            draft.trainings.data = res.data.data.trainings;
+            draft.eligibilities.data = res.data.data.eligibilities;
+          }))
         }
       })
   };
 
-  onCreate = () => {
-    this.setState({previousLink: this.props.location.pathname});
-    this.props.history.push('/maintenance/jobs/new')
+  onAdd = s => {
+    switch(s) {
+      case 1: {
+        this.setState(produce(draft => {
+          draft.specificCourses.add = !draft.specificCourses.add
+        }));
+        break;
+      }
+
+      case 2: {
+        this.setState(produce(draft => {
+          draft.customQualifications.add = !draft.customQualifications.add
+        }));
+        break;
+      }
+
+      case 3: {
+        this.setState(produce(draft => {
+          draft.trainings.add = !draft.trainings.add
+        }));
+        break;
+      }
+    }
   };
 
-  onCancel = () => {
-    this.props.blockNavigation(false);
-    setTimeout(() => {
-      this.props.history.push(this.state.previousLink);
-      this.setState({officeName: ''})
-    }, 0);
-  };
-
-  onChangeEducation = o => {
-    console.log(o);
-    this.setState({selectedEducation: o, educationDidSelect: true})
-  };
-
-  onChangeJobName = e => {
-    const value = e.target.value;
-
-    this.setState({jobName: value}, () => {
-      this.blockNavigationChecker();
-      // this.disabledChecker()
-    })
-  };
-
-  onChangeYearsOfExperience = v => {
-    this.setState({yearsOfExperience: v}, () => {
-      this.blockNavigationChecker();
-    })
+  handleClickOutside = e => {
+    // if (this.refs.numeric && !this.refs.numeric.contains(e.target)) {
+    //   this.setState({focused: false})
+    // } else {
+    //   this.setState({focused: true})
+    // }
+    if (this.refs.add && !this.refs.add.contains(e.target)) {
+      this.setState(produce(draft => {
+        draft.specificCourses.add = false;
+        draft.customQualifications.add = false;
+        draft.trainings.add = false;
+        draft.eligibilities.add = false;
+      }))
+    }
   };
 
   blockNavigationChecker = () => {
@@ -95,20 +126,10 @@ class QualificationStandards extends Component {
   render() {
     const qualificationsTitleBar =
       <div className={univStyles.titleBar + (this.props.location.pathname.includes('/new') ? ' ' + univStyles.bottom : '')}>
-        {
-          this.props.location.pathname.includes('/new') ?
-            <React.Fragment>
-              <p>Post new job</p>
-              <a onClick={this.onCancel}>Cancel</a>
-              <Button disabled={this.state.saveDisabled} onClick={this.onSave} width={70} classNames={['tertiary']} name="SAVE"/>
-            </React.Fragment> :
-            <React.Fragment>
-              <p>Qualification Standards</p>
-            </React.Fragment>
-        }
+        <p>Qualification Standards</p>
       </div>;
 
-    const specificCourses = this.state.specificCourses.map((course, i, a) => (
+    const specificCourses = this.state.specificCourses.data.map((course, i, a) => (
       <Fragment key={course.key}>
         <Col xs={4}>
           <div style={{marginTop: 15}} className={univStyles.fields}>
@@ -121,16 +142,22 @@ class QualificationStandards extends Component {
         {
           i === a.length - 1 ?
             <Col xs={4}>
-              <div style={{marginTop: 15}} className={univStyles.fields + ' ' + univStyles.add}>
-                <p style={{textAlign: 'center'}}>+&nbsp;&nbsp;ADD A <Link to="/heys">SPECIFIC COURSE</Link></p>
-              </div>
+              {
+                this.state.specificCourses.add ?
+                  <div ref="add" style={{marginTop: 15}} className={univStyles.fields + ' ' + univStyles.add + ' ' + univStyles.addActive}>
+                    <input autoFocus type="text"/>
+                  </div> :
+                  <div style={{marginTop: 15}} className={univStyles.fields + ' ' + univStyles.add}>
+                    <p style={{textAlign: 'center'}}>+&nbsp;&nbsp;ADD A <span onClick={() => this.onAdd(1)}>SPECIFIC COURSE</span></p>
+                  </div>
+              }
             </Col> :
             null
         }
       </Fragment>
     ));
 
-    const customQualifications = this.state.customQualifications.map((custom, i, a) => (
+    const customQualifications = this.state.customQualifications.data.map((custom, i, a) => (
       <Fragment key={custom.key}>
         <Col xs={4}>
           <div style={{marginTop: 15}} className={univStyles.fields}>
@@ -143,16 +170,22 @@ class QualificationStandards extends Component {
         {
           i === a.length - 1 ?
             <Col xs={4}>
-              <div style={{marginTop: 15}} className={univStyles.fields + ' ' + univStyles.add}>
-                <p style={{textAlign: 'center'}}>+&nbsp;&nbsp;ADD A <Link to="/heys">CUSTOM QUALIFICATION</Link></p>
-              </div>
+              {
+                this.state.customQualifications.add ?
+                  <div ref="add" style={{marginTop: 15}} className={univStyles.fields + ' ' + univStyles.add + ' ' + univStyles.addActive}>
+                    <input autoFocus type="text"/>
+                  </div> :
+                  <div style={{marginTop: 15}} className={univStyles.fields + ' ' + univStyles.add}>
+                    <p style={{textAlign: 'center'}}>+&nbsp;&nbsp;ADD A <span onClick={() => this.onAdd(2)}>CUSTOM QUALIFICATIONS</span></p>
+                  </div>
+              }
             </Col> :
             null
         }
       </Fragment>
     ));
 
-    const trainings = this.state.trainings.map((training, i, a) => (
+    const trainings = this.state.trainings.data.map((training, i, a) => (
       <Fragment key={training.key}>
         <Col xs={4}>
           <div style={{marginTop: 15}} className={univStyles.fields}>
@@ -165,9 +198,15 @@ class QualificationStandards extends Component {
         {
           i === a.length - 1 ?
             <Col xs={4}>
-              <div style={{marginTop: 15}} className={univStyles.fields + ' ' + univStyles.add}>
-                <p style={{textAlign: 'center'}}>+&nbsp;&nbsp;ADD A <Link to="/heys">TRAINING</Link></p>
-              </div>
+              {
+                this.state.trainings.add ?
+                  <div ref="add" style={{marginTop: 15}} className={univStyles.fields + ' ' + univStyles.add + ' ' + univStyles.addActive}>
+                    <input autoFocus type="text"/>
+                  </div> :
+                  <div style={{marginTop: 15}} className={univStyles.fields + ' ' + univStyles.add}>
+                    <p style={{textAlign: 'center'}}>+&nbsp;&nbsp;ADD A <span onClick={() => this.onAdd(3)}>TRAINING</span></p>
+                  </div>
+              }
             </Col> :
             null
         }

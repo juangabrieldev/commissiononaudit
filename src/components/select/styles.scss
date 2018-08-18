@@ -1,0 +1,117 @@
+@import "../layout/variables";
+
+.select {
+  min-height: 40px;
+  width: 100%;
+  border: solid 1px $border-color;
+  border-radius: 2px;
+  transition: .1s border-color;
+  position: relative;
+  display: flex;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+
+  &.focused {
+    border-color: #aaaaaa;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &.menuContainerOpen {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  > input {
+    border: none;
+    padding: 0 8px;
+    flex-grow: 1;
+
+    &::placeholder {
+      font-size: 14px;
+      opacity: .3;
+    }
+  }
+
+  .selectedOptionContainer {
+    padding: 0 0 0 6px;
+    display: flex;
+    align-items: center;
+
+    > div {
+      height: 70%;
+      display: flex;
+      padding: 0 8px;
+      border-radius: 2px;
+      background: $primary-color;
+      align-items: center;
+      transition: .1s background-color;
+      position: relative;
+
+      &:not(:last-of-type) {
+        margin-right: 5px
+      }
+
+      > p {
+        margin: 0;
+        font-size: 14px;
+        width: 150px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: white
+      }
+    }
+  }
+
+  .icon {
+    display: flex;
+    align-items: center;
+    padding-right: 8px;
+  }
+
+  .menuContainer {
+    border: solid 1px #aaaaaa;
+    border-top: none;
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+    position: absolute;
+    top: 39px;
+    left: -1px;
+    max-height: 200px;
+    width: calc(100% + 2px);
+    background: white;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    overflow-y: scroll;
+
+    .groupName {
+      font-size: 12px;
+      opacity: .4;
+      line-height: 25px;
+      margin: 0;
+      padding: 0 8px;
+
+      &:first-of-type {
+        margin-top: 6px;
+      }
+    }
+
+    .menuOption {
+      margin: 0;
+      padding: 0 8px;
+      line-height: 40px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: .1s background-color;
+
+      &:hover {
+        background: lighten($border-color, 10)
+      }
+    }
+  }
+}

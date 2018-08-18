@@ -10,26 +10,10 @@ class Numeric extends Component {
     focused: false
   };
 
-  handleClickOutside = e => {
-    if (this.refs.numeric && !this.refs.numeric.contains(e.target)) {
-      this.setState({focused: false})
-    } else {
-      this.setState({focused: true})
-    }
-  };
-
-  componentDidMount = () => {
-    document.addEventListener('mousedown', this.handleClickOutside);
-  };
-
-  componentWillUnmount = () => {
-    document.removeEventListener('mousedown', this.handleClickOutside);
-  };
-
   subtract = () => {
     if(this.state.value > 0) {
       this.setState({value: this.state.value - 1}, () => {
-        this.onChangeHandler(this.state.value)
+        this.onChangeHandler(this.state.value);
       })
     }
   };
@@ -44,20 +28,26 @@ class Numeric extends Component {
     this.props.onChangeHandler(v)
   };
 
+  onTypeHandler = e => {
+    const reg = /^[0-9]*$/;
+
+    if(reg.test(e.target.value)) {
+      this.setState({value: parseInt(e.target.value, 10)}, () => {
+        this.onChangeHandler(parseInt(this.state.value, 10))
+      })
+    }
+  };
+
   render() {
     return (
-      <div style={{width: this.props.width}} className={styles.numeric + (this.state.focused ? ' ' + styles.focused : '')}>
+      <div onBlur={() => this.setState({focused: false})} style={{width: this.props.width}} className={styles.numeric + (this.state.focused ? ' ' + styles.focused : '')}>
         <label
           className={this.state.value > 0 ? styles.shown : ''}
           htmlFor={this.props.name}>
           {this.props.name}
         </label>
-        {
-          this.state.value > 0 ?
-            <p>{this.state.value}</p> :
-            <p className={styles.placeholder}>{this.props.name}</p>
-        }
-        <div ref="numeric" className={styles.buttons}>
+        <input onFocus={() => this.setState({focused: true})} onChange={this.onTypeHandler} placeholder={this.props.name} type="text" value={this.state.value > 0 ? this.state.value : ''}/>
+        <div className={styles.buttons}>
           <div onClick={this.subtract}>
             <p>-</p>
           </div>

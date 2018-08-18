@@ -5,7 +5,7 @@ import axios from 'axios';
 import styles from './jobs.scss';
 
 import Button from '../../../button/button';
-import Dropdown from '../../../dropdown/dropdown';
+import Select from '../../../select/select';
 
 import { office } from "../../../../api";
 import univStyles from "../../styles.scss";
@@ -29,30 +29,32 @@ class Jobs extends Component {
     jobDescription: null,
     education: [
       {
-        type: 'group',
         name: 'SPECIFIC COURSES',
         items: [
           {
-            value: 10,
-            label: `Bachelor of Science in Civil Engineering`
+            value: 1,
+            label: `Bachelor of Science in Civil Engineering`,
+            key: 'ebab9316-a278-11e8-98d0-529269fb1459'
           },
           {
-            value: 23,
-            label: 'Bachelor of Science in Electrical Engineering'
-          }
-        ]
-      },
-      {
-        type: 'group',
-        name: 'CUSTOM QUALIFICATION',
-        items: [
-          {
-            value: 10,
-            label: `Bachelor's Degree in Engineering`
+            value: 2,
+            label: 'Bachelor of Science in Electrical Engineering',
+            key: 'ebab96fe-a278-11e8-98d0-529269fb1459'
           },
           {
-            value: 23,
-            label: 'Completion of two-year studies in college'
+            value: 3,
+            label: 'Bachelor of Science in Electrical Engineering',
+            key: 'ebab9b54-a278-11e8-98d0-529269fb1459'
+          },
+          {
+            value: 4,
+            label: 'Bachelor of Science in Electrical Engineering',
+            key: 'ebab9b54-a278-11e8-98d0-529269fb1459'
+          },
+          {
+            value: 5,
+            label: 'Bachelor of Science in Electrical Engineering',
+            key: 'ebab9e6a-a278-11e8-98d0-529269fb1459'
           }
         ]
       },
@@ -175,20 +177,7 @@ class Jobs extends Component {
                           name="* Job Name"/>
                       </div>
                       <div className={univStyles.input}>
-                        <Dropdown
-                          isMulti
-                          isSearchable
-                          didSelect={this.state.educationDidSelect}
-                          onChange={this.onChangeEducation}
-                          options={this.state.education}
-                          value={this.state.selectedEducation}
-                          placeholder="Education"/>
-                      </div>
-                      <div className={univStyles.input}>
-                        <Numeric onChangeHandler={this.onChangeYearsOfExperience} width={250} name={'Years of experience'}/>
-                      </div>
-                      <div className={univStyles.input}>
-                        <Numeric width={250} name={'Hours of relevant training'}/>
+                        <Select isGrouped selected={[]} options={this.state.education} onChangeHandler={this.onChangeYearsOfExperience} name="Education"/>
                       </div>
                       <div className={univStyles.input}>
                         <TextArea characterLimit={300} value={this.state.officeDescription} onChangeHandler={e => this.onChangeDescription(e)} name="Job description"/>
