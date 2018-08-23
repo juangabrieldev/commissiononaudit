@@ -13,15 +13,15 @@ class Test extends Component {
     formData.append('file', this.refs.file.files[0]);
     formData.append('applicationId', '5891568898');
 
-    // axios.post('http://localhost:4000/documents/', formData)
-    //   .then(res => {
-    //     if(res.data.status === 200) {
-    //       this.setState({
-    //         showPreview: true,
-    //         url: res.data.url
-    //       })
-    //     }
-    //   })
+    axios.post('http://localhost:4000/documents/', formData)
+      .then(res => {
+        if(res.data.status === 200) {
+          this.setState({
+            showPreview: true,
+            url: res.data.url
+          })
+        }
+      })
   };
 
   render() {

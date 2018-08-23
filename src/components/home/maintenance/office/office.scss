@@ -125,7 +125,7 @@
       font-size: 14px;
     }
 
-    &:not(.selected):hover {
+    &:not(.selected, .cursorSelected):hover {
       background-color: lighten($border-color, 6) !important;
 
       .select {
@@ -146,6 +146,16 @@
       }
     }
 
+    &.cursorSelected {
+      background-color: #5f5f5f !important;
+      border-color: #5f5f5f;
+
+      p, span, mark {
+        color: white !important;
+        opacity: 1
+      }
+    }
+
     &:last-of-type {
       border-bottom: solid 1px lighten($border-color, 5);
     }
@@ -163,6 +173,12 @@
 
     .departmentNameRow {
       min-width: 240px;
+      max-width: 40%;
+
+      mark {
+        border-radius: 2px;
+        background-color: rgba(255, 234, 139, 0.57);
+      }
 
       > a {
         display: inline;
@@ -188,9 +204,6 @@
     }
 
     .departmentHeadRow {
-      width: 240px;
-      min-width: 210px;
-      margin-right: 0;
       margin-left: auto;
 
       > p {

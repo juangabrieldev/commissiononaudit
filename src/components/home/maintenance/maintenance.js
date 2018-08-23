@@ -10,6 +10,7 @@ import Office from './office/office';
 import Jobs from './jobs/jobs';
 import QualificationStandards from './qualificationStandards/qualificationStandards';
 import SideBar from '../sideBar/sideBar';
+import Employees from './employees/employees';
 
 import departments from '../../../assets/ui/departments.svg';
 import documents from '../../../assets/ui/documents.svg';
@@ -93,6 +94,7 @@ class Maintenance extends Component {
           </SideBar>
           <div className={styles.container + (this.state.zeroTop ? ' ' + styles.zeroTop : '')}>
             <Switch>
+              <Route path={this.props.match.path + '/employees'} component={Employees}/>
               <Route path={this.props.match.path + '/jobs'} component={Jobs}/>
               <Route path={this.props.match.path + '/office'} component={Office}/>
               <Route path={this.props.match.path + '/qualification-standards'} component={QualificationStandards}/>

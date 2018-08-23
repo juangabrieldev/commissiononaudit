@@ -8,6 +8,7 @@
   align-items: center;
   transition: .1s;
   position: relative;
+  box-sizing: border-box;
 
   &.focused {
     border-color: #aaaaaa;
@@ -46,6 +47,8 @@
   > input {
     padding: 0 8px;
     border: none;
+    flex-grow: 1;
+    height: 100%;
 
     &::placeholder {
       font-size: 14px;
@@ -54,7 +57,7 @@
   }
 
   .buttons {
-    margin-right: 0;
+    margin-right: 0 !important;
     margin-left: auto;
     display: flex;
     align-items: center;

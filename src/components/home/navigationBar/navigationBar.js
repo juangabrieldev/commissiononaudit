@@ -16,12 +16,12 @@ class NavigationBar extends Component {
     super(props);
 
     switch(this.props.role) {
-      case 1: {
+      case 7: {
         this.state = {tabs: ['Maintenance']};
         break;
       }
 
-      case 3: {
+      case 2: {
         this.state = {tabs: ['Announcements']}
       }
     }
@@ -31,12 +31,12 @@ class NavigationBar extends Component {
     if(this.props.location.pathname === '/') {
 
       switch(this.props.role) {
-        case 1: {
+        case 7: {
           this.props.history.push('/maintenance/office');
           break;
         }
 
-        case 3: {
+        case 2: {
           this.props.history.push('/announcements');
           break;
         }

@@ -1,10 +1,31 @@
 @import "../../../layout/variables";
 
-.header {
-  height: 40px;
-  background: yellow
-}
+a {
+  .jobs {
+    padding: 15px;
+    border: solid 1px $border-color;
+    margin-top: 12px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: .05s border-color;
 
-.newBody {
-  padding: 15px;
+    &:hover {
+      border-color: darken($border-color, 5);
+    }
+
+    p {
+      margin: 0;
+      font-weight: 400;
+
+      &:not(.sub) {
+        font-weight: 600
+      }
+    }
+
+    .sub {
+      font-size: 14px;
+      color: $text-secondary;
+      margin-top: 5px;
+    }
+  }
 }

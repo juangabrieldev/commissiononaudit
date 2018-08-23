@@ -19,7 +19,7 @@ class Numeric extends Component {
   };
 
   add = () => {
-    this.setState({value: this.state.value + 1}, () => {
+    this.setState({value: (this.state.value ? this.state.value : 0) + 1}, () => {
       this.onChangeHandler(this.state.value)
     })
   };
@@ -40,7 +40,7 @@ class Numeric extends Component {
 
   render() {
     return (
-      <div onBlur={() => this.setState({focused: false})} style={{width: this.props.width}} className={styles.numeric + (this.state.focused ? ' ' + styles.focused : '')}>
+      <div onBlur={() => this.setState({focused: false})} style={{width: this.props.width + 50}} className={styles.numeric + (this.state.focused ? ' ' + styles.focused : '')}>
         <label
           className={this.state.value > 0 ? styles.shown : ''}
           htmlFor={this.props.name}>

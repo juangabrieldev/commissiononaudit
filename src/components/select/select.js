@@ -1,98 +1,73 @@
 import React, {Component, Fragment} from 'react';
-import produce from 'immer';
+import ReactSelect from 'react-select';
+import _ from 'lodash';
 
-import styles from './styles.scss';
-
-import icon from '../../assets/ui/selectDownArrow.svg';
+import './styles.scss';
+import styles from './anotherStyles.scss';
 
 class Select extends Component {
-  state = {
-    isFocused: false,
-    isOpen: false,
-    selected: []
-  };
-
-  componentDidMount = () => {
-    document.addEventListener('mousedown', this.handleClickOutside);
-  };
-
-  componentWillUnmount = () => {
-    document.removeEventListener('mousedown', this.handleClickOutside);
-  };
-
-  handleClickOutside = e => {
-    if (this.refs.select && !this.refs.select.contains(e.target)) {
-      this.setState({isOpen: false});
-    } else {
-      this.setState({isOpen: true});
-    }
-  };
-
-  menuOptionOnClick = item => {
-    this.setState(produce(draft => {
-      draft.selected.push(item)
-    }))
-  };
-
-  render() {
-    const comparisonArray = [...this.state.selected];
-
-    const filteredArray = [];
-
-    const options = this.props.options.map(option => {
-      const filter = option.items.filter((item, i, a) => {
-        console.log(i, comparisonArray.length);
-        if( i < comparisonArray.length)
-          return item.value !== comparisonArray[i].value;
-        else return true
-      });
-
-      const itemsGrouped = filter.map((item, i) => (
-        <p onClick={() => this.menuOptionOnClick(item)} style={{paddingLeft: 16}} className={styles.menuOption}>{item.label}</p>
-      ));
-
-      if(this.props.isGrouped) {
-        return (
-          <Fragment key={option.key}>
-            <span className={styles.groupName}>{option.name}</span>
-            {itemsGrouped}
-          </Fragment>
-        )
+  customStyles = {
+    control: (base, state) => {
+      return {
+        ...base,
+        borderRadius: 2,
+        background: state.isDisabled? '#f0f0f0' : 'white',
+        minHeight: 40,
+        borderColor: state.isFocused ? '#aaaaaa' : '#e1e1e1',
+        boxShadow: 'none',
       }
-    });
+    },
+    placeholder: base => ({
+      ...base,
+      fontWeight: 400,
+      fontSize: 14,
+      color: '#b3b3b3'
+    }),
+    menu: (base, state) => {
+      return {
+        ...base,
+        zIndex: 2,
+        borderRadius: 2,
+        border: 'solid 1px',
+        borderColor: state.isFocused ? '#aaaaaa' : '#e1e1e1',
+        boxShadow: 'none'
+      }
+    },
+    valueContainer: base => ({
+      ...base,
+      transform: 'translateY(1px)'
+    }),
+  };
 
-    const selected = this.state.selected.map(i => {
-      return (
-        <div onClick={() => 'hey'}>
-          <p title={i.label}>{i.label}</p>
-        </div>
-      )
-    });
+  onChangeHandler = o => {
+    this.props.onChangeHandler(o)
+  };
+
+  render = () => {
+    let show;
+
+    if(Array.isArray(this.props.value)) {
+      show = this.props.value.length > 0;
+    } else {
+      show = this.props.value != null;
+    }
 
     return (
-      <div style={{width: this.props.width}}>
-        <div tabIndex={0} ref="select" onBlur={() => this.setState({isFocused: false})} onFocus={() => this.setState({isFocused: true})} className={styles.select + (this.state.isFocused ? ' ' + styles.focused: '') + (this.state.isOpen ? ' ' + styles.menuContainerOpen : '')}>
-          {
-            this.state.selected.length > 0 ?
-              <div className={styles.selectedOptionContainer}>
-                {selected}
-              </div> :
-              null
-          }
-          <input placeholder={(this.state.selected.length > 0 ? '' : this.props.name)} type="text"/>
-          <div className={styles.icon}>
-            <img src={icon} height={10} alt=""/>
-          </div>
-          {
-            this.state.isOpen ?
-              <div className={styles.menuContainer}>
-                {options}
-              </div> :
-              null
-          }
-        </div>
+      <div className={styles.select}>
+        <span className={show ? styles.shown: ''}>{this.props.placeholder}</span>
+        <ReactSelect
+          value={this.props.value}
+          onChange={this.onChangeHandler}
+          classNamePrefix="react-select"
+          styles={this.customStyles}
+          placeholder={this.props.placeholder}
+          isMulti={this.props.isMulti}
+          isClearable={this.props.isClearable}
+          isGroup={this.props.isGroup}
+          isDisabled={this.props.isDisabled}
+          options={this.props.options} />
       </div>
-    );
+    )
   }
 }
 

@@ -1,71 +1,92 @@
 import React, {Component} from 'react';
 import {Switch, Route, Link, withRouter} from 'react-router-dom';
+import { Container, Row, Col, setConfiguration } from 'react-grid-system';
+
 import axios from 'axios';
+import connect from "react-redux/es/connect/connect";
 
 import styles from './jobs.scss';
 
 import Button from '../../../button/button';
 import Select from '../../../select/select';
 
-import { office } from "../../../../api";
+import {jobs, office, qualificationStandards} from "../../../../api";
 import univStyles from "../../styles.scss";
 import SearchBar from "../../searchBar/searchBar";
-import {Scrollbars} from "react-custom-scrollbars";
-import {TransitionGroup} from "react-transition-group";
 import Input from "../../../input/input";
 import Numeric from "../../../numeric/numeric";
 import TextArea from "../../../textarea/textArea";
-import ViewOffice from "../office/viewOffice";
+
+import { initializeSocket, events } from "../../../../socket";
+
 import * as actions from "../../../../store/actions/ui/actions";
-import connect from "react-redux/es/connect/connect";
+import ViewOffice from "../office/viewOffice";
+
+setConfiguration({ gutterWidth: 15 });
 
 class Jobs extends Component {
   state = {
     jobs: [],
     previousLink: '/maintenance/jobs',
-    jobName: null,
+    jobName: '',
     yearsOfExperience: null,
-    relevantTraining: null,
+    hoursOfTraining: null,
     jobDescription: null,
-    education: [
-      {
-        name: 'SPECIFIC COURSES',
-        items: [
-          {
-            value: 1,
-            label: `Bachelor of Science in Civil Engineering`,
-            key: 'ebab9316-a278-11e8-98d0-529269fb1459'
-          },
-          {
-            value: 2,
-            label: 'Bachelor of Science in Electrical Engineering',
-            key: 'ebab96fe-a278-11e8-98d0-529269fb1459'
-          },
-          {
-            value: 3,
-            label: 'Bachelor of Science in Electrical Engineering',
-            key: 'ebab9b54-a278-11e8-98d0-529269fb1459'
-          },
-          {
-            value: 4,
-            label: 'Bachelor of Science in Electrical Engineering',
-            key: 'ebab9b54-a278-11e8-98d0-529269fb1459'
-          },
-          {
-            value: 5,
-            label: 'Bachelor of Science in Electrical Engineering',
-            key: 'ebab9e6a-a278-11e8-98d0-529269fb1459'
-          }
-        ]
-      },
-    ],
-    educationDidSelect: false
+    education: [],
+    eligibility: [],
+    selectedOffice: null,
+    selectedEducation: [],
+    selectedEligibility: [],
+    saveDisabled: false,
+    office: []
   };
 
   componentDidMount = () => {
-    axios.get(office.get + '?jobs=1')
+    this.fetch();
+
+    const socket = initializeSocket();
+
+    socket.on(events.jobs, this.fetch)
+  };
+
+  componentDidUpdate = (prevProps, prevState) => {
+    // if(prevState !== this.state) {
+    //   this.blockNavigationChecker();
+    // }
+  };
+
+  fetch = () => {
+    axios.get(office.get + '?jobs=1') //for react-select
       .then(res => {
-        this.setState({departments: res.data.data})
+        this.setState({office: res.data.data})
+      });
+
+    axios.get(qualificationStandards.select) //for react-select
+      .then(res => {
+        if(res.data.status === 200) {
+          this.setState({
+            education: [
+              {
+                label: 'Specific course',
+                options: res.data.data.specificCourses
+              },
+              {
+                label: 'Custom qualifications',
+                options: res.data.data.customQualifications
+              }
+            ],
+            eligibility: res.data.data.eligibility
+          })
+        }
+      });
+
+    axios.get(jobs.view)
+      .then(res => {
+        if(res.data.status === 200) {
+          this.setState({
+            jobs: res.data.data
+          })
+        }
       })
   };
 
@@ -82,34 +103,68 @@ class Jobs extends Component {
     }, 0);
   };
 
-  onChangeEducation = o => {
-    console.log(o)
-    this.setState({selectedEducation: o, educationDidSelect: true})
+  onChangeDescription = e => {
+    this.setState({jobDescription: e.target.value})
   };
 
   onChangeJobName = e => {
     const value = e.target.value;
 
-    this.setState({jobName: value}, () => {
-      this.blockNavigationChecker();
-      // this.disabledChecker()
-    })
+    this.setState({jobName: value})
   };
 
   onChangeYearsOfExperience = v => {
     this.setState({yearsOfExperience: v}, () => {
-      this.blockNavigationChecker();
+    })
+  };
+
+  onChangeHoursOfTraining = v => {
+    this.setState({hoursOfTraining: v}, () => {
     })
   };
 
   blockNavigationChecker = () => {
-    if (this.state.jobName) {
-      if (!this.props.blockedNavigation) {
-        this.props.blockNavigation(true, `You haven't finished your post yet. Are you sure you want to leave?`);
-      }
-    } else {
-      this.props.blockNavigation(false);
-    }
+    // if (!!this.state.jobName || !!this.state.jobDescription || !!this.state.selectedEducation || !!this.state.selectedEligibility) {
+    //   if (!this.props.blockedNavigation) {
+    //     this.props.blockNavigation(true, `You haven't finished your post yet. Are you sure you want to leave?`);
+    //   }
+    // } else {
+    //   this.props.blockNavigation(false);
+    // }
+  };
+
+  reset = () => {
+    this.setState({
+      jobName: '',
+      yearsOfExperience: null,
+      hoursOfTraining: null,
+      jobDescription: null,
+      selectedOffice: null,
+      selectedEducation: [],
+      selectedEligibility: [],
+    })
+  };
+
+  onSave = () => {
+    axios.post(jobs.create, {
+      jobName: this.state.jobName,
+      selectedOffice: this.state.selectedOffice,
+      selectedEducation: this.state.selectedEducation,
+      selectedEligibility: this.state.selectedEligibility,
+      yearsOfExperience: this.state.yearsOfExperience,
+      hoursOfTraining: this.state.hoursOfTraining,
+      jobDescription: this.state.jobDescription
+    })
+      .then(res => {
+        this.reset();
+        if(res.data.status === 200) {
+          this.props.history.push('/maintenance/jobs');
+        }
+      })
+  };
+
+  disabledChecker = () => {
+    this.setState({saveDisabled: !(this.state.jobName.length > 9 && this.state.selectedOffice != null)})
   };
 
   render() {
@@ -128,6 +183,19 @@ class Jobs extends Component {
             </React.Fragment>
         }
       </div>;
+
+    const jobs = this.state.jobs.map(job => {
+      return (
+        <Col xs={4}>
+          <Link to={'/maintenance/jobs/' + job.slug}>
+            <div className={styles.jobs}>
+              <p style={{fontSize: 14}}>{job.jobtitle}</p>
+              <p className={styles.sub}>{job.count} employees</p>
+            </div>
+          </Link>
+        </Col>
+      )
+    });
 
     return (
       <React.Fragment>
@@ -150,8 +218,12 @@ class Jobs extends Component {
                       }}/>
                   </div>
                   <div className={univStyles.formBody}>
-                    <div className={styles.header}>
-
+                    <div style={{padding: 15}}>
+                      <Container fluid style={{padding: 0, marginTop: -12}}>
+                        <Row>
+                          {jobs}
+                        </Row>
+                      </Container>
                     </div>
                   </div>
                 </div>
@@ -166,7 +238,7 @@ class Jobs extends Component {
                     <p>Job Details</p>
                   </div>
                   <div className={univStyles.formBody}>
-                    <div className={styles.newBody}>
+                    <div style={{padding: 15}}>
                       <div className={univStyles.input}>
                         <Input
                           characterLimit={40}
@@ -177,16 +249,55 @@ class Jobs extends Component {
                           name="* Job Name"/>
                       </div>
                       <div className={univStyles.input}>
-                        <Select isGrouped selected={[]} options={this.state.education} onChangeHandler={this.onChangeYearsOfExperience} name="Education"/>
+                        <Select
+                          isMulti
+                          placeholder="* Office"
+                          onChangeHandler={o => this.setState({selectedOffice: o})}
+                          options={this.state.office}/>
                       </div>
                       <div className={univStyles.input}>
-                        <TextArea characterLimit={300} value={this.state.officeDescription} onChangeHandler={e => this.onChangeDescription(e)} name="Job description"/>
+                        <Select
+                          isMulti
+                          isGroup
+                          placeholder="Education"
+                          onChangeHandler={o => this.setState({selectedEducation: o})}
+                          options={this.state.education}/>
+                      </div>
+                      <div className={univStyles.input}>
+                        <Select
+                          selected={this.state.selectedEducation}
+                          isMulti
+                          placeholder="Eligibility"
+                          onChangeHandler={o => this.setState({selectedEligibility: o})}
+                          options={this.state.eligibility}/>
+                      </div>
+                      <div className={univStyles.input}>
+                        <Numeric onChangeHandler={this.onChangeYearsOfExperience} width={200} name="Years of experience"/>
+                      </div>
+                      <div className={univStyles.input}>
+                        <Numeric onChangeHandler={this.onChangeHoursOfTraining} width={200} name="Hours of relevant training"/>
+                      </div>
+                      <div className={univStyles.input}>
+                        <TextArea
+                          characterLimit={300}
+                          value={this.state.jobDescription}
+                          onChangeHandler={e => this.onChangeDescription(e)}
+                          name="Job description"/>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
               <div className={univStyles.pageMain + ' ' + univStyles.bottom} />
+            </div>
+          }/>
+          <Route path={'/maintenance/jobs/:slug'} exact render={() =>
+            <div className={univStyles.main}>
+              <div className={univStyles.pageMainNew + ' ' + univStyles.top} />
+              <div className={univStyles.pageMain}>
+                {/*<Route path={'/maintenance/office/:slug'} exact component={}/>*/}
+                <p>HAHAHA</p>
+              </div>
             </div>
           }/>
         </Switch>

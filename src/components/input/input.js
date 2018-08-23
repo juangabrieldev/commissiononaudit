@@ -123,7 +123,7 @@ class Input extends Component {
             )
           }}
           autoFocus={this.props.autofocus}
-          onChange={e => this.onChangeHandler(e)}
+          onChange={this.onChangeHandler}
           onFocus={this.onFocus}
           onBlur={this.onBlur}
           type={this.state.show ? 'text' : this.props.type}

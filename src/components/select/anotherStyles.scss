@@ -1,0 +1,22 @@
+.select {
+  position: relative;
+
+  > span {
+    position: absolute;
+    margin-left: 5px;
+    padding: 0 2px;
+    top: 6px;
+    opacity: 0;
+    transition: .1s;
+    color: #878787;
+    z-index: -1;
+
+    &.shown {
+      font-size: 13px;
+      top: -8px;
+      opacity: 1;
+      background: white;
+      z-index: 1;
+    }
+  }
+}

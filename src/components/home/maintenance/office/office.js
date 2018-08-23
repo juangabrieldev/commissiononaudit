@@ -1,13 +1,12 @@
 import React, {Component} from 'react';
 import { Switch, Route, Link, Prompt, withRouter  } from 'react-router-dom';
-import ReactSVG from 'react-svg';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { connect } from 'react-redux';
-import Slug from 'slugify';
 import produce from 'immer';
 import axios from 'axios';
 import moment from 'moment';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
+import Highlighter from 'react-highlight-words';
 
 import styles from './office.scss';
 import univStyles from '../../styles.scss';
@@ -36,11 +35,16 @@ class Office extends Component {
     officeDescription: '',
     blockedNavigation: false,
     office: [],
+    searchOffice: [], //rows of searched office
     selectedOffice: [],
     previousLink: '',
     slug: '',
     showTransition: false,
     saveDisabled: true,
+    search: false,
+    splitString: null,
+    searchValue: null,
+    cursor: 0
   };
 
   fetch = () => {
@@ -75,7 +79,18 @@ class Office extends Component {
     if (prev.location.pathname !== this.props.location.pathname) {
       this.setState({
         officeName: '',
-        officeDescription: ''
+        numberOfClusters: 0,
+        officeDescription: '',
+        blockedNavigation: false,
+        selectedOffice: [],
+        previousLink: '',
+        slug: '',
+        showTransition: false,
+        saveDisabled: true,
+        search: false,
+        splitString: null,
+        searchValue: null,
+        cursor: 0
       });
     }
   };
@@ -86,6 +101,65 @@ class Office extends Component {
     const socket = initializeSocket();
 
     socket.on(events.office, this.fetch)
+  };
+
+  onChangeSearchJobs = e => {
+    const value = e.target.value;
+
+    if(value.length === 0) {
+      document.removeEventListener('keydown', this.selectSearchJobs);
+
+      return this.setState({
+        searchValue: null,
+        search: false,
+        showTransition: false,
+        cursor: 0
+      })
+    }
+
+    axios.get(office.search + `/${value}`)
+      .then(res => {
+        document.addEventListener('keydown', this.selectSearchJobs);
+
+        this.setState({
+          search: true,
+          searchOffice: res.data.data,
+          splitString: value.split(' '),
+          searchValue: value,
+          showTransition: false,
+          cursor: 0
+        })
+      })
+  };
+
+  selectSearchJobs = e => {
+    switch(e.which) {
+      case 38: {
+        if(this.state.cursor === 0) {
+          this.setState({cursor: this.state.searchOffice.length})
+        } else {
+          this.setState({cursor: this.state.cursor - 1})
+        }
+
+        break;
+      }
+
+      case 40: {
+        if(this.state.cursor + 1 <= this.state.searchOffice.length) {
+          this.setState({cursor: this.state.cursor + 1})
+        } else {
+          this.setState({cursor: 0})
+        }
+
+        break;
+      }
+
+      case 13: {
+        if(this.state.cursor !== 0) {
+          this.props.history.push('/maintenance/office/' + this.state.searchOffice[this.state.cursor - 1].slug)
+        }
+      }
+    }
   };
 
   onChangeOfficeName = e => {
@@ -112,11 +186,7 @@ class Office extends Component {
   };
 
   disabledChecker = () => {
-    if (this.state.officeName.length > 10 && this.state.numberOfClusters > 0) {
-      this.setState({saveDisabled: false})
-    } else {
-      this.setState({saveDisabled: true})
-    }
+    this.setState({saveDisabled: !(this.state.officeName.length > 9 && this.state.numberOfClusters > 0)})
   };
 
   blockNavigationChecker = () => {
@@ -160,7 +230,6 @@ class Office extends Component {
     axios.post(office.create, {
       officeName: this.state.officeName,
       officeDescription: this.state.officeDescription,
-      slug: Slug(this.state.officeName.toLowerCase()),
       employeeId: this.props.employeeId,
       firstName: this.props.firstName,
       numberOfClusters: this.state.numberOfClusters
@@ -189,7 +258,7 @@ class Office extends Component {
   };
 
   render() {
-    const departmentsTitleBar =
+    const officeTitleBar =
       <div className={univStyles.titleBar + (this.props.location.pathname.includes('/new') ? ' ' + univStyles.bottom : '')}>
         {
           this.props.location.pathname.includes('/new') ?
@@ -205,14 +274,14 @@ class Office extends Component {
         }
       </div>;
 
-    const departmentRows = this.state.office.map(department => {
+    const officeRows = this.state.office.map(office => {
       const selected = this.state.selectedOffice.find(element => {
-        return element === department.id;
+        return element === office.id;
       });
 
       return (
         <CSSTransition
-          key={department.key}
+          key={office.key}
           timeout={4000}
           classNames={{
             enter: styles.enter,
@@ -220,24 +289,23 @@ class Office extends Component {
           }}>
           <div className={styles.row + (selected ? ' ' + styles.selected : '')}>
             <div className={styles.select}>
-              <Checkbox toggle={value => this.onSelect(department.id, value)} />
+              <Checkbox toggle={value => this.onSelect(office.id, value)} />
             </div>
             <div className={styles.departmentNameRow}>
-              <Link to={'/maintenance/office/' + department.slug}>{department.officeName}</Link>
+              <Link to={'/maintenance/office/' + office.slug}>{office.officeName}</Link>
               {
-                department.newDepartment ?
+                office.newDepartment ?
                   <span>NEW</span> :
                   null
               }
             </div>
             <div className={styles.departmentHeadRow}>
-              <p>{department.departmentHead}</p>
             </div>
             <div className={styles.dateAddedRow}>
-              <p title={'Created on ' + moment(department.dateCreated).format('dddd, MMMM D, YYYY') + ' at ' + moment(department.dateCreated).format('h:mm A')}>{moment(department.dateCreated).format('MMMM D, YYYY')}</p>
+              <p title={'Created on ' + moment(office.dateCreated).format('dddd, MMMM D, YYYY') + ' at ' + moment(office.dateCreated).format('h:mm A')}>{moment(office.dateCreated).format('MMMM D, YYYY')}</p>
             </div>
             <div className={styles.numberOfEmployeesRow}>
-              <p>46</p>
+              <p>{office.count}</p>
               <div className={styles.options}>
                 <div/>
                 <div/>
@@ -250,9 +318,57 @@ class Office extends Component {
     }
     );
 
+    const searchedOfficeRows = this.state.searchOffice.map((office, i) => {
+      const selected = this.state.selectedOffice.find(element => {
+        return element === office.id;
+      });
+
+      return (
+        <CSSTransition
+          key={office.key}
+          timeout={4000}
+          classNames={{
+            enter: styles.enter,
+            enterActive: styles.enterActive,
+          }}>
+          <div className={styles.row + (selected ? ' ' + styles.selected : '') + (i === this.state.cursor - 1 ? ' ' + styles.cursorSelected : '')}>
+            <div className={styles.select}>
+              <Checkbox toggle={value => this.onSelect(office.id, value)} />
+            </div>
+            <div className={styles.departmentNameRow}>
+              <Link to={'/maintenance/office/' + office.slug}>
+                <Highlighter
+                  autoEscape
+                  searchWords={this.state.splitString}
+                  textToHighlight={office.officename}/>
+              </Link>
+              {
+                office.newDepartment ?
+                  <span>NEW</span> :
+                  null
+              }
+            </div>
+            <div className={styles.departmentHeadRow}>
+            </div>
+            <div className={styles.dateAddedRow}>
+              <p title={'Created on ' + moment(office.dateCreated).format('dddd, MMMM D, YYYY') + ' at ' + moment(office.dateCreated).format('h:mm A')}>{moment(office.dateCreated).format('MMMM D, YYYY')}</p>
+            </div>
+            <div className={styles.numberOfEmployeesRow}>
+              <p>{office.count}</p>
+              <div className={styles.options}>
+                <div/>
+                <div/>
+                <div/>
+              </div>
+            </div>
+          </div>
+        </CSSTransition>
+      )
+    });
+
     return (
       <React.Fragment>
-        {departmentsTitleBar}
+        {officeTitleBar}
         <Switch>
           <Route path={'/maintenance/office'} exact render={() =>
             <div className={univStyles.main}>
@@ -268,6 +384,8 @@ class Office extends Component {
                         null
                     }
                     <SearchBar
+                      onChangeHandler={e => this.onChangeSearchJobs(e)}
+                      value={this.state.searchValue}
                       placeholder="Search Office"
                       style={{
                         width: 170,
@@ -296,7 +414,11 @@ class Office extends Component {
                         autoHeight
                         autoHide>
                         <TransitionGroup exit={false} component={null} enter={this.state.showTransition}>
-                          {departmentRows}
+                          {
+                            this.state.search ?
+                              searchedOfficeRows :
+                              officeRows
+                          }
                         </TransitionGroup>
                         <p className={styles.end}>end of results</p>
                       </Scrollbars>
@@ -317,7 +439,7 @@ class Office extends Component {
                     <div className={styles.newBody}>
                       <div className={univStyles.input}>
                         <Input
-                          characterLimit={40}
+                          characterLimit={100}
                           autofocus
                           type="text"
                           value={this.state.officeName}

@@ -12,7 +12,7 @@ export const chooseRole = role => dispatch => {
   let myCookies, tokenDecoded;
 
   switch(role) {
-    case 1: {
+    case 7: {
       myCookies = cookies.get('session2');
       tokenDecoded = jwt.decode(myCookies);
 

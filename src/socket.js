@@ -6,6 +6,7 @@ export const initializeSocket = () => {
 };
 
 export const events = {
+  jobs: 'JOBS',
   office: 'OFFICE',
   systemLogs: 'SYSTEM_LOGS',
   qualificationStandards: 'QUALIFICATION_STANDARDS'

@@ -37,13 +37,6 @@ class ViewOffice extends Component {
       })
   };
 
-  otherDepartments = () => {
-    axios.get(office.get)
-      .then(res => {
-
-      })
-  };
-
   componentDidMount = () => {
     this.fetch();
   };
@@ -132,7 +125,7 @@ class ViewOffice extends Component {
             <div className={viewOfficeStyles.view}>
               <div className={univStyles.groupOfFields}>
                 <p className={univStyles.title}>BASIC INFORMATION</p>
-                <div className={univStyles.fields} style={{width: '30%'}}>
+                <div className={univStyles.fields} style={{display: 'inline-block'}}>
                   <p className={univStyles.title}>OFFICE NAME</p>
                   <p>{this.state.officeName}</p>
                 </div>

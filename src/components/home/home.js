@@ -32,7 +32,7 @@ class Home extends Component {
           <Route path="/maintenance" component={Maintenance}/>
         </Switch>
         {
-          this.props.role === 1 ?
+          this.props.role === 7 ?
             <SideBarRight employeeId={this.props.employeeId}/> :
             null
         }
