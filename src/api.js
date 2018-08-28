@@ -1,8 +1,9 @@
 export const rootUrl = 'http://localhost:4000';
 
 export const authentication = {
-    registration: rootUrl + '/login/register/',
-    login: rootUrl + '/login/',
+  registration: rootUrl + '/login/register/',
+  login: rootUrl + '/login/',
+  verifyToken: rootUrl + '/login/verify',
 };
 
 export const announcements = {
@@ -40,4 +41,4 @@ export const employees = {
 
 export const roles = {
   select: rootUrl + '/roles/select'
-}
+};

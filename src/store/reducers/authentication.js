@@ -21,7 +21,8 @@ let initialState = {
   lastName: null,
   middleInitial: null,
   employeeId: null,
-  email: null
+  email: null,
+  authentication: null
 };
 
 const cookies = new Cookies();
@@ -38,6 +39,7 @@ if(myCookies) {
   initialState.email = tokenDecoded.email;
   initialState.role = tokenDecoded.role;
   initialState.employeeId = tokenDecoded.employeeId;
+  initialState.imageUrl = tokenDecoded.imageUrl
 }
 
 const reducer = (state = initialState, action) => {
@@ -75,7 +77,8 @@ const reducer = (state = initialState, action) => {
         mode: action.payload.mode,
         role: action.payload.role,
         email: action.payload.email,
-        employeeId: action.payload.employeeId
+        employeeId: action.payload.employeeId,
+        imageUrl: action.payload.imageUrl
       };
     }
 

@@ -40,7 +40,7 @@ class Avatar extends Component {
     return (
       <Aux>
         <div onClick={e => this.props.onClick(e)} className={styles.avatarContainer}>
-          <div className={styles.avatar}>
+          <div className={styles.avatar} style={{background: (!this.props.imageUrl.hasUrl ? this.props.imageUrl.color : '')}}>
             <p>{this.props.firstName.charAt(0) + this.props.lastName.charAt(0)}</p>
             <div className={styles.online}/>
           </div>
@@ -64,7 +64,7 @@ class Avatar extends Component {
                   <div className={styles.dropdown}>
                     <div className={styles.title}>
                       <div className={styles.left}>
-                        <div className={styles.avatarBig}>
+                        <div className={styles.avatarBig} style={{background: (!this.props.imageUrl.hasUrl ? this.props.imageUrl.color : '')}}>
                           <div className={styles.change}>
                             <p>Change picture</p>
                           </div>
@@ -72,7 +72,7 @@ class Avatar extends Component {
                         </div>
                       </div>
                       <div className={styles.right}>
-                        <p className={styles.name}>{`${this.props.firstName} ${this.props.middleInitial} ${this.props.lastName}`}</p>
+                        <p className={styles.name}>{`${this.props.firstName} ${(this.props.middleInitial != null ? this.props.middleInitial : '')} ${this.props.lastName}`}</p>
                         <p className={styles.job}>Administrator</p>
                         <p className={styles.job}>{this.props.email}</p>
                       </div>
@@ -97,7 +97,8 @@ const mapStateToProps = state => {
     firstName: state.authentication.firstName,
     middleInitial: state.authentication.middleInitial,
     lastName: state.authentication.lastName,
-    email: state.authentication.email
+    email: state.authentication.email,
+    imageUrl: state.authentication.imageUrl
   }
 };
 

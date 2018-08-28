@@ -15,6 +15,8 @@ import TextArea from "../../../textarea/textArea";
 
 import * as actions from "../../../../store/actions/ui/actions";
 
+import { addToast } from "../../../../store/actions/ui/ui";
+
 class Employees extends Component {
   state = {
     employees: [],
@@ -136,6 +138,14 @@ class Employees extends Component {
 
   reset = () => {
     this.setState({
+      employeeId: null,
+      jobId: null,
+      firstName: null,
+      middleName: null,
+      lastName: null,
+      clusterId: null,
+      role: null,
+      office: null,
     })
   };
 
@@ -151,9 +161,10 @@ class Employees extends Component {
       office: this.state.selectedOffice.value
     })
       .then(res => {
-        this.reset();
         if(res.data.status === 200) {
           this.props.history.push('/maintenance/employees');
+          this.props.addToast(`Sucessfully added ${this.state.firstName} ${this.state.lastName} to employees.`);
+          this.reset();
         }
       })
   };
@@ -315,7 +326,8 @@ const mapDispatchToProps = dispatch => {
           value,
           message
         }
-      })
+      }),
+    addToast: message => dispatch(addToast(message))
   }
 };
 

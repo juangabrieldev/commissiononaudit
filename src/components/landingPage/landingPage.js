@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import DocumentTitle from 'react-document-title';
 import { TransitionGroup } from 'react-transition-group';
 
-import Aux from '../auxillary/auxillary';
 import CookieInfo from '../cookieInfo/cookieInfo';
+import Input from '../input/input';
 
 import styles from './landingPage.scss';
 
@@ -14,27 +14,146 @@ import appIcon from '../../assets/landingPage/appIcon.svg';
 import close from '../../assets/ui/close.svg';
 
 class LandingPage extends Component {
+  state = {
+    quickLogin: {
+      show: false,
+      imageUrl: {
+        hasUrl: false,
+        color: ''
+      },
+      firstName: '',
+      lastName: '',
+      employeeId: '',
+      password: ''
+    }
+  };
+
+  componentDidMount = () => {
+    document.addEventListener('mousedown', this.handleClickOutside);
+  };
+
+  componentWillUnmount = () => {
+    document.removeEventListener('mousedown', this.handleClickOutside);
+  };
+
+  removeRecent = (i, recents) => {
+    recents.splice(i, 1);
+
+    if(recents.length > 0) {
+      localStorage.setItem('recents', JSON.stringify(recents));
+    } else {
+      localStorage.removeItem('recents')
+    }
+
+    setTimeout(() => this.forceUpdate(), 100);
+  };
+
+  onRecentClickHandler = (employeeId, firstName, lastName, imageUrl) => {
+    this.setState({
+      quickLogin: {
+        show: true,
+        imageUrl,
+        employeeId,
+        firstName,
+        lastName
+      }
+    })
+  };
+
+  onChangePassword = e => {
+    this.setState({
+      quickLogin: {
+        ...this.state.quickLogin,
+        password: e.target.value
+      }
+    })
+  };
+
+  handleClickOutside = e => {
+    if (this.refs.quick && !this.refs.quick.contains(e.target)) {
+      this.setState({quickLogin: {
+          ...this.state.quickLogin,
+          show: false
+      }})
+    }
+  };
+
   render() {
     const recents = JSON.parse(localStorage.getItem('recents'));
-    let recentsComponent;
+    const RecentsComponent = () => {
+      if(recents != null) {
+        return recents.map((recent, i) => (
+            <div key={i} className={styles.recent}>
+              <div onClick={() => this.removeRecent(i, recents)} className={styles.recentClose}>
+                <img src={close} height={8} alt=""/>
+              </div>
+              <div onClick={() => this.onRecentClickHandler(recent.employeeId, recent.firstName, recent.lastName, recent.imageUrl)} className={styles.recentAvatar}>
+                {
+                  recent.imageUrl.hasUrl ?
+                    <img src="http://localhost:4000/images/2x2.png" onError={() => console.log('image error')} height={155} alt=""/> :
+                    <div
+                      className={styles.recentAvatarInitials}
+                      style={{
+                      background: recent.imageUrl.color,
+                      height: 155,
+                      width: 155
+                    }}>
+                      <p>{recent.firstName.charAt(0)}{recent.lastName.charAt(0)}</p>
+                    </div>
+                }
+              </div>
+              <p className={styles.recentName}>{recent.firstName}</p>
+            </div>
+          ))
+      }
+    };
 
-    if(recents != null) {
-      recentsComponent = recents.map((recent, i) => (
-        <div key={i} className={styles.recent}>
-          <div className={styles.recentClose}>
-            <img src={close} height={8} alt=""/>
+    const quickLogin = (
+      <div className={styles.quickLogin}>
+        <div ref="quick" className={styles.form}>
+          <div className={styles.title}>
+            <p><strong>Log in</strong><br/>as</p>
           </div>
-          <div className={styles.recentAvatar}>
-            <img src="http://localhost:4000/images/2x2.png" onError={() => console.log('image error')} height={155} alt=""/>
+          <div className={styles.inside}>
+            <div className={styles.quickLoginAvatar}>
+              <div className={styles.recent}>
+                <div className={styles.recentAvatar}>
+                  {
+                    this.state.quickLogin.imageUrl.hasUrl ?
+                      <img src="http://localhost:4000/images/2x2.png" onError={() => console.log('image error')} height={155} alt=""/> :
+                      <div
+                        className={styles.recentAvatarInitials}
+                        style={{
+                          background: this.state.quickLogin.imageUrl.color,
+                          height: 155,
+                          width: 155
+                        }}>
+                        <p className={styles.initials}>{this.state.quickLogin.firstName.charAt(0)}{this.state.quickLogin.lastName.charAt(0)}</p>
+                      </div>
+                  }
+                </div>
+                <p className={styles.recentName}>{this.state.quickLogin.firstName}</p>
+              </div>
+            </div>
+            <Input
+              onChangeHandler={this.onChangePassword}
+              value={this.state.quickLogin.password}
+              autofocus width={350}
+              type="password"
+              name="Password"/>
           </div>
-          <p className={styles.recentName}>{recent.name}</p>
         </div>
-      ));
-    }
+      </div>
+    );
 
     return(
       <DocumentTitle title="Welcome to Commission on Audit Promotion System">
-        <Aux>
+        <Fragment>
+          {
+            this.state.quickLogin.show ?
+              quickLogin :
+              null
+          }
           <Getstarted toggle={() => this.props.history.push('/')} />
           <div className={styles.nav}>
             <div className={styles.inside}>
@@ -82,7 +201,7 @@ class LandingPage extends Component {
                     <p className={styles.recentTitle}>Quick login</p>
                     <p className={styles.recentDesc}>Click your picture or add an account.</p>
                     <div className={styles.recents}>
-                      {recentsComponent}
+                      <RecentsComponent />
                     </div>
                   </div>
                 </div> :
@@ -91,7 +210,7 @@ class LandingPage extends Component {
                 </div>
             }
           </div>
-        </Aux>
+        </Fragment>
       </DocumentTitle>
     )
   }

@@ -10,6 +10,7 @@ import NotificationBar from '../notificationBar/notificationBar';
 import PrivateRoute from '../privateRoute/privateRoute';
 import CompleteRegistration from '../completeRegistration/completeRegistration';
 import Home from '../home/home';
+import Toaster from '../toaster/toaster';
 
 import './layout.scss';
 
@@ -94,6 +95,7 @@ class Layout extends Component {
           </Switch>
           <LoginHelper/>
           <NotificationBar/>
+          <Toaster />
         </Aux>
       </Router>
     );

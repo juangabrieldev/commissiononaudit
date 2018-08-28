@@ -6,7 +6,8 @@ import * as actions from '../actions/ui/actions';
 const initialState = {
   showAvatarDropdown: false,
   blockNavigation: false,
-  blockNavigationMessage: ''
+  blockNavigationMessage: '',
+  toasts: []
 };
 
 const reducer = (state = initialState, action) => {
@@ -24,6 +25,18 @@ const reducer = (state = initialState, action) => {
         blockNavigation: action.payload.value,
         blockNavigationMessage: action.payload.message
       }
+    }
+
+    case actions.ADD_TOAST: {
+      return produce(state, draft => {
+        draft.toasts.push(action.payload.message)
+      });
+    }
+
+    case actions.REMOVE_TOAST: {
+      return produce(state, draft => {
+        draft.toasts.splice(0, 1)
+      });
     }
 
     default:

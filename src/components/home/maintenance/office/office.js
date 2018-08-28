@@ -37,7 +37,7 @@ class Office extends Component {
     office: [],
     searchOffice: [], //rows of searched office
     selectedOffice: [],
-    previousLink: '',
+    previousLink: '/maintenance/office',
     slug: '',
     showTransition: false,
     saveDisabled: true,
@@ -83,7 +83,6 @@ class Office extends Component {
         officeDescription: '',
         blockedNavigation: false,
         selectedOffice: [],
-        previousLink: '',
         slug: '',
         showTransition: false,
         saveDisabled: true,

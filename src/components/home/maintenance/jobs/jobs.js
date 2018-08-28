@@ -186,7 +186,7 @@ class Jobs extends Component {
 
     const jobs = this.state.jobs.map(job => {
       return (
-        <Col xs={4}>
+        <Col key={job.key} xs={4}>
           <Link to={'/maintenance/jobs/' + job.slug}>
             <div className={styles.jobs}>
               <p style={{fontSize: 14}}>{job.jobtitle}</p>

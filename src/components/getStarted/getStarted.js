@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import axios from 'axios';
 import validator from 'email-validator';
 import produce from 'immer';
@@ -18,9 +18,10 @@ import styles from './getStarted.scss';
 import email from '../../assets/ui/email.svg';
 import employee from '../../assets/ui/employee.svg';
 import administrator from '../../assets/ui/administrator.svg';
+import success from '../../assets/ui/success.svg';
 
 //import actionCreators
-import { login, register, reset, keepMeLoggedIn, chooseRole } from '../../store/actions/authentication/authentication';
+import { login, register, reset, keepMeLoggedIn, chooseRole, verificationSuccessLogin } from '../../store/actions/authentication/authentication';
 
 //import routes from api
 import { authentication } from '../../api';
@@ -49,7 +50,15 @@ class GetStarted extends Component {
         validationMessage: null
       },
     },
-    role: null
+    verification: {
+      timer: 30,
+      emailVerified: false,
+      invalidEmailLink: false,
+      emailResending: false,
+      redirectStopper: false,
+      token: ''
+    },
+    role: null,
   };
 
   timer = null;
@@ -76,13 +85,17 @@ class GetStarted extends Component {
       e.target.value = q;
       this.onChangeEmployeeIdHandler(e, 2);
     }
+
+    if(this.props.mode === 2) {
+      this.resendTimer()
+    }
   };
 
   componentWillUnmount = () => {
     document.removeEventListener('mousedown', this.handleClickOutside);
   };
 
-  componentDidUpdate = prevProps => {
+  componentDidUpdate = (prevProps, prevState) => {
     if(prevProps.location !== this.props.location) {
       this.setState(produce(draft => {
         draft.registration.employeeId.employeeId = '';
@@ -93,7 +106,6 @@ class GetStarted extends Component {
       }));
 
       this.props.reset();
-
 
       const { q } = stringquery(this.props.location.search);
 
@@ -106,6 +118,100 @@ class GetStarted extends Component {
         e.target.value = q;
         this.onChangeEmployeeIdHandler(e, 2);
       }
+    }
+
+    if(prevProps.mode !== this.props.mode && this.props.mode === 2) {
+      this.resendTimer()
+    }
+  };
+
+  resendTimer = () => {
+    const interval = setInterval(() => {
+      this.setState(produce(draft => {
+        draft.verification.timer -= 1;
+      }), () => {
+        if(this.state.verification.timer === 0) {
+          clearInterval(interval)
+        }
+      })
+    }, 1000)
+  };
+
+  onClickResend = () => {
+    // this.setState({emailResending: true}, () => {
+    //   axios.post(authentication.verifyToken + '/resend', {
+    //     employeeId: this.props.employeeId,
+    //     email: this.props.email,
+    //     firstName: this.props.firstName
+    //   })
+    //     .then(res => {
+    //       this.setState({timer: 30, emailResending: false}, this.resendTimer)
+    //     })
+    // })
+    this.setState(produce(draft => {
+      draft.verification.emailResending = true;
+    }), () => {
+      axios.post(authentication.verifyToken + '/resend', {
+        employeeId: this.props.employeeId,
+        email: this.props.email,
+        firstName: this.props.firstName
+      })
+        .then(res => {
+          this.setState(produce(draft => {
+            draft.verification.timer = 30;
+            draft.verification.emailResending = false;
+          }), this.resendTimer)
+        })
+    })
+  };
+
+  emailVerifiedRedirect = () => {
+    this.setState(produce(draft => {
+      draft.verification.redirectStopper = true;
+    }), () => {
+      setTimeout(() => {
+        this.props.verificationSuccessLogin({
+          employeeId: this.props.employeeId,
+          email: this.props.email,
+          firstName: this.props.firstName,
+          lastName: this.props.lastName
+        })
+      }, 3000)
+    });
+  };
+
+  onChangeTokenHandler = e => {
+    const { value } = e.target;
+
+    this.setState(produce(draft => {
+      draft.verification.token = value
+    }));
+  };
+
+  onTokenSubmit = e => {
+    if(e.which === 13 && this.state.verification.token.length === 30) {
+      axios.get(authentication.verifyToken + `?token=${this.state.verification.token}&employeeid=${this.props.employeeId}`)
+        .then(res => {
+          switch(res.data.status) {
+            case 401: {
+              // this.setState({invalidEmailLink: true});
+              this.setState(produce(draft => {
+                draft.verification.invalidEmailLink = true;
+                draft.verification.token = ''
+              }));
+              break;
+            }
+
+            case 200: {
+              this.setState(produce(draft => {
+                draft.verification.emailVerified = true;
+                draft.verification.invalidEmailLink = false;
+                draft.verification.token = ''
+              }));
+              break;
+            }
+          }
+        })
     }
   };
 
@@ -280,12 +386,18 @@ class GetStarted extends Component {
       switch (s) {
         case 1:
           if(this.state.login.employeeId.length >= 1 && this.state.login.password.length >= 1) {
+            this.setState(produce(draft => {
+              draft.login.password = ''
+            }));
             this.props.login(this.state.login.employeeId, this.state.login.password);
           }
         break;
 
         case 2:
           if(this.state.registration.employeeId.isValid && this.state.registration.email.isValid && this.state.registration.password.isValid) {
+            this.setState(produce(draft => {
+              draft.login.password = ''
+            }));
             this.props.register(this.state.registration.employeeId.employeeId, this.state.registration.email.email, this.state.registration.password.password);
           }
       }
@@ -298,52 +410,54 @@ class GetStarted extends Component {
 
   render() {
     const login =
-      <frosted-glass-container>
-        <frosted-glass blur-amount="100px" overlay-color="#ffffff52">
-          <div className={styles.getStarted} onKeyPress={e => this.onSubmit(e, 1)}>
-            <div ref="form" className={styles.form}>
-              <div className={styles.title}>
-                <p><strong>Log in</strong><br/> to enter PMS</p>
-              </div>
-              {
-                this.props.authenticationSuccessful === false ?
-                  <Alert type="error" message={this.props.authenticationMessage} employeeId={this.props.notYetRegisteredEmployeeId}/> :
-                  null
-              }
-              <div className={styles.inside}>
-                <Input value={this.state.login.employeeId} onChangeHandler={e => this.onChangeEmployeeIdHandler(e, 1)} autofocus={true} width={350} type="text" name="Employee ID"/>
-                <Input value={this.state.login.password} onChangeHandler={e => this.onChangePasswordHandler(e, 1)} width={350} type="password" name="Password"/>
-                <div className={styles.helper}>
-                  <CheckBox toggle={v => this.keepMeLoggedIn(v)}/>
-                  <p>Keep me logged in.</p>
-                  <p><Link to="/">Forgot your password?</Link></p>
-                </div>
-                <div style={{
-                  margin: 20,
-                  display: 'flex',
-                  justifyContent: 'center'
-                }}>
-                  {
-                    this.props.isAuthenticating ?
-                      <Loadingbutton
-                        width={150}
-                        complete={this.props.doneAuthenticating}
-                        completeMessage="Welcome back" /> :
-                      <Button
-                        onClick={e => this.onSubmit(e, 1, true)}
-                        disabled={!(this.state.login.employeeId.length > 0 && this.state.login.password.length > 0)}
-                        type="submit"
-                        width={150}
-                        name="CONTINUE"
-                        classNames={['tertiary']} />
-                  }
-                </div>
-                <p className={styles.create}>or you can <Link to={'register'}>create an account.</Link></p>
-              </div>
-            </div>
+      <div className={styles.getStarted} onKeyPress={e => this.onSubmit(e, 1)}>
+        <div ref="form" className={styles.form}>
+          <div className={styles.title}>
+            <p><strong>Log in</strong><br/> to enter PMS</p>
           </div>
-        </frosted-glass>
-      </frosted-glass-container>;
+          {
+            this.props.authenticationSuccessful === false && this.props.notYetRegisteredEmployeeId == null ?
+              <div style={{padding: '15px 30px', paddingBottom: 0, marginBottom: -12}}>
+                <Alert type="error" message={this.props.authenticationMessage} employeeId={this.props.notYetRegisteredEmployeeId}/>
+              </div> :
+              this.props.authenticationSuccessful === false && this.props.notYetRegisteredEmployeeId != null ?
+              <div style={{padding: '15px 30px', paddingBottom: 0, marginBottom: -8}}>
+                <Alert type="default" message={this.props.authenticationMessage} employeeId={this.props.notYetRegisteredEmployeeId}/>
+              </div> :
+                null
+          }
+          <div className={styles.inside}>
+            <Input value={this.state.login.employeeId} onChangeHandler={e => this.onChangeEmployeeIdHandler(e, 1)} autofocus={true} width={350} type="text" name="Employee ID"/>
+            <Input value={this.state.login.password} onChangeHandler={e => this.onChangePasswordHandler(e, 1)} width={350} type="password" name="Password"/>
+            <div className={styles.helper}>
+              <CheckBox toggle={v => this.keepMeLoggedIn(v)}/>
+              <p>Keep me logged in.</p>
+              <p><Link to="/">Forgot your password?</Link></p>
+            </div>
+            <div style={{
+              margin: 20,
+              display: 'flex',
+              justifyContent: 'center'
+            }}>
+              {
+                this.props.isAuthenticating ?
+                  <Loadingbutton
+                    width={150}
+                    complete={this.props.doneAuthenticating}
+                    completeMessage="Welcome back" /> :
+                  <Button
+                    onClick={e => this.onSubmit(e, 1, true)}
+                    disabled={!(this.state.login.employeeId.length > 0 && this.state.login.password.length > 0)}
+                    type="submit"
+                    width={150}
+                    name="CONTINUE"
+                    classNames={['tertiary']} />
+              }
+            </div>
+            <p className={styles.create}>or you can <Link to={'register'}>create an account.</Link></p>
+          </div>
+        </div>
+      </div>;
 
     const register =
       <div className={styles.getStarted} onKeyPress={e => this.onSubmit(e, 2)}>
@@ -431,20 +545,79 @@ class GetStarted extends Component {
         <div className={styles.form}>
           <div className={styles.emailContainer}>
             <div className={styles.left}>
-              <img src={email} alt="" height={150}/>
+              {
+                this.state.verification.emailVerified ?
+                  <img src={success} alt="" height={150}/> :
+                  <img src={email} alt="" height={150}/>
+              }
             </div>
             <div className={styles.right}>
-              <p className={styles.emailTitle}>Verify your e-mail</p>
-              <p className={styles.emailDescription}>
-                Hi, <span>{this.props.firstName}!</span> Please verify your e-mail address so you can
-                sign in if you ever
-                forget your password. We've
-                sent a confirmation link to: <span>{this.props.email}</span>
-              </p>
+              {
+                this.state.verification.emailVerified ?
+                  <p className={styles.emailTitle}>Success!</p> :
+                  <p className={styles.emailTitle}>Verify your e-mail</p>
+              }
+              {
+                this.state.verification.invalidEmailLink ?
+                  <div>
+                    <Alert type="error" message="The code you entered is either invalid or has expired."/>
+                  </div> :
+                  null
+              }
+              {
+                this.state.verification.emailVerified ?
+                  <p className={styles.emailDescription}>
+                    Your e-mail address was successfully verified. You can now use it to reset your password in case you forget it.
+                  </p> :
+                  <div onKeyPress={this.onTokenSubmit}>
+                    <p className={styles.emailDescription}>
+                      Hi, <span>{this.props.firstName}!</span> Please verify your e-mail address so you can
+                      sign in if you ever
+                      forget your password. We've
+                      sent a confirmation code to: <span>{this.props.email}</span>
+                    </p>
+                    <Input
+                      autofocus
+                      onChangeHandler={this.onChangeTokenHandler}
+                      type="text"
+                      value={this.state.verification.token}
+                      name="Verification code"/>
+                  </div>
+              }
             </div>
           </div>
           <div className={styles.resendContainer}>
-            <p>If you still don't see it, take a look at <strong>spam</strong> section, or you can <strong>resend the confirmation link.</strong></p>
+            {
+              this.state.verification.emailVerified ?
+                <Fragment>
+                  {
+                    !this.state.verification.redirectStopper ? this.emailVerifiedRedirect() : null
+                  }
+                  <p>You're being redirected. Please wait...</p>
+                </Fragment> :
+                <Fragment>
+                  {
+                    this.state.verification.emailResending ?
+                      <p><strong>Resending...</strong></p> :
+                      <p>
+                        If you don't see it, take a look at <strong>spam</strong> section, or you can&nbsp;
+                        <strong onClick={this.state.verification.timer === 0 ? this.onClickResend : null} className={this.state.verification.timer === 0 ? styles.resendButton : ''}><span>resend</span>&nbsp;the confirmation code</strong>&nbsp;
+                        {
+                          this.state.verification.timer !== 0 ?
+                            <Fragment>
+                              after 00:
+                              {
+                                this.state.verification.timer < 10 ?
+                                  "0" + this.state.verification.timer :
+                                  this.state.verification.timer
+                              } seconds.
+                            </Fragment> :
+                            null
+                        }
+                      </p>
+                  }
+                </Fragment>
+            }
           </div>
         </div>
       </div>;
@@ -499,9 +672,11 @@ const mapStateToProps = state => {
     authenticationSuccessful: state.authentication.authenticationSuccessful,
     mode: state.authentication.mode,
     firstName: state.authentication.firstName,
+    lastName: state.authentication.lastName,
     email: state.authentication.email,
     authenticationMessage: state.authentication.authenticationMessage,
-    notYetRegisteredEmployeeId: state.authentication.notYetRegisteredEmployeeId
+    notYetRegisteredEmployeeId: state.authentication.notYetRegisteredEmployeeId,
+    employeeId: state.authentication.employeeId
   }
 };
 
@@ -511,7 +686,8 @@ const mapDispatchToProps = dispatch => {
     register: (employeeid, email, password) => dispatch(register(employeeid, email, password)),
     keepMeLoggedIn: v => dispatch(keepMeLoggedIn(v)),
     reset: () => dispatch(reset()),
-    chooseRole: role => dispatch(chooseRole(role))
+    chooseRole: role => dispatch(chooseRole(role)),
+    verificationSuccessLogin: data => dispatch(verificationSuccessLogin(data))
   }
 };
 

@@ -3,6 +3,25 @@
 .alert {
   border-radius: 2px;
   border: 1px solid;
+  position: relative;
+
+  //&:hover {
+  //  .close {
+  //    opacity: 1;
+  //  }
+  //}
+
+  .close {
+    position: absolute;
+    right: 0;
+    top: 0;
+    //opacity: 1;
+    //transition: .1s;
+
+    .icon {
+      height: 10px
+    }
+  }
 
   p {
     font-size: 14px;
@@ -19,7 +38,21 @@
     }
   }
 
-  &.error {
+  &.default {
+    border-color: lighten($primary-color, 28);
+    background: lighten($primary-color, 30);
 
+    p {
+      color: darken($primary-color, 40)
+    }
+  }
+
+  &.error {
+    border-color: $error;
+    background: lighten($error, 29);
+
+    p {
+      color: $error;
+    }
   }
 }
