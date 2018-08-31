@@ -24,3 +24,21 @@
     }
   }
 }
+
+.enter {
+  opacity: .01;
+}
+
+.enterActive {
+  opacity: 1;
+  transition: ease 200ms;
+}
+
+.exit {
+  opacity: 1;
+}
+
+.exitActive {
+  opacity: .01;
+  transition: ease 200ms;
+}

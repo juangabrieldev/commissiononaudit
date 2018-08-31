@@ -1,47 +1,48 @@
 @import "../layout/mixins";
 @import "../layout/variables";
 
-.top {
-  position: fixed;
-  height: 90px;
-  width: 100%;
-  border-bottom: 1px solid #ebebeb;
-  background: white;
-  z-index: 1;
+.checked {
+  position: absolute;
+  right: 15px;
+  display: flex;
+  align-items: center;
 }
 
-.middle {
-  position: absolute;
-  height: calc(100vh - 90px);
-  top: 90px;
-  width: 100%;
-  min-width: 1200px;
-  z-index: 0;
+.status {
+  margin-top: auto;
+  margin-bottom: 8px;
+  pointer-events: none;
+  padding: 0 !important;
 
-  .container {
-    max-width: 1000px;
+  > p {
+    margin: 0;
+    box-sizing: border-box;
+  }
+
+  .progressP {
+    font-size: 14px;
+    color: $text-secondary;
+    padding: 0 15px 2px;
+  }
+
+  .progressContainer {
+    height: 15px;
     display: flex;
-    margin: 0 auto;
-    padding-top: 35px;
+    align-items: center;
 
-    .sideBarContainer {
-      display: block;
-      height: auto;
-      min-width: 320px;
+    .progressBar {
+      height: 5px;
+      width: 100%;
+      background: #f5f5f5;
+      margin: 0 15px;
+      border-radius: 1px;
+      overflow: hidden;
 
-      .sideBar {
-        position: fixed;
-        margin: 0;
-        width: 280px;
+      .value {
+        height: 100%;
+        transition: width ease .1s;
+        background: $primary-color;
       }
-    }
-
-
-
-    .form {
-      width: 680px;
-      margin-left: auto;
-      margin-right: 0
     }
   }
 }

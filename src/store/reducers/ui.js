@@ -29,7 +29,10 @@ const reducer = (state = initialState, action) => {
 
     case actions.ADD_TOAST: {
       return produce(state, draft => {
-        draft.toasts.push(action.payload.message)
+        draft.toasts.push({
+          message: action.payload.message,
+          key: action.payload.key
+        })
       });
     }
 

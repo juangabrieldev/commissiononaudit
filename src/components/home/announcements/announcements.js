@@ -22,6 +22,7 @@ class Announcements extends Component {
   };
 
   componentDidMount = () => {
+
   };
 
   navigate = url => {

@@ -76,6 +76,11 @@ const reducer = (state = initialState, action) =>
         // };
         draft.picture.rawImage = state.picture.oldRawImage;
         draft.picture.ui.showModal = true;
+        break;
+
+      case actions.REPLACE_PROGRESS:
+        draft.progress = action.payload.value;
+        break;
     }
   });
 

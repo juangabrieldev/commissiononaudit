@@ -3,6 +3,7 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import SVG from 'react-svg';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import axios from 'axios';
 
 import styles from './avatar.scss';
 
@@ -11,27 +12,78 @@ import Dropdown from '../dropdown/dropdown';
 
 import downArrow from '../../../assets/ui/downArrow.svg';
 
+
+
 import { logout } from '../../../store/actions/authentication/authentication'
+import {employees, publicFolder} from "../../../api";
 
 class Avatar extends Component {
-  state = {
-    showAvatarDropdown: false
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      showAvatarDropdown: false,
+      hasUrl: this.props.imageUrl.hasUrl,
+      imageUrl: null
+    }
+  }
+
+  componentDidMount = () => {
+    axios.get(employees.avatar + this.props.employeeId)
+      .then(res => {
+        if(res.data.data != null) {
+          this.setState({
+            hasUrl: true,
+            imageUrl: res.data.data
+          })
+        }
+      });
+
+    switch(this.props.role) {
+      case 1: {
+        this.role = 'Admin Officer';
+        break;
+      }
+
+      case 2: {
+        this.role = 'Applicant';
+        break;
+      }
+
+      case 3: {
+        this.role = 'By-cluster evaluator';
+        break;
+      }
+
+      case 4: {
+        this.role = 'Division Chief';
+        break;
+      }
+
+      case 5: {
+        this.role = 'HR-Evaluator';
+        break;
+      }
+
+      case 6: {
+        this.role = 'Supervisor';
+        break;
+      }
+
+      case 7: {
+        this.role = 'ICTO-Maintenance';
+        break;
+      }
+
+      default: break;
+    }
   };
 
   componentWillReceiveProps = next => {
-    if(next.showAvatarDropdown !== this.props.showAvatarDropdown) {
-      this.setState({showAvatarDropdown: next.showAvatarDropdown})
-    }
+    this.setState({showAvatarDropdown: next.showAvatarDropdown})
   };
 
   logout = () => {
-    const recents = JSON.parse(localStorage.getItem('recent'));
-    let recentsNew = [];
-    if(recents != null) {
-      for(let i = 0; i < recents.length; i++) {
-
-      }
-    }
     this.props.logout();
     this.props.history.replace('/');
   };
@@ -40,8 +92,12 @@ class Avatar extends Component {
     return (
       <Aux>
         <div onClick={e => this.props.onClick(e)} className={styles.avatarContainer}>
-          <div className={styles.avatar} style={{background: (!this.props.imageUrl.hasUrl ? this.props.imageUrl.color : '')}}>
-            <p>{this.props.firstName.charAt(0) + this.props.lastName.charAt(0)}</p>
+          <div className={styles.avatar} style={{background: (!this.state.hasUrl ? this.props.imageUrl.color : '')}}>
+            {
+              this.state.hasUrl ?
+                <img src={publicFolder.images + this.state.imageUrl} height={30} alt=""/> :
+                <p>{this.props.firstName.charAt(0) + this.props.lastName.charAt(0)}</p>
+            }
             <div className={styles.online}/>
           </div>
           <div className={styles.username}>
@@ -51,7 +107,7 @@ class Avatar extends Component {
         </div>
         <TransitionGroup component={null}>
           {
-            this.state.showAvatarDropdown ?
+            this.props.showAvatarDropdown ?
               <CSSTransition
                 timeout={300}
                 classNames={{
@@ -64,16 +120,20 @@ class Avatar extends Component {
                   <div className={styles.dropdown}>
                     <div className={styles.title}>
                       <div className={styles.left}>
-                        <div className={styles.avatarBig} style={{background: (!this.props.imageUrl.hasUrl ? this.props.imageUrl.color : '')}}>
+                        <div className={styles.avatarBig} style={{background: (!this.state.hasUrl ? this.props.imageUrl.color : '')}}>
                           <div className={styles.change}>
                             <p>Change picture</p>
                           </div>
-                          <p>{this.props.firstName.charAt(0) + this.props.lastName.charAt(0)}</p>
+                          {
+                            this.state.hasUrl ?
+                              <img src={publicFolder.images + this.state.imageUrl} height={60} alt=""/> :
+                              <p>{this.props.firstName.charAt(0) + this.props.lastName.charAt(0)}</p>
+                          }
                         </div>
                       </div>
                       <div className={styles.right}>
                         <p className={styles.name}>{`${this.props.firstName} ${(this.props.middleInitial != null ? this.props.middleInitial : '')} ${this.props.lastName}`}</p>
-                        <p className={styles.job}>Administrator</p>
+                        <p className={styles.job}>{this.role}</p>
                         <p className={styles.job}>{this.props.email}</p>
                       </div>
                     </div>
@@ -98,7 +158,9 @@ const mapStateToProps = state => {
     middleInitial: state.authentication.middleInitial,
     lastName: state.authentication.lastName,
     email: state.authentication.email,
-    imageUrl: state.authentication.imageUrl
+    employeeId: state.authentication.employeeId,
+    imageUrl: state.authentication.imageUrl,
+    role: state.authentication.role
   }
 };
 

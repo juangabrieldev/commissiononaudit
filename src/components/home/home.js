@@ -4,6 +4,7 @@ import Title from 'react-document-title';
 import NavigationPrompt from 'react-router-navigation-prompt';
 import { connect } from 'react-redux';
 
+import DeleteConfirmationModal from '../confirmationModal/deleteConfirmationModal';
 import NavigationBar from './navigationBar/navigationBar';
 import Announcements from './announcements/announcements';
 import Maintenance from './maintenance/maintenance';
@@ -45,6 +46,7 @@ const mapStateToProps = state => {
   return {
     blockNavigation: state.ui.blockNavigation,
     blockNavigationMessage: state.ui.blockNavigationMessage,
+    showConfirmationModal: state.ui.showConfirmationModal,
     employeeId: state.authentication.employeeId,
     role: state.authentication.role
   }

@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { connect } from 'react-redux';
+import slug from 'slugify';
 
 import styles from './navigationBar.scss';
 
@@ -15,30 +16,36 @@ class NavigationBar extends Component {
   constructor(props) {
     super(props);
 
-    switch(this.props.role) {
-      case 7: {
-        this.state = {tabs: ['Maintenance']};
-        break;
-      }
+    if(this.props.mode !== 3) {
+      switch(this.props.role) {
+        case 7: {
+          this.state = {tabs: ['Maintenance']};
+          break;
+        }
 
-      case 2: {
-        this.state = {tabs: ['Announcements']}
+        case 2: {
+          this.state = {tabs: ['Announcements']}
+        }
       }
+    } else {
+      this.state = {tabs: ['Complete registration']}
     }
   }
 
   componentDidMount = () => {
     if(this.props.location.pathname === '/') {
 
-      switch(this.props.role) {
-        case 7: {
-          this.props.history.push('/maintenance/office');
-          break;
-        }
+      if(this.props.mode !== 3) {
+        switch(this.props.role) {
+          case 7: {
+            this.props.history.push('/maintenance/office');
+            break;
+          }
 
-        case 2: {
-          this.props.history.push('/announcements');
-          break;
+          case 2: {
+            this.props.history.push('/announcements');
+            break;
+          }
         }
       }
 
@@ -67,10 +74,10 @@ class NavigationBar extends Component {
       <TransitionGroup component={null}>
         {
           this.state.tabs.map((tab, index) => (
-            <div key={index} className={styles.tab + (this.props.location.pathname.includes('/' + tab.toLowerCase()) ? ' ' + styles.active : '')}>
-              <Link to={tab === 'Maintenance' ? `/${tab.toLowerCase()}/employees` : ''}>{tab}</Link>
+            <div key={index} className={styles.tab + (this.props.location.pathname.includes('/' + slug(tab.toLowerCase())) ? ' ' + styles.active : '')}>
+              <Link to={tab === 'Maintenance' ? `/${tab.toLowerCase()}/employees` : `/${slug(tab.toLowerCase())}`}>{tab}</Link>
               {
-                this.props.location.pathname.includes('/' + tab.toLowerCase()) || (tab === 'Announcements' && this.props.location.pathname === '/') ?
+                this.props.location.pathname.includes('/' + slug(tab.toLowerCase())) || (tab === 'Announcements' && this.props.location.pathname === '/') ?
                   <CSSTransition
                     in="true"
                     timeout={200}

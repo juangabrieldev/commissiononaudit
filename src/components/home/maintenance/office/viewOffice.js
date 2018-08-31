@@ -141,7 +141,7 @@ class ViewOffice extends Component {
               <div className={viewOfficeStyles.groupOfFields}>
                 <p>CLUSTERS</p>
                 <div className={viewOfficeStyles.clusters}>
-                  <Container fluid style={{padding: 0, marginTop: '-8px'}}>
+                  <Container fluid style={{padding: 0, marginTop: '-15px'}}>
                     <Row>
                       {this.clusters}
                     </Row>

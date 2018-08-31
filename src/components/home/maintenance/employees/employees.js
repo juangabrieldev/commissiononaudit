@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import {Switch, Route, Link, withRouter} from 'react-router-dom';
 import axios from 'axios';
 import connect from "react-redux/es/connect/connect";
@@ -16,10 +16,17 @@ import TextArea from "../../../textarea/textArea";
 import * as actions from "../../../../store/actions/ui/actions";
 
 import { addToast } from "../../../../store/actions/ui/ui";
+import styles from "../office/office.scss";
+import {Scrollbars} from "react-custom-scrollbars";
+import {CSSTransition} from "react-transition-group";
+import Checkbox from "../../../checkBox/checkBox";
+
+import { initializeSocket, events } from "../../../../socket";
 
 class Employees extends Component {
   state = {
     employees: [],
+    selectedEmployee: [],
     office: [],
     employeeId: null,
     jobs: [],
@@ -36,19 +43,57 @@ class Employees extends Component {
   };
 
   componentDidMount = () => {
+    this.mounted = true;
+
     this.fetch();
+
+    const socket = initializeSocket();
+
+    socket.on(events.employees, this.fetch)
   };
 
+  componentWillUnmount = () => {
+    this.mounted = false;
+  };
+
+
   fetch = () => {
-    axios.get(office.get + '?jobs=1')
+    let data = {
+      office: null,
+      roles: null,
+      employees: null
+    };
+
+    axios.get(office.get + '?jobs=1') //for react-select
       .then(res => {
-        this.setState({office: res.data.data}, () => {
-          axios.get(roles.select)
-            .then(res => {
-              this.setState({roles: res.data.data})
-            })
-        })
-      });
+        data.office = res.data.data;
+        return axios.get(roles.select);
+        //   axios.get(roles.select)
+        //     .then(res => {
+        //       this.setState({roles: res.data.data}, () => {
+        //         axios.get(employees.get) // for actual employees data
+        //           .then(res => {
+        //             this.setState({employees: res.data.data})
+        //           })
+        //       })
+        //     })
+        // })
+      })
+      .then(res => {
+        data.roles = res.data.data;
+        return axios.get(employees.get);
+      })
+      .then(res => {
+        data.employees = res.data.data;
+
+        if(this.mounted) {
+          this.setState({
+            office: data.office,
+            roles: data.roles,
+            employees: data.employees
+          })
+        }
+      })
   };
 
   onChangeOfficeHandler =  o => {
@@ -57,7 +102,7 @@ class Employees extends Component {
         selectedOffice: this.state.selectedOffice
       })
         .then(res => {
-          if(res.data.status == 200) {
+          if(res.data.status === 200) {
             this.setState({jobs: res.data.data, selectedJob: null}, () => {
               if(!!this.state.selectedOffice) {
                 axios.get(office.clusters + `/${this.state.selectedOffice.value}`)
@@ -186,6 +231,76 @@ class Employees extends Component {
         }
       </div>;
 
+    const employeeRows = this.state.employees.map(employee => {
+      const selected = this.state.selectedEmployee.find(element => {
+        return element === employee.id;
+      });
+
+      const registrationStatus = () => {
+        if(parseInt(employee.registered, 10) === 1 && employee.registrationcomplete) {
+          return 'Completely registered'
+        } else if(parseInt(employee.registered, 10) === 1) {
+          return 'Registered, but not complete'
+        } else {
+          return 'Not yet registered'
+        }
+      };
+
+      return (
+        <CSSTransition
+          key={employee.key}
+          timeout={4000}
+          classNames={{
+            enter: styles.enter,
+            enterActive: styles.enterActive,
+          }}>
+          <div className={styles.row + (selected ? ' ' + styles.selected : '')}>
+            <div className={styles.select}>
+              <Checkbox toggle={value => this.onSelect(employee.id, value)} />
+            </div>
+            <div className={styles.employeeNameRow}>
+              <Link to={'/maintenance/employees/' + employee.slug}>
+                {
+                  employee.firstname + ' ' +  (employee.middlename !== null ? employee.middlename.charAt(0) + '. ' : '') + employee.lastname
+                }
+                {
+                  (this.props.employeeId === employee.employeeid ? <Fragment> <span>(YOU)</span></Fragment> : '')
+                }
+              </Link>
+            </div>
+            <div className={styles.filler}>
+            </div>
+            <div className={styles.registrationStatusRow}>
+              <p>
+                {
+                  <Fragment>
+                    {
+                      registrationStatus()
+                    }
+                  </Fragment>
+
+                }
+              </p>
+            </div>
+            <div className={styles.verificationStatusRow}>
+              <p>
+                {
+                  employee.verified ?
+                    'Verified' :
+                    'Not yet verified'
+                }
+              </p>
+              <div className={styles.options}>
+                <div/>
+                <div/>
+                <div/>
+              </div>
+            </div>
+          </div>
+        </CSSTransition>
+      )
+    });
+
     return (
       <React.Fragment>
         {employeesTitleBar}
@@ -207,6 +322,29 @@ class Employees extends Component {
                       }}/>
                   </div>
                   <div className={univStyles.formBody}>
+                    <div className={styles.rowHeader}>
+                      <div className={styles.employeeName}>
+                        <p>Employee name</p>
+                      </div>
+                      <div className={styles.registrationStatus}>
+                        <p>Registration status</p>
+                      </div>
+                      <div className={styles.verificationStatus}>
+                        <p>Verification status</p>
+                      </div>
+                    </div>
+                    <div className={styles.tableBody}>
+                      <Scrollbars
+                        style={{
+                          width: '100%',
+                          maxHeight: 'calc(100vh - 190px)',
+                        }}
+                        autoHeight
+                        autoHide>
+                        {employeeRows}
+                        <p className={styles.end}>end of results</p>
+                      </Scrollbars>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -272,7 +410,6 @@ class Employees extends Component {
                         <div className={univStyles.input}>
                           <Input
                             characterLimit={50}
-                            autofocus
                             type="text"
                             value={this.state.firstName}
                             onChangeHandler={this.onChangeFirstNameHandler}
@@ -281,7 +418,6 @@ class Employees extends Component {
                         <div className={univStyles.input}>
                           <Input
                             characterLimit={50}
-                            autofocus
                             type="text"
                             value={this.state.middleName}
                             onChangeHandler={this.onChangeMiddleNameHandler}
@@ -290,7 +426,6 @@ class Employees extends Component {
                         <div className={univStyles.input}>
                           <Input
                             characterLimit={50}
-                            autofocus
                             type="text"
                             value={this.state.lastName}
                             onChangeHandler={this.onChangeLastNameHandler}

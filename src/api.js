@@ -36,9 +36,16 @@ export const systemLogs = {
 };
 
 export const employees = {
-  create: rootUrl + '/employees/create'
+  create: rootUrl + '/employees/create',
+  get: rootUrl + '/employees/',
+  avatar: rootUrl + '/employees/avatar/',
+  registrationProgress: rootUrl + '/employees/registration-progress/',
 };
 
 export const roles = {
   select: rootUrl + '/roles/select'
+};
+
+export const publicFolder = {
+  images: rootUrl + '/images/'
 };

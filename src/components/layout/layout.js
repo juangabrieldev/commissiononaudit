@@ -81,7 +81,6 @@ class Layout extends Component {
               component={Landing}
             />
             <PrivateRoute
-              exact={true}
               myMode={3}
               path="/complete-registration"
               firstRedirect="/"

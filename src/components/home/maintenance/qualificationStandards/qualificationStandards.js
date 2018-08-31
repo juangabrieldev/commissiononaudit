@@ -50,6 +50,8 @@ class QualificationStandards extends Component {
   };
 
   componentDidMount = () => {
+    this.mounted = true;
+
     this.fetch();
     document.addEventListener('mousedown', this.handleClickOutside);
 
@@ -63,13 +65,15 @@ class QualificationStandards extends Component {
   };
 
   componentWillUnmount = () => {
+    this.mounted = false;
+
     document.removeEventListener('mousedown', this.handleClickOutside);
   };
 
   fetch = () => {
     axios.get(qualificationStandards.get)
       .then(res => {
-        if(res.data.status === 200) {
+        if(res.data.status === 200 && this.mounted) {
           this.setState(produce(draft => {
             draft.specificCourses.data = res.data.data.educationSpecific;
             draft.customQualifications.data = res.data.data.educationCustom;
@@ -113,11 +117,6 @@ class QualificationStandards extends Component {
   };
 
   handleClickOutside = e => {
-    // if (this.refs.numeric && !this.refs.numeric.contains(e.target)) {
-    //   this.setState({focused: false})
-    // } else {
-    //   this.setState({focused: true})
-    // }
     if (this.refs.add && !this.refs.add.contains(e.target)) {
       this.setState(produce(draft => {
         draft.specificCourses.add = false;

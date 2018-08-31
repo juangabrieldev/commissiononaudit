@@ -23,8 +23,8 @@ class Cropper extends Component {
     return (
       <div className={styles.crop}>
         <div className={styles.form}>
-          <div className={styles.title}>
-            <p><strong>Crop</strong> your image</p>
+          <div className={styles.header}>
+            <p>Crop your image</p>
           </div>
           <div className={styles.container}>
             <div className={styles.top}>
@@ -53,21 +53,20 @@ class Cropper extends Component {
           <div className={styles.bottom}>
             <div className={styles.change}>
               <Button
-                classNames={['tertiary']}
+                classNames={['primary']}
                 width={120}
-                name="Change picture"
+                name="CHANGE PICTURE"
                 onClick={this.props.clickedUploadImage}/>
             </div>
             <div className={styles.right}>
               <Button
-                width={80}
                 classNames={['cancel']}
-                name="Cancel"
+                name="CANCEL"
                 onClick={this.props.cancel}/>
               <Button
-                width={80}
-                classNames={['primary']}
-                name="Save"
+                width={70}
+                classNames={['tertiary']}
+                name="SAVE"
                 onClick={this.saveHandler}/>
             </div>
           </div>

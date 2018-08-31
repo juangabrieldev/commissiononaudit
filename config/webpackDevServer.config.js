@@ -32,7 +32,7 @@ module.exports = function(proxy, allowedHost) {
     // Enable gzip compression of generated files.
     compress: true,
     // Silence WebpackDevServer's own logs since they're generally not useful.
-    // It will still show compile warnings and errors with this setting.
+    // It will still isLoaded compile warnings and errors with this setting.
     clientLogLevel: 'none',
     // By default WebpackDevServer serves physical files from current directory
     // in addition to all the virtual build products that it serves from memory.

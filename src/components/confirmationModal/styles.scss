@@ -1,0 +1,66 @@
+@import "../layout/variables";
+
+.background {
+  height: 100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+
+  .form {
+    position: absolute;
+    right: 0;
+    left: 0;
+    top: 180px;
+    margin: auto;
+    width: 500px;
+
+    .header {
+      border: 1px solid $border-color;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      border-top-left-radius: 2px;
+      border-top-right-radius: 2px;
+      background: white;
+
+      > p {
+        font-weight: 600;
+        font-size: 18px;
+        margin: 0 0 0 12px;
+      }
+    }
+
+    .formBody {
+      border: 1px solid $border-color;
+      border-top: none;
+      border-bottom-left-radius: 2px;
+      border-bottom-right-radius: 2px;
+      background: white;
+      display: flex;
+      flex-direction: column;
+
+      > p {
+        margin: 0;
+        padding: 30px 20px;
+        font-size: 14px;
+      }
+
+      .footer {
+        padding: 12px;
+        display: flex;
+        border-top: solid 1px $border-color;
+        justify-content: flex-end;
+
+        > input:first-child {
+          margin-right: 12px;
+        }
+      }
+    }
+  }
+}

@@ -84,19 +84,19 @@
     color: #969da5
   }
 
-  .officeName {
+  .employeeName {
     min-width: 240px;
     box-sizing: border-box;
     margin-left: 35px;
   }
 
-  .dateAdded {
+  .registrationStatus {
     width: 200px;
     margin-right: 0;
     margin-left: auto
   }
 
-  .numberOfEmployees {
+  .verificationStatus {
     min-width: 150px;
     margin-right: 0;
   }
@@ -161,7 +161,7 @@
     }
 
     &:nth-child(even) {
-      background-color: lighten($border-color, 8);
+      background-color: lighten($border-color, 9);
     }
 
     .select {
@@ -171,7 +171,7 @@
       visibility: hidden;
     }
 
-    .departmentNameRow {
+    .employeeNameRow {
       min-width: 240px;
       max-width: 40%;
 
@@ -186,6 +186,10 @@
         color: #393b4c;
         font-weight: 400;
         font-size: 14px;
+
+        span {
+          opacity: .5;
+        }
       }
 
       > span {
@@ -203,7 +207,7 @@
       }
     }
 
-    .departmentHeadRow {
+    .filler {
       margin-left: auto;
 
       > p {
@@ -213,12 +217,12 @@
       }
     }
 
-    .dateAddedRow {
+    .registrationStatusRow {
       width: 200px;
       margin-right: 0;
     }
 
-    .numberOfEmployeesRow {
+    .verificationStatusRow {
       min-width: 150px;
       margin-right: 0;
       display: flex;
@@ -278,6 +282,70 @@
 
     > div {
       margin: 0
+    }
+  }
+}
+
+.background {
+  height: 100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+
+  .form {
+    position: absolute;
+    right: 0;
+    left: 0;
+    top: 180px;
+    margin: auto;
+    width: 500px;
+
+    .header {
+      border: 1px solid $border-color;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      border-top-left-radius: 2px;
+      border-top-right-radius: 2px;
+      background: white;
+
+      > p {
+        font-weight: 600;
+        font-size: 18px;
+        margin: 0 0 0 12px;
+      }
+    }
+
+    .formBody {
+      border: 1px solid $border-color;
+      border-top: none;
+      border-bottom-left-radius: 2px;
+      border-bottom-right-radius: 2px;
+      background: white;
+      display: flex;
+      flex-direction: column;
+
+      p {
+        margin: 0;
+        font-size: 14px;
+      }
+
+      .footer {
+        padding: 12px;
+        display: flex;
+        border-top: solid 1px $border-color;
+        justify-content: flex-end;
+
+        > input:first-child {
+          margin-right: 12px;
+        }
+      }
     }
   }
 }

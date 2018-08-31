@@ -1,9 +1,7 @@
 @import "../../layout/mixins";
 @import "../../layout/variables";
 
-.form {
-  @include form;
-  width: 100%;
+.picture {
   height: 500px;
   position: relative;
   display: flex;
@@ -51,13 +49,13 @@
 
   .bottom {
     position: absolute;
-    bottom: 30px;
+    bottom: 20px;
     width: 100%;
     display: flex;
     align-items: center;
 
     .helper {
-      margin-left: 30px;
+      margin-left: 20px;
       margin-right: auto;
 
       p {

@@ -12,6 +12,7 @@ import Getstarted from '../getStarted/getStarted';
 import landing from '../../assets/landingPage/landing.svg';
 import appIcon from '../../assets/landingPage/appIcon.svg';
 import close from '../../assets/ui/close.svg';
+import { publicFolder } from "../../api";
 
 class LandingPage extends Component {
   state = {
@@ -42,10 +43,16 @@ class LandingPage extends Component {
     if(recents.length > 0) {
       localStorage.setItem('recents', JSON.stringify(recents));
     } else {
-      localStorage.removeItem('recents')
+      localStorage.removeItem('recents');
     }
 
-    setTimeout(() => this.forceUpdate(), 100);
+    setTimeout(() => {
+      if(recents.length === 0) {
+        window.location.reload()
+      } else {
+        this.forceUpdate();
+      }
+    }, 100);
   };
 
   onRecentClickHandler = (employeeId, firstName, lastName, imageUrl) => {
@@ -82,7 +89,8 @@ class LandingPage extends Component {
     const recents = JSON.parse(localStorage.getItem('recents'));
     const RecentsComponent = () => {
       if(recents != null) {
-        return recents.map((recent, i) => (
+        return recents.map((recent, i, a) => (
+          <Fragment>
             <div key={i} className={styles.recent}>
               <div onClick={() => this.removeRecent(i, recents)} className={styles.recentClose}>
                 <img src={close} height={8} alt=""/>
@@ -90,21 +98,38 @@ class LandingPage extends Component {
               <div onClick={() => this.onRecentClickHandler(recent.employeeId, recent.firstName, recent.lastName, recent.imageUrl)} className={styles.recentAvatar}>
                 {
                   recent.imageUrl.hasUrl ?
-                    <img src="http://localhost:4000/images/2x2.png" onError={() => console.log('image error')} height={155} alt=""/> :
+                    <img src={publicFolder.images + recent.imageUrl.url} height={155} alt=""/> :
                     <div
                       className={styles.recentAvatarInitials}
                       style={{
-                      background: recent.imageUrl.color,
-                      height: 155,
-                      width: 155
-                    }}>
-                      <p>{recent.firstName.charAt(0)}{recent.lastName.charAt(0)}</p>
+                        background: recent.imageUrl.color,
+                        height: 155,
+                        width: 155
+                      }}>
+                      <p className={styles.initials}>{recent.firstName.charAt(0)}{recent.lastName.charAt(0)}</p>
                     </div>
                 }
               </div>
               <p className={styles.recentName}>{recent.firstName}</p>
             </div>
-          ))
+            {
+              i === a.length - 1 && a.length === 1 ?
+                <Link to="/get-started/login">
+                  <div className={styles.addAccount}>
+                    <div className={styles.iconContainer}>
+                      <div className={styles.vertical} />
+                      <div className={styles.horizontal} />
+                    </div>
+                    <p>Add account</p>
+                  </div>
+                </Link> :
+                null
+            }
+            {
+              a.length > 1
+            }
+          </Fragment>
+        ))
       }
     };
 
@@ -120,7 +145,7 @@ class LandingPage extends Component {
                 <div className={styles.recentAvatar}>
                   {
                     this.state.quickLogin.imageUrl.hasUrl ?
-                      <img src="http://localhost:4000/images/2x2.png" onError={() => console.log('image error')} height={155} alt=""/> :
+                      <img src={publicFolder.images + this.state.quickLogin.imageUrl.url} onError={() => console.log('image error')} height={155} alt=""/> :
                       <div
                         className={styles.recentAvatarInitials}
                         style={{

@@ -1,5 +1,8 @@
+import axios from 'axios';
+
 import { store } from '../../../index';
 import * as actions from './actions';
+import {employees} from "../../../api";
 
 export const uploadImage = rawImage => {
   return {
@@ -40,5 +43,18 @@ export const croppedImage = (croppedImage, canvasData) => {
 export const editCroppedImage = () => {
   return {
     type: actions.EDIT_CROPPED_IMAGE,
+  }
+};
+
+export const replaceProgress = (value, employeeId) => {
+  axios.post(employees.registrationProgress + employeeId, {
+    value
+  });
+
+  return {
+    type: actions.REPLACE_PROGRESS,
+    payload: {
+      value
+    }
   }
 };

@@ -11,18 +11,19 @@ import Highlighter from 'react-highlight-words';
 import styles from './office.scss';
 import univStyles from '../../styles.scss';
 
+import Alert from '../../../alert/alert';
 import Button from '../../../button/button';
 import Checkbox from '../../../checkBox/checkBox';
+import DeleteConfirmationModal from '../../../confirmationModal/deleteConfirmationModal';
 import Input from '../../../input/input';
 import SearchBar from '../../searchBar/searchBar';
 import TextArea from '../../../textarea/textArea';
 
-import departmentsWidget from '../../../../assets/ui/departments.svg';
-import leaf from '../../../../assets/ui/leaf.svg';
-
 import * as actions from '../../../../store/actions/ui/actions';
 
 import { office } from "../../../../api";
+
+import { addToast } from "../../../../store/actions/ui/ui";
 
 import { initializeSocket, events } from "../../../../socket";
 import ViewOffice from "./viewOffice";
@@ -43,19 +44,28 @@ class Office extends Component {
     saveDisabled: true,
     search: false,
     splitString: null,
-    searchValue: null,
-    cursor: 0
+    searchValue: undefined,
+    cursor: 0,
+    isLoaded: false,
+    deleteOffice: {
+      showDeleteConfirmationModal: false,
+      password: '',
+      passwordIncorrect: false
+    }
   };
 
   fetch = () => {
     axios.get(office.get)
       .then(res => {
         if (res.data.status === 200) {
-          this.setState({
-            office: [...res.data.data],
-            selectedOffice: [],
-            previousLink: '/maintenance/office'
-          }, () => this.setState({showTransition: true}))
+          if(this.mounted) {
+            this.setState({
+              office: [...res.data.data],
+              selectedOffice: [],
+              previousLink: '/maintenance/office',
+              isLoaded: true,
+            }, () => this.setState({showTransition: true}))
+          }
         }
       });
   };
@@ -95,12 +105,18 @@ class Office extends Component {
   };
 
   componentDidMount = () => {
+    this.mounted = true;
+
     this.fetch();
 
     const socket = initializeSocket();
 
     socket.on(events.office, this.fetch)
   };
+
+  componentWillUnmount = () => {
+    this.mounted = false;
+  }
 
   onChangeSearchJobs = e => {
     const value = e.target.value;
@@ -234,26 +250,66 @@ class Office extends Component {
       numberOfClusters: this.state.numberOfClusters
     })
       .then(res => {
-        this.reset();
         if(res.data.status === 200) {
           this.props.blockNavigation(false);
-          axios.get(office.get)
-            .then(res => {
-              if(res.data.status === 200) {
-                this.props.history.push('/maintenance/office/');
-              }
-            });
+          this.props.addtoast(`Successfully added ${this.state.officeName}.`);
+          this.reset();
+          this.props.history.push('/maintenance/office/');
         }
       })
   };
 
   onDelete = () => {
+    this.setState({
+      ...this.state,
+      deleteOffice: {
+        ...this.state.deleteOffice,
+        showDeleteConfirmationModal: true
+      }
+    })
+  };
+
+  onDeleteCancel = () => {
+    this.setState({
+      ...this.state,
+      deleteOffice: {
+        ...this.state.deleteOffice,
+        showDeleteConfirmationModal: false
+      }
+    })
+  };
+
+  onDeleteConfirm = () => {
     axios.post(office.delete, {
       id: [...this.state.selectedOffice],
       employeeId: this.props.employeeId,
-      firstName: this.props.firstName
+      firstName: this.props.firstName,
+      password: this.state.deleteOffice.password
     })
-      .then(res => {})
+      .then(res => {
+        console.log(res);
+        if(res.data.status === 200) {
+          this.setState(produce(draft => {
+            draft.deleteOffice.passwordIncorrect = false;
+            draft.deleteOffice.showDeleteConfirmationModal = false;
+            draft.deleteOffice.password = '';
+          }));
+          this.props.addtoast('Office successfully deleted.')
+        } else {
+          this.setState(produce(draft => {
+            draft.deleteOffice.passwordIncorrect = true;
+            draft.deleteOffice.password = '';
+          }))
+        }
+      })
+  };
+
+  onChangePassword = e => {
+    const value = e.target.value;
+
+    this.setState(produce(draft => {
+      draft.deleteOffice.password = value
+    }))
   };
 
   render() {
@@ -290,7 +346,7 @@ class Office extends Component {
             <div className={styles.select}>
               <Checkbox toggle={value => this.onSelect(office.id, value)} />
             </div>
-            <div className={styles.departmentNameRow}>
+            <div className={styles.employeeNameRow}>
               <Link to={'/maintenance/office/' + office.slug}>{office.officeName}</Link>
               {
                 office.newDepartment ?
@@ -298,12 +354,12 @@ class Office extends Component {
                   null
               }
             </div>
-            <div className={styles.departmentHeadRow}>
+            <div className={styles.filler}>
             </div>
-            <div className={styles.dateAddedRow}>
+            <div className={styles.registrationStatusRow}>
               <p title={'Created on ' + moment(office.dateCreated).format('dddd, MMMM D, YYYY') + ' at ' + moment(office.dateCreated).format('h:mm A')}>{moment(office.dateCreated).format('MMMM D, YYYY')}</p>
             </div>
-            <div className={styles.numberOfEmployeesRow}>
+            <div className={styles.verificationStatusRow}>
               <p>{office.count}</p>
               <div className={styles.options}>
                 <div/>
@@ -314,8 +370,7 @@ class Office extends Component {
           </div>
         </CSSTransition>
       )
-    }
-    );
+    });
 
     const searchedOfficeRows = this.state.searchOffice.map((office, i) => {
       const selected = this.state.selectedOffice.find(element => {
@@ -334,7 +389,7 @@ class Office extends Component {
             <div className={styles.select}>
               <Checkbox toggle={value => this.onSelect(office.id, value)} />
             </div>
-            <div className={styles.departmentNameRow}>
+            <div className={styles.employeeNameRow}>
               <Link to={'/maintenance/office/' + office.slug}>
                 <Highlighter
                   autoEscape
@@ -347,12 +402,12 @@ class Office extends Component {
                   null
               }
             </div>
-            <div className={styles.departmentHeadRow}>
+            <div className={styles.filler}>
             </div>
-            <div className={styles.dateAddedRow}>
+            <div className={styles.registrationStatusRow}>
               <p title={'Created on ' + moment(office.dateCreated).format('dddd, MMMM D, YYYY') + ' at ' + moment(office.dateCreated).format('h:mm A')}>{moment(office.dateCreated).format('MMMM D, YYYY')}</p>
             </div>
-            <div className={styles.numberOfEmployeesRow}>
+            <div className={styles.verificationStatusRow}>
               <p>{office.count}</p>
               <div className={styles.options}>
                 <div/>
@@ -368,63 +423,101 @@ class Office extends Component {
     return (
       <React.Fragment>
         {officeTitleBar}
-        <Switch>
-          <Route path={'/maintenance/office'} exact render={() =>
-            <div className={univStyles.main}>
-              <div className={univStyles.pageMainNew + ' ' + univStyles.top} />
-              <div className={univStyles.pageMain}>
-                <div className={univStyles.form}>
-                  <div className={univStyles.header}>
-                    <p>List of Office</p>
-                    <p className={univStyles.subtitle}>{this.state.office.length} records</p>
-                    {
-                      this.state.selectedOffice.length !== 0 ?
-                        <p onClick={this.onDelete} className={univStyles.formControl + ' ' + univStyles.delete}>Delete</p> :
-                        null
-                    }
-                    <SearchBar
-                      onChangeHandler={e => this.onChangeSearchJobs(e)}
-                      value={this.state.searchValue}
-                      placeholder="Search Office"
-                      style={{
-                        width: 170,
-                        marginRight: 12,
-                        marginLeft: this.state.selectedOffice.length === 0 ? 'auto' : ''
-                      }}/>
-                  </div>
-                  <div className={univStyles.formBody}>
-                    <div className={styles.rowHeader}>
-                      <div className={styles.officeName}>
-                        <p>Office Name</p>
-                      </div>
-                      <div className={styles.dateAdded}>
-                        <p>Date added</p>
-                      </div>
-                      <div className={styles.numberOfEmployees}>
-                        <p>Number of employees</p>
-                      </div>
+        {
+          this.state.deleteOffice.showDeleteConfirmationModal ?
+            <DeleteConfirmationModal>
+              <div className={styles.background}>
+                <div style={{position: 'relative', height: '100%', width: '100%'}}>
+                  <div className={styles.form}>
+                    <div className={styles.header}>
+                      <p>Are you really sure?</p>
                     </div>
-                    <div className={styles.tableBody}>
-                      <Scrollbars
-                        style={{
-                          width: '100%',
-                          maxHeight: 'calc(100vh - 190px)',
-                        }}
-                        autoHeight
-                        autoHide>
-                        <TransitionGroup exit={false} component={null} enter={this.state.showTransition}>
-                          {
-                            this.state.search ?
-                              searchedOfficeRows :
-                              officeRows
-                          }
-                        </TransitionGroup>
-                        <p className={styles.end}>end of results</p>
-                      </Scrollbars>
+                    <div className={styles.formBody}>
+                      <div style={{padding: 20, paddingBottom: 0}}>
+                        {
+                          this.state.deleteOffice.passwordIncorrect ?
+                            <div style={{marginBottom: 20}}>
+                              <Alert type="error" message="Password is incorrect."/>
+                            </div> :
+                            null
+                        }
+                        <p>This action <strong>cannot be undone.</strong> Selected office will be <strong>permanently deleted.</strong> All the employees and clusters will also be affected.</p>
+                        <br/>
+                        <p>Please enter your password to confirm.</p>
+                        <Input autofocus width="100%" value={this.state.deleteOffice.password} type="password" onChangeHandler={e => this.onChangePassword(e)} name="Password"/>
+                      </div>
+                      <div className={styles.footer}>
+                        <Button classNames={['cancel']} onClick={this.onDeleteCancel} name="CANCEL"/>
+                        <Button disabled={this.state.deleteOffice.password.length === 0} classNames={['tertiary']} onClick={this.onDeleteConfirm} name="I UNDERSTAND, DELETE THIS OFFICE"/>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
+            </DeleteConfirmationModal> :
+            null
+        }
+        <Switch>
+          <Route path={'/maintenance/office'} exact render={() =>
+            <div className={univStyles.main}>
+              <div className={univStyles.pageMainNew + ' ' + univStyles.top} />
+              {
+                this.state.isLoaded ?
+                  <div className={univStyles.pageMain}>
+                    <div className={univStyles.form}>
+                      <div className={univStyles.header}>
+                        <p>List of Office</p>
+                        <p className={univStyles.subtitle}>{this.state.office.length} records</p>
+                        {
+                          this.state.selectedOffice.length !== 0 ?
+                            <p onClick={this.onDelete} className={univStyles.formControl + ' ' + univStyles.delete}>Delete</p> :
+                            null
+                        }
+                        <SearchBar
+                          onChangeHandler={e => this.onChangeSearchJobs(e)}
+                          value={this.state.searchValue}
+                          placeholder="Search Office"
+                          style={{
+                            width: 170,
+                            marginRight: 12,
+                            marginLeft: this.state.selectedOffice.length === 0 ? 'auto' : ''
+                          }}/>
+                      </div>
+                      <div className={univStyles.formBody}>
+                        <div className={styles.rowHeader}>
+                          <div className={styles.employeeName}>
+                            <p>Office name</p>
+                          </div>
+                          <div className={styles.registrationStatus}>
+                            <p>Date added</p>
+                          </div>
+                          <div className={styles.verificationStatus}>
+                            <p>Number of employees</p>
+                          </div>
+                        </div>
+                        <div className={styles.tableBody}>
+                          <Scrollbars
+                            style={{
+                              width: '100%',
+                              maxHeight: 'calc(100vh - 190px)',
+                            }}
+                            autoHeight
+                            autoHide>
+                            <TransitionGroup exit={false} component={null} enter={this.state.showTransition}>
+                              {
+                                this.state.search ?
+                                  searchedOfficeRows :
+                                  officeRows
+                              }
+                            </TransitionGroup>
+                            <p className={styles.end}>end of results</p>
+                          </Scrollbars>
+                        </div>
+                      </div>
+                    </div>
+                  </div> :
+                  null
+              }
             </div>
           }/>
           <Route path={'/maintenance/office/new'} exact render={() =>
@@ -488,7 +581,8 @@ const mapDispatchToProps = dispatch => {
           value,
           message
         }
-      })
+      }),
+    addtoast: message => dispatch(addToast(message))
   }
 };
 
