@@ -18,17 +18,16 @@ import { logout } from '../../../store/actions/authentication/authentication'
 import {employees, publicFolder} from "../../../api";
 
 class Avatar extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      showAvatarDropdown: false,
-      hasUrl: this.props.imageUrl.hasUrl,
-      imageUrl: null
-    }
-  }
+  state = {
+    hasUrl: false,
+    imageUrl: null
+  };
 
   componentDidMount = () => {
+    if(this.props.showAvatarDropdown) {
+      this.refs.bad.click()
+    }
+
     axios.get(employees.avatar + this.props.employeeId)
       .then(res => {
         if(res.data.data != null) {
@@ -91,7 +90,7 @@ class Avatar extends Component {
   render() {
     return (
       <Aux>
-        <div onClick={e => this.props.onClick(e)} className={styles.avatarContainer}>
+        <div ref="bad" onClick={e => this.props.onClick(e)} className={styles.avatarContainer}>
           <div className={styles.avatar} style={{background: (!this.state.hasUrl ? this.props.imageUrl.color : '')}}>
             {
               this.state.hasUrl ?

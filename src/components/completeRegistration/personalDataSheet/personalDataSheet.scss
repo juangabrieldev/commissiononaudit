@@ -1,0 +1,126 @@
+@import "../../layout/variables";
+
+.inside {
+  display: flex;
+
+  .left {
+    flex-grow: 1;
+    //margin-right: 15px; enable after pre-def
+
+    .annotation {
+      margin: 20px 0 10px;
+      font-size: 12px;
+      color: $text-secondary
+    }
+
+    .firstRow {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+
+      > div {
+        margin: 0;
+        flex-grow: 1;
+
+        &:nth-child(4) {
+          flex-grow: 0
+        }
+
+        &:not(:last-child) {
+          margin-right: 15px
+        }
+      }
+    }
+
+    .secondRow {
+      margin-top: 15px;
+      display: flex;
+
+      > div {
+        &:not(:last-child) {
+          margin-right: 15px;
+        }
+
+        margin: 0;
+      }
+
+      .checkBox {
+
+        > div {
+          display: flex
+        }
+
+        p.title {
+          margin-bottom: 5px;
+          font-size: 13px;
+          opacity: .75;
+        }
+
+        p {
+          margin: 0 10px 0 0;
+          font-size: 14px
+        }
+
+        input {
+          margin-right: 5px;
+          cursor: pointer;
+        }
+      }
+    }
+
+    .thirdRow {
+      margin-top: 15px;
+      display: flex;
+
+      > div {
+        &:not(:last-child) {
+          margin-right: 15px;
+        }
+
+        flex-grow: 1;
+        margin: 0;
+      }
+    }
+
+    .fourthRow {
+      margin-top: 15px;
+      display: flex;
+
+      > div {
+        &:not(:last-child) {
+          margin-right: 15px;
+        }
+
+        flex-grow: 1;
+        margin: 0;
+      }
+    }
+
+    .fifthRow, .sixthRow, .seventhRow, .eightRow, .ninthRow {
+      display: flex;
+
+      > div {
+        &:not(:last-child) {
+          margin-right: 15px;
+        }
+
+        flex-grow: 1;
+        margin: 0;
+      }
+    }
+
+    .seventhRow {
+      margin-top: 25px;
+    }
+
+    .ninthRow {
+      margin-top: 15px;
+    }
+  }
+
+  .right {
+    width: 200px;
+    height: 400px;
+    background: yellow;
+  }
+}

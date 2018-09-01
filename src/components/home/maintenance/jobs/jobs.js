@@ -250,6 +250,7 @@ class Jobs extends Component {
                       </div>
                       <div className={univStyles.input}>
                         <Select
+                          value={this.state.selectedOffice}
                           isMulti
                           placeholder="* Office"
                           onChangeHandler={o => this.setState({selectedOffice: o})}
@@ -257,6 +258,7 @@ class Jobs extends Component {
                       </div>
                       <div className={univStyles.input}>
                         <Select
+                          value={this.state.selectedEducation}
                           isMulti
                           isGroup
                           placeholder="Education"
@@ -265,6 +267,7 @@ class Jobs extends Component {
                       </div>
                       <div className={univStyles.input}>
                         <Select
+                          value={this.state.selectedEligibility}
                           selected={this.state.selectedEducation}
                           isMulti
                           placeholder="Eligibility"

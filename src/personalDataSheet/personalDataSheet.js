@@ -112,6 +112,16 @@ export const personalDataSheet = {
       scholarshipAcademicHonorsReceived: null
     },
   },
+  civilServiceEligibility: {
+    type: null, //CAREER SERVICE/ RA 1080 (BOARD/ BAR) UNDER SPECIAL LAWS/ CES/ CSE /BARANGAY ELIGIBILITY / DRIVER'S LICENSE wag all caps
+    rating: null, //if applicable
+    dateOfExamination: null,
+    placeOfExamination: null,
+    license: { //if applicable
+      number: null,
+      dateOfValidity: null
+    }
+  },
   trainings: [],
   // example format
   // {

@@ -14,8 +14,6 @@ const saveRecentsToLocal = token => {
   if(recents != null) {
     const found = recents.find(recent => recent.employeeId === token.employeeId);
 
-    console.log(`found: ${found}, foundCondition: ${found != null}`);
-
     if(found == null) { //if the logged in user does not exist in quick login
       recents.push({
         firstName: token.firstName,
@@ -101,10 +99,11 @@ export const chooseRole = role => dispatch => {
       imageUrl: tokenDecoded.imageUrl
     }
   });
+
   const socket = initializeSocket();
   socket.emit('login', {
     employeeId: tokenDecoded.employeeId
-  })
+  });
 };
 
 export const login = (employeeId, password) => dispatch => {

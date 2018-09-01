@@ -10,7 +10,7 @@ import warning from '../../assets/ui/warning.svg';
 
 class Input extends Component {
   state = {
-    value: '',
+    value: this.props.value != null ? this.props.value : '',
     borderColor: '#e1e1e1',
     didFocus: false,
     onFocus: false,

@@ -18,13 +18,15 @@ class NavigationBar extends Component {
 
     if(this.props.mode !== 3) {
       switch(this.props.role) {
-        case 7: {
-          this.state = {tabs: ['Maintenance']};
+        case 1:
+        case 2: {
+          this.state = {tabs: ['Announcements']};
           break;
         }
 
-        case 2: {
-          this.state = {tabs: ['Announcements']}
+        case 7: {
+          this.state = {tabs: ['Maintenance']};
+          break;
         }
       }
     } else {
@@ -34,22 +36,22 @@ class NavigationBar extends Component {
 
   componentDidMount = () => {
     if(this.props.location.pathname === '/') {
-
       if(this.props.mode !== 3) {
         switch(this.props.role) {
-          case 7: {
-            this.props.history.push('/maintenance/office');
-            break;
-          }
-
+          case 1:
           case 2: {
             this.props.history.push('/announcements');
             break;
           }
-        }
-      }
 
-      this.forceUpdate(); //really bad code
+          case 7: {
+            this.props.history.push('/maintenance/employees');
+            break;
+          }
+        }
+
+        this.forceUpdate();
+      }
     }
 
     document.addEventListener('mousedown', this.handleClickOutside);

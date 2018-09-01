@@ -15,6 +15,11 @@ export const jobs = {
   view: rootUrl + '/jobs',
 };
 
+export const jobOpportunities = {
+  select: rootUrl + '/job-opportunities/jobs/', //for react-select
+  create: rootUrl + '/job-opportunities/',
+};
+
 export const office = {
   get: rootUrl + '/office/',
   create: rootUrl + '/office/create',

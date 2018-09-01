@@ -20,7 +20,7 @@ import jobs from '../../../assets/ui/jobs.svg';
 class Maintenance extends Component {
   componentDidMount = () => {
     if(this.props.location.pathname === '/maintenance' || this.props.location.pathname === '/maintenance/') {
-      this.props.history.push('/maintenance/office');
+      this.props.history.push('/maintenance/employees');
     }
 
     if(this.props.location.pathname.includes('/new')) {
