@@ -1,0 +1,38 @@
+@import "../layout/variables";
+
+.autoComplete {
+  position: relative;
+
+  > div {
+    margin: 0;
+  }
+
+  .suggestions {
+    position: absolute;
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+    top: 39px;
+    width: 100%;
+    background: white;
+    box-sizing: border-box;
+    border: solid 1px #aaaaaa;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+
+    > p {
+      padding: 12px;
+      margin: 0;
+      font-size: 14px;
+      cursor: pointer;
+
+      &:hover {
+        background: $border-color
+      }
+
+      &.selected {
+        background: $border-color
+      }
+    }
+  }
+}

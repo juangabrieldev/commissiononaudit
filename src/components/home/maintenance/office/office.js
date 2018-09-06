@@ -114,10 +114,6 @@ class Office extends Component {
     socket.on(events.office, this.fetch)
   };
 
-  componentWillUnmount = () => {
-    this.mounted = false;
-  }
-
   onChangeSearchJobs = e => {
     const value = e.target.value;
 

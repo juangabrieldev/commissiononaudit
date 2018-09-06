@@ -361,75 +361,87 @@ class Employees extends Component {
                     <div style={{padding: 15}}>
                       <div className={univStyles.groupOfFields}>
                         <p className={univStyles.title}>Primary details</p>
-                        <div className={univStyles.input}>
-                          <Input
-                            characterLimit={7}
-                            autofocus
-                            type="text"
-                            value={this.state.employeeId}
-                            onChangeHandler={this.onChangeEmployeeIdHandler}
-                            name="* Employee ID"/>
-                        </div>
-                        <div className={univStyles.input}>
-                          <Select
-                            value={this.state.selectedOffice}
-                            isClearable
-                            onChangeHandler={o => this.onChangeOfficeHandler(o)}
-                            options={this.state.office}
-                            placeholder="* Office"/>
-                        </div>
-                        <div className={univStyles.input}>
-                          <Select
-                            isClearable
-                            value={this.state.selectedJob}
-                            onChangeHandler={this.onChangeJobHandler}
-                            isDisabled={this.state.jobs.length === 0}
-                            options={this.state.jobs}
-                            placeholder="* Job"/>
-                        </div>
-                        <div className={univStyles.input}>
-                          <Select
-                            isClearable
-                            value={this.state.selectedCluster}
-                            onChangeHandler={this.onChangeClusterHandler}
-                            isDisabled={this.state.clusters.length === 0}
-                            options={this.state.clusters}
-                            placeholder="* Cluster"/>
-                        </div>
-                        <div className={univStyles.input}>
-                          <Select
-                            value={this.state.selectedRole}
-                            isClearable
-                            onChangeHandler={this.onChangeRole}
-                            options={this.state.roles}
-                            placeholder="* Role"/>
+                        <div style={{display: 'flex'}}>
+                          <div style={{flexGrow: 1, flexBasis: 0, marginRight: 15}}>
+                            <div className={univStyles.input}>
+                              <Input
+                                characterLimit={7}
+                                autofocus
+                                type="text"
+                                value={this.state.employeeId}
+                                onChangeHandler={this.onChangeEmployeeIdHandler}
+                                name="* Employee ID"/>
+                            </div>
+                            <div className={univStyles.input}>
+                              <Select
+                                value={this.state.selectedOffice}
+                                isClearable
+                                onChangeHandler={o => this.onChangeOfficeHandler(o)}
+                                options={this.state.office}
+                                placeholder="* Office"/>
+                            </div>
+                            <div className={univStyles.input}>
+                              <Select
+                                value={this.state.selectedRole}
+                                isClearable
+                                onChangeHandler={this.onChangeRole}
+                                options={this.state.roles}
+                                placeholder="* Role"/>
+                            </div>
+                          </div>
+                          <div style={{flexGrow: 1, flexBasis: 0}}>
+                            <div className={univStyles.input}>
+                              <Select
+                                isClearable
+                                value={this.state.selectedJob}
+                                onChangeHandler={this.onChangeJobHandler}
+                                isDisabled={this.state.jobs.length === 0}
+                                options={this.state.jobs}
+                                placeholder="* Job"/>
+                            </div>
+                            <div className={univStyles.input}>
+                              <Select
+                                isClearable
+                                value={this.state.selectedCluster}
+                                onChangeHandler={this.onChangeClusterHandler}
+                                isDisabled={this.state.clusters.length === 0}
+                                options={this.state.clusters}
+                                placeholder="* Cluster"/>
+                            </div>
+                          </div>
                         </div>
                       </div>
                       <div className={univStyles.groupOfFields}>
                         <p className={univStyles.title}>Personal information</p>
-                        <div className={univStyles.input}>
-                          <Input
-                            characterLimit={50}
-                            type="text"
-                            value={this.state.firstName}
-                            onChangeHandler={this.onChangeFirstNameHandler}
-                            name="* First name"/>
-                        </div>
-                        <div className={univStyles.input}>
-                          <Input
-                            characterLimit={50}
-                            type="text"
-                            value={this.state.middleName}
-                            onChangeHandler={this.onChangeMiddleNameHandler}
-                            name="Middle name"/>
-                        </div>
-                        <div className={univStyles.input}>
-                          <Input
-                            characterLimit={50}
-                            type="text"
-                            value={this.state.lastName}
-                            onChangeHandler={this.onChangeLastNameHandler}
-                            name="* Last name"/>
+                        <div style={{display: 'flex'}}>
+                          <div style={{flexGrow: 1, flexBasis: 0, marginRight: 15}}>
+                            <div className={univStyles.input}>
+                              <Input
+                                characterLimit={50}
+                                type="text"
+                                value={this.state.firstName}
+                                onChangeHandler={this.onChangeFirstNameHandler}
+                                name="* First name"/>
+                            </div>
+                            <div className={univStyles.input}>
+                              <Input
+                                characterLimit={50}
+                                type="text"
+                                value={this.state.middleName}
+                                onChangeHandler={this.onChangeMiddleNameHandler}
+                                name="Middle name"/>
+                            </div>
+                          </div>
+                          <div style={{flexGrow: 1, flexBasis: 0}}>
+                            <div className={univStyles.input}>
+                              <Input
+                                characterLimit={50}
+                                type="text"
+                                value={this.state.lastName}
+                                onChangeHandler={this.onChangeLastNameHandler}
+                                name="* Last name"/>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>

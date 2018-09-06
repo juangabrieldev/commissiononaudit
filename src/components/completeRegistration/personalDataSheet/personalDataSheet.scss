@@ -5,46 +5,54 @@
 
   .left {
     flex-grow: 1;
-    //margin-right: 15px; enable after pre-def
+    margin-right: 15px;
 
     .annotation {
-      margin: 20px 0 10px;
+      margin: -4px 0 10px;
       font-size: 12px;
-      color: $text-secondary
+      opacity: .75
     }
 
     .firstRow {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: nowrap;
-
       > div {
         margin: 0;
-        flex-grow: 1;
 
-        &:nth-child(4) {
-          flex-grow: 0
+        &:not(:first-child) {
+          margin-top: 15px;
         }
+      }
 
-        &:not(:last-child) {
-          margin-right: 15px
+      > div {
+        > div {
+          margin: 0;
+
+          &:first-child {
+            margin-right: 15px;
+            flex-grow: 1;
+          }
         }
       }
     }
 
     .secondRow {
       margin-top: 15px;
-      display: flex;
 
       > div {
-        &:not(:last-child) {
-          margin-right: 15px;
-        }
+        > div {
+          &:first-child {
+            margin-right: 15px
+          }
 
-        margin: 0;
+          flex-grow: 1;
+
+          > div {
+            margin: 0;
+          }
+        }
       }
 
       .checkBox {
+        flex-grow: 0;
 
         > div {
           display: flex
@@ -96,7 +104,7 @@
       }
     }
 
-    .fifthRow, .sixthRow, .seventhRow, .eightRow, .ninthRow {
+    .fifthRow, .sixthRow, .seventhRow, .eightRow, .ninthRow, .tenthRow, .eleventhRow {
       display: flex;
 
       > div {
@@ -109,8 +117,75 @@
       }
     }
 
-    .seventhRow {
-      margin-top: 25px;
+    .twelfthRow {
+      display: flex;
+
+      .children {
+        flex-grow: 1;
+
+        > div {
+          display: flex;
+          margin-left: 15px;
+
+          &:not(:first-child) {
+            margin-top: 15px;
+          }
+
+          > div {
+            &:first-child {
+              margin-right: 15px;
+              flex-grow: 1;
+              flex-basis: 0;
+            }
+
+            margin: 0;
+          }
+
+          input {
+            flex-grow: 1;
+          }
+        }
+      }
+    }
+
+    .thirteenthRow, .fourteenthRow {
+      > div {
+        &:not(:first-child) {
+          margin-top: 15px;
+        }
+
+        margin: 0;
+      }
+    }
+
+    .fourteenthRow {
+      margin-top: 15px;
+
+      > div > div {
+        margin: 0;
+
+        &:not(:first-child) {
+          margin-top: 15px;
+        }
+
+        &:last-of-type:not(:only-child) {
+          margin-bottom: 5px;
+        }
+      }
+
+      > div > p {
+        margin: 0;
+        font-size: 13px;
+
+        .remove, .addMore {
+          cursor: pointer;
+          font-size: 14px;
+        }
+
+        .addMore {
+          color: $primary-color;
+        }
+      }
     }
 
     .ninthRow {
@@ -119,8 +194,28 @@
   }
 
   .right {
-    width: 200px;
+    width: 320px;
     height: 400px;
-    background: yellow;
+    border-radius: 2px;
+    border: solid 1px $border-color;
+
+    &.borderTransparent {
+      border-color: transparent;
+    }
+
+    &.fixed {
+      position: fixed;
+      top: 114px;
+      right: 31px;
+      width: 273px;
+    }
   }
 }
+
+.hr {
+  height: 1px;
+  width: 100%;
+  margin: 15px 0;
+  background: lighten($border-color, 8);
+}
+

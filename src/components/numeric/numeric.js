@@ -29,18 +29,20 @@ class Numeric extends Component {
   };
 
   onTypeHandler = e => {
-    const reg = /^[0-9]*$/;
+    if(!this.props.disabledTyping) {
+      const reg = /^[0-9]*$/;
 
-    if(reg.test(e.target.value)) {
-      this.setState({value: parseInt(e.target.value, 10)}, () => {
-        this.onChangeHandler(parseInt(this.state.value, 10))
-      })
+      if(reg.test(e.target.value)) {
+        this.setState({value: parseInt(e.target.value, 10)}, () => {
+          this.onChangeHandler(parseInt(this.state.value, 10))
+        })
+      }
     }
   };
 
   render() {
     return (
-      <div onBlur={() => this.setState({focused: false})} style={{width: this.props.width + 50}} className={styles.numeric + (this.state.focused ? ' ' + styles.focused : '')}>
+      <div onBlur={() => this.setState({focused: false})} style={{width: (this.props.width ? this.props.width + 50 : null)}} className={styles.numeric + (this.state.focused ? ' ' + styles.focused : '')}>
         <label
           className={this.state.value > 0 ? styles.shown : ''}
           htmlFor={this.props.name}>

@@ -53,6 +53,8 @@
 
 :global .react-datepicker-wrapper {
   display: inline-block;
+  width: 100%;
+
 }
 
 :global .react-datepicker {
@@ -394,7 +396,7 @@
   background-color: rgba(33, 107, 165, 0.5);
 }
 
-.react-datepicker__month--selecting-range :global .react-datepicker__day--in-range:not(:global .react-datepicker__day--in-selecting-range) {
+:global .react-datepicker__month--selecting-range :global .react-datepicker__day--in-range:not(:global .react-datepicker__day--in-selecting-range) {
   background-color: #f0f0f0;
   color: $text-primary;
 }
@@ -411,10 +413,13 @@
 :global .react-datepicker__input-container {
   position: relative;
   display: inline-block;
+  width: 100%;
 
   > input {
     height: 40px;
+    width: 100%;
     border: solid 1px $border-color;
+    box-sizing: border-box;
     border-radius: 2px;
     padding: 0 8px;
     transition: border-color .1s;
@@ -648,4 +653,8 @@
 :global .react-datepicker__portal .react-datepicker__navigation--next--disabled, :global .react-datepicker__portal .react-datepicker__navigation--next--disabled:hover {
   border-left-color: #e6e6e6;
   cursor: default;
+}
+
+:global .react-datepicker__day--outside-month {
+  opacity: .2
 }

@@ -38,11 +38,19 @@ class Input extends Component {
     if(this.props.passwordStrength === null || this.props.passwordStrength === undefined) {
       this.setState({borderColor: '#aaaaaa', onFocus: true});
     }
+
+    if(this.props.onFocus != null) {
+      this.props.onFocus();
+    }
   };
 
   onBlur = () => {
     if(this.props.passwordStrength === null || this.props.passwordStrength === undefined) {
       this.setState({borderColor: '#e1e1e1', didFocus: true, onFocus: false});
+    }
+
+    if(this.props.onBlur != null) {
+      this.props.onBlur();
     }
   };
 

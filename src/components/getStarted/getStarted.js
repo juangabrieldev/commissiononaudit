@@ -3,7 +3,7 @@ import axios from 'axios';
 import validator from 'email-validator';
 import produce from 'immer';
 import z from 'zxcvbn';
-import {Link, Route, Switch, withRouter, Prompt, Redirect} from 'react-router-dom';
+import {Link, Route, Switch, withRouter} from 'react-router-dom';
 import { connect } from 'react-redux';
 import stringquery from 'stringquery';
 
