@@ -1,0 +1,31 @@
+@import "../../../layout/variables";
+
+.jobOpportunities {
+  display: flex;
+  flex-direction: column;
+
+  > a {
+    font-weight: 400;
+
+    &:not(:first-child) {
+      margin-top: 15px;
+    }
+
+    > div {
+      padding: 15px;
+      border-radius: 2px;
+      border: solid 1px $border-color;
+      cursor: pointer;
+      transition: .05s border-color;
+      display: inline-block;
+
+      &:hover {
+        border-color: darken($border-color, 5);
+      }
+
+      p {
+        margin: 0;
+      }
+    }
+  }
+}

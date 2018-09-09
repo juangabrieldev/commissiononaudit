@@ -176,15 +176,6 @@
       > div > p {
         margin: 0;
         font-size: 13px;
-
-        .remove, .addMore {
-          cursor: pointer;
-          font-size: 14px;
-        }
-
-        .addMore {
-          color: $primary-color;
-        }
       }
     }
 
@@ -219,3 +210,31 @@
   background: lighten($border-color, 8);
 }
 
+.workExperience, .trainingsAttended {
+  margin: 0;
+  display: flex;
+
+  > div {
+    margin: 0;
+    flex-grow: 1;
+
+    &:not(:last-child) {
+      margin-right: 15px;
+    }
+  }
+}
+
+.trainingsAttended {
+  > div:first-child {
+    flex-basis: 75rem;
+  }
+}
+
+.remove, .addMore {
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.addMore {
+  color: $primary-color;
+}

@@ -102,10 +102,6 @@
         margin-left: auto;
         cursor: pointer;
       }
-
-      > input:first-of-type {
-        margin-left: auto
-      }
     }
 
     .main {
@@ -194,11 +190,54 @@
           transition: border-color .05s;
 
           &.current {
-            border-color: $primary-color;
+            animation: currentPage ease;
+            animation-duration: 1.5s;
 
             > p.title {
-              color: $primary-color
+              animation: currentPageP ease;
+              animation-duration: 1.5s;
             }
+
+            @keyframes currentPage {
+              0% {
+                border-color: lighten($border-color, 3);
+              }
+
+              40% {
+                border-color: $primary-color;
+              }
+
+              90% {
+                border-color: $primary-color;
+              }
+
+              100% {
+                border-color: lighten($border-color, 3);
+              }
+            }
+
+            @keyframes currentPageP {
+              0% {
+                color: #969da5;
+              }
+
+              40% {
+                color: $primary-color;
+              }
+
+              90% {
+                color: $primary-color;
+              }
+
+              100% {
+                color: #969da5;
+              }
+            }
+          }
+
+          &.notCurrent {
+            opacity: .2;
+            pointer-events: none;
           }
 
           &:not(:first-child) {

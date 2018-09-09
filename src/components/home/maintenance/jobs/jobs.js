@@ -20,7 +20,6 @@ import TextArea from "../../../textarea/textArea";
 import { initializeSocket, events } from "../../../../socket";
 
 import * as actions from "../../../../store/actions/ui/actions";
-import ViewOffice from "../office/viewOffice";
 
 setConfiguration({ gutterWidth: 15 });
 
@@ -34,6 +33,7 @@ class Jobs extends Component {
     jobDescription: null,
     education: [],
     eligibility: [],
+    salaryGrade: null,
     selectedOffice: null,
     selectedEducation: [],
     selectedEligibility: [],
@@ -113,6 +113,11 @@ class Jobs extends Component {
     this.setState({jobName: value})
   };
 
+  onChangeSalaryGrade = v => {
+    this.setState({salaryGrade: v}, () => {
+    })
+  };
+
   onChangeYearsOfExperience = v => {
     this.setState({yearsOfExperience: v}, () => {
     })
@@ -148,6 +153,7 @@ class Jobs extends Component {
   onSave = () => {
     axios.post(jobs.create, {
       jobName: this.state.jobName,
+      salaryGrade: this.state.salaryGrade,
       selectedOffice: this.state.selectedOffice,
       selectedEducation: this.state.selectedEducation,
       selectedEligibility: this.state.selectedEligibility,
@@ -273,6 +279,9 @@ class Jobs extends Component {
                           placeholder="Eligibility"
                           onChangeHandler={o => this.setState({selectedEligibility: o})}
                           options={this.state.eligibility}/>
+                      </div>
+                      <div className={univStyles.input}>
+                        <Numeric onChangeHandler={this.onChangeSalaryGrade} width={200} name="Salary grade"/>
                       </div>
                       <div className={univStyles.input}>
                         <Numeric onChangeHandler={this.onChangeYearsOfExperience} width={200} name="Years of experience"/>

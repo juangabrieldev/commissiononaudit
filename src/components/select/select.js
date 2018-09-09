@@ -1,11 +1,11 @@
-import React, {Component, Fragment} from 'react';
+import React, { PureComponent } from 'react';
 import ReactSelect from 'react-select';
-import _ from 'lodash';
+import Creatable from 'react-select/lib/Creatable'
 
 import './styles.scss';
 import styles from './anotherStyles.scss';
 
-class Select extends Component {
+class Select extends PureComponent {
   customStyles = {
     control: (base, state) => {
       return {
@@ -52,20 +52,36 @@ class Select extends Component {
       show = this.props.value != null;
     }
 
+    console.log('rerender');
+
     return (
       <div className={styles.select}>
         <span className={show ? styles.shown: ''}>{this.props.placeholder}</span>
-        <ReactSelect
-          value={this.props.value}
-          onChange={this.onChangeHandler}
-          classNamePrefix="react-select"
-          styles={this.customStyles}
-          placeholder={this.props.placeholder}
-          isMulti={this.props.isMulti}
-          isClearable={this.props.isClearable}
-          isGroup={this.props.isGroup}
-          isDisabled={this.props.isDisabled}
-          options={this.props.options} />
+        {
+          this.props.isCreatable ?
+            <Creatable
+              value={this.props.value}
+              onChange={this.onChangeHandler}
+              classNamePrefix="react-select"
+              styles={this.customStyles}
+              placeholder={this.props.placeholder}
+              isMulti={this.props.isMulti}
+              isClearable={this.props.isClearable}
+              isGroup={this.props.isGroup}
+              isDisabled={this.props.isDisabled}
+              options={this.props.options} /> :
+            <ReactSelect
+              value={this.props.value}
+              onChange={this.onChangeHandler}
+              classNamePrefix="react-select"
+              styles={this.customStyles}
+              placeholder={this.props.placeholder}
+              isMulti={this.props.isMulti}
+              isClearable={this.props.isClearable}
+              isGroup={this.props.isGroup}
+              isDisabled={this.props.isDisabled}
+              options={this.props.options} />
+        }
       </div>
     )
   }

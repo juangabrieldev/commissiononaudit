@@ -1,10 +1,14 @@
 import React, {Component, Fragment} from 'react';
-import {Route, Switch, withRouter} from 'react-router-dom';
+import {Link, Route, Switch, withRouter} from 'react-router-dom';
 import connect from "react-redux/es/connect/connect";
 import axios from 'axios';
 import moment from 'moment';
+import produce from 'immer';
+import { Container, Row, Col, setConfiguration } from 'react-grid-system';
 
 import univStyles from '../../styles.scss'
+import styles from './styles.scss';
+
 import Button from "../../../button/button";
 import Input from "../../../input/input";
 import Select from "../../../select/select";
@@ -12,6 +16,9 @@ import DatePicker from '../../../datePicker/datePicker';
 import Numeric from '../../../numeric/numeric';
 
 import {jobOpportunities} from "../../../../api";
+import TextArea from "../../../textarea/textArea";
+
+setConfiguration({ gutterWidth: 15 });
 
 class JobOpportunities extends Component {
   state = {
@@ -22,6 +29,7 @@ class JobOpportunities extends Component {
     jobOpportunities: [],
     deadline: null,
     vacancies: [],
+    description: ''
   };
 
   onCreate = () => {
@@ -35,6 +43,7 @@ class JobOpportunities extends Component {
 
   componentDidMount = () => {
     this.fetch();
+    this.setState({previousLink: '/announcements/job-opportunities/'})
   };
 
 
@@ -42,7 +51,9 @@ class JobOpportunities extends Component {
     axios.get(jobOpportunities.select + this.props.employeeId)
       .then(res => {
         this.setState({jobs: res.data.data});
+        return axios.get(jobOpportunities.root + this.props.employeeId)
       })
+      .then(res => this.setState({jobOpportunities: res.data.data}))
   };
 
   onChangeTitleHandler = e => {
@@ -50,23 +61,29 @@ class JobOpportunities extends Component {
   };
 
   onChangeJobHandler = o => {
-    this.setState({selectedJob: o}, () => {
-      this.vacancies = o;
-    })
+    o.forEach(obj => {
+      if(!(!!obj.vacancies)) {
+        obj.vacancies = 0
+      }
+    });
+
+    this.setState({selectedJob: o})
   };
 
   onChangeDeadline = deadline => {
     this.setState({deadline})
   };
 
-  onChangeVacanciesHandler = (vacancies, value) => {
-    this.vacancies = this.vacancies.map(vacant => {
-      if (vacant.value === value) {
-        vacant.vacancy = vacancies;
-      }
+  onChangeVacanciesHandler = (vacancies, index) => {
+    this.setState(produce(draft => {
+      draft.selectedJob[index].vacancies = vacancies
+    }))
+  };
 
-      return vacant
-    });
+  onChangeDescription = e => {
+    const value = e.target.value;
+
+    this.setState({description: value})
   };
 
   onSave = () => {
@@ -75,8 +92,9 @@ class JobOpportunities extends Component {
       deadline: moment(this.state.deadline).format(),
       content: {
         title: this.state.title,
-        jobs: this.vacancies
-      }
+        jobs: this.state.selectedJob
+      },
+      description: this.state.description
     })
       .then(res => {
 
@@ -95,16 +113,35 @@ class JobOpportunities extends Component {
             </React.Fragment> :
             <React.Fragment>
               <p>Job Opportunities</p>
-              <Button onClick={this.onCreate} classNames={['primary']} name="+  POST NEW JOB OPPORTUNITY"/>
+              {
+                this.props.role === 1 ?
+                  <Button onClick={this.onCreate} classNames={['primary']} name="+  POST NEW JOB OPPORTUNITY"/> :
+                  null
+              }
             </React.Fragment>
         }
       </div>;
 
-    const vacancies = this.state.selectedJob.map(job => {
+    const vacancies = this.state.selectedJob.map((job, i) => {
       return (
         <div className={univStyles.input}>
-          <Numeric onChangeHandler={v => this.onChangeVacanciesHandler(v, job.value)} width={200} name={`* Vacancies for ${job.label}`}/>
+          <Numeric
+            value={this.state.selectedJob[i].vacancies}
+            bindValue
+            onChangeHandler={v => this.onChangeVacanciesHandler(v, i)}
+            width={200}
+            name={`* Vacancies for ${job.label}`}/>
         </div>
+      )
+    });
+
+    const JobOpportunitiesRow = this.state.jobOpportunities.map(job => {
+      return (
+        <Link to={'/announcements/job-opportunities/' + job.id}>
+          <div>
+            <p>{job.content.title}</p>
+          </div>
+        </Link>
       )
     });
 
@@ -121,53 +158,64 @@ class JobOpportunities extends Component {
                     <p>Job Opportunities</p>
                     <p className={univStyles.subtitle}>{this.state.jobOpportunities.length} records</p>
                   </div>
-                  <div className={univStyles.formBody}>
-
-                  </div>
-                </div>
-              </div>
-            </div>
-          }/>
-          <Route path={'/announcements/job-opportunities/new'} exact render={() =>
-            <div className={univStyles.main}>
-              <div className={univStyles.pageMainNew}>
-                <div className={univStyles.form}>
-                  <div className={univStyles.header}>
-                    <p>Job Opportunity Details</p>
-                  </div>
-                  <div className={univStyles.formBody}>
-                    <div style={{padding: 15}}>
-                      <div className={univStyles.groupOfFields}>
-                        <p className={univStyles.title}>Primary details</p>
-                        <div className={univStyles.input}>
-                          <Input value={this.state.title} characterLimit={50} onChangeHandler={e => this.onChangeTitleHandler(e)} name="* Title"/>
-                        </div>
-                        <div className={univStyles.input}>
-                          <Select
-                            isMulti
-                            isClearable
-                            value={this.state.selectedJob}
-                            onChangeHandler={this.onChangeJobHandler}
-                            options={this.state.jobs}
-                            placeholder="* Job(s)"/>
-                        </div>
-                        {
-                          vacancies
-                        }
-                        <div className={univStyles.input}>
-                          <DatePicker
-                            selected={this.state.deadline}
-                            onChange={o => this.onChangeDeadline(o)}
-                            placeholder="* Deadline" />
-                        </div>
-                      </div>
+                  <div className={univStyles.formBody} style={{padding: 15}}>
+                    <div className={styles.jobOpportunities}>
+                      {JobOpportunitiesRow}
                     </div>
                   </div>
                 </div>
               </div>
-              <div className={univStyles.pageMain + ' ' + univStyles.bottom} />
             </div>
           }/>
+          {
+            this.props.role === 1 ?
+              <Route path={'/announcements/job-opportunities/new'} exact render={() =>
+                <div className={univStyles.main}>
+                  <div className={univStyles.pageMainNew}>
+                    <div className={univStyles.form}>
+                      <div className={univStyles.header}>
+                        <p>Job Opportunity Details</p>
+                      </div>
+                      <div className={univStyles.formBody}>
+                        <div style={{padding: 15}}>
+                          <div className={univStyles.groupOfFields}>
+                            <p className={univStyles.title}>Primary details</p>
+                            <div className={univStyles.input}>
+                              <Input value={this.state.title} characterLimit={50} onChangeHandler={e => this.onChangeTitleHandler(e)} name="* Title"/>
+                            </div>
+                            <div className={univStyles.input}>
+                              <Select
+                                isMulti
+                                isClearable
+                                value={this.state.selectedJob}
+                                onChangeHandler={this.onChangeJobHandler}
+                                options={this.state.jobs}
+                                placeholder="* Job(s)"/>
+                            </div>
+                            { vacancies }
+                            <div className={univStyles.input}>
+                              <DatePicker
+                                selected={this.state.deadline}
+                                onChange={o => this.onChangeDeadline(o)}
+                                placeholder="* Deadline" />
+                            </div>
+                            <div className={univStyles.input}>
+                          <TextArea
+                            value={this.state.description}
+                            characterLimit={300}
+                            onChangeHandler={this.onChangeDescription}
+                            name="* Description" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className={univStyles.pageMain + ' ' + univStyles.bottom} />
+                </div>
+              }/> :
+              null
+          }
         </Switch>
       </Fragment>
     );

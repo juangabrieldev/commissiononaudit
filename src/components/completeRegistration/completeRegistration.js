@@ -4,6 +4,7 @@ import { withRouter, Switch, Route } from 'react-router-dom';
 import ReactSVG from "react-svg";
 import slug from 'slugify';
 import axios from 'axios';
+import Title from 'react-document-title';
 
 import NavigationBar from "../home/navigationBar/navigationBar";
 import PersonalDataSheet from './personalDataSheet/personalDataSheet';
@@ -45,7 +46,7 @@ class CompleteRegistration extends Component {
 
   render() {
     const sideBarTabs =
-      <React.Fragment>
+      <Fragment>
         {
           this.state.tabs.map((tab, index) => {
             let className = '';
@@ -85,11 +86,12 @@ class CompleteRegistration extends Component {
             </div>
           </div>
         </div>
-      </React.Fragment>;
+      </Fragment>;
 
 
     return (
       <Fragment>
+        <Title title="Complete your registration"/>
         <NavigationBar />
         <div className={univStyles.page}>
           <Sidebar>

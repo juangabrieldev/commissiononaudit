@@ -48,7 +48,12 @@ class Numeric extends Component {
           htmlFor={this.props.name}>
           {this.props.name}
         </label>
-        <input onFocus={() => this.setState({focused: true})} onChange={this.onTypeHandler} placeholder={this.props.name} type="text" value={this.state.value > 0 ? this.state.value : ''}/>
+        <input
+          onFocus={() => this.setState({focused: true})}
+          onChange={this.onTypeHandler}
+          placeholder={this.props.name}
+          type="text"
+          value={this.props.bindValue && this.props.value > 0 ? this.props.value : (this.state.value > 0 ? this.state.value : '')}/>
         <div className={styles.buttons}>
           <div onClick={this.subtract}>
             <p>-</p>

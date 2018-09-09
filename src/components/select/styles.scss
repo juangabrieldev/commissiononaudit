@@ -1,6 +1,10 @@
 :global {
-  .react-select__control:hover {
-    border-color: #e1e1e1 !important;
+  .react-select__control:hover:not(.css-s4xjtr) {
+    border-color: #e1e1e1;
+  }
+
+  .css-s4xjtr:hover {
+    border-color: #aaaaaa !important;
   }
 
   .react-select__option {

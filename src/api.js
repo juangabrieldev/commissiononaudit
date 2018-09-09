@@ -18,6 +18,7 @@ export const jobs = {
 export const jobOpportunities = {
   select: rootUrl + '/job-opportunities/jobs/', //for react-select
   create: rootUrl + '/job-opportunities/',
+  root: rootUrl + '/job-opportunities/'
 };
 
 export const office = {
@@ -33,7 +34,10 @@ export const qualificationStandards = {
   get: rootUrl + '/qualification-standards',
   create: rootUrl + '/qualification-standards',
   delete: rootUrl + '/qualification-standards/delete',
-  select: rootUrl + '/qualification-standards/select'
+  select: rootUrl + '/qualification-standards/select', //for react-select
+  courses: rootUrl + '/qualification-standards/courses', //for react-select
+  eligibilities: rootUrl + '/qualification-standards/eligibilities', //for react-select
+  trainings: rootUrl + '/qualification-standards/trainings', //for react-select
 };
 
 export const systemLogs = {
@@ -45,6 +49,7 @@ export const employees = {
   get: rootUrl + '/employees/',
   avatar: rootUrl + '/employees/avatar/',
   registrationProgress: rootUrl + '/employees/registration-progress/',
+  completeRegistration: rootUrl + '/employees/complete-registration/'
 };
 
 export const roles = {
