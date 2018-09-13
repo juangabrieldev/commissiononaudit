@@ -3,6 +3,7 @@ import { withRouter, Route, Switch } from 'react-router-dom';
 import Title from 'react-document-title';
 import NavigationPrompt from 'react-router-navigation-prompt';
 import { connect } from 'react-redux';
+import ReactNoUnmountHide from 'react-no-unmount-hide';
 
 import DeleteConfirmationModal from '../confirmationModal/deleteConfirmationModal';
 import NavigationBar from './navigationBar/navigationBar';
@@ -10,6 +11,7 @@ import Announcements from './announcements/announcements';
 import Maintenance from './maintenance/maintenance';
 import NavigationModal from '../navigationModal/navigationModal';
 import SideBarRight from './sideBarRight/sideBarRight';
+import NotFound from '../notFound/notFound';
 
 import * as actions from '../../store/actions/ui/actions';
 
@@ -28,10 +30,17 @@ class Home extends Component {
         </NavigationPrompt>
         <Title title="Commission on Audit Promotion Management System"/>
         <NavigationBar />
-        <Switch>
-          <Route path="/announcements" component={Announcements}/>
-          <Route path="/maintenance" component={Maintenance}/>
-        </Switch>
+        {
+          this.props.notFound ?
+            <NotFound onClick={this.props.disableNotFound} link={this.props.notFoundHome}/> :
+            null
+        }
+        <div style={{display: this.props.notFound ? 'none' : null}}>
+          <Switch>
+            <Route path="/announcements" component={Announcements}/>
+            <Route path="/maintenance" component={Maintenance}/>
+          </Switch>
+        </div>
         {
           this.props.role === 7 ?
             <SideBarRight employeeId={this.props.employeeId}/> :
@@ -48,7 +57,9 @@ const mapStateToProps = state => {
     blockNavigationMessage: state.ui.blockNavigationMessage,
     showConfirmationModal: state.ui.showConfirmationModal,
     employeeId: state.authentication.employeeId,
-    role: state.authentication.role
+    role: state.authentication.role,
+    notFoundHome: state.ui.notFoundHome,
+    notFound: state.ui.notFound
   }
 };
 
@@ -61,6 +72,7 @@ const mapDispatchToProps = dispatch => {
             value
           }
         }),
+    disableNotFound: () => dispatch({type: actions.DISABLE_NOT_FOUND})
   }
 };
 

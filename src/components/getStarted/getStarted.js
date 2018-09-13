@@ -189,7 +189,7 @@ class GetStarted extends Component {
   };
 
   onTokenSubmit = e => {
-    if(e.which === 13 && this.state.verification.token.length === 30) {
+    if(e.which === 13) {
       axios.get(authentication.verifyToken + `?token=${this.state.verification.token}&employeeid=${this.props.employeeId}`)
         .then(res => {
           switch(res.data.status) {
@@ -430,8 +430,7 @@ class GetStarted extends Component {
             <Input value={this.state.login.employeeId} onChangeHandler={e => this.onChangeEmployeeIdHandler(e, 1)} autofocus={true} width={350} type="text" name="Employee ID"/>
             <Input value={this.state.login.password} onChangeHandler={e => this.onChangePasswordHandler(e, 1)} width={350} type="password" name="Password"/>
             <div className={styles.helper}>
-              <CheckBox toggle={v => this.keepMeLoggedIn(v)}/>
-              <p>Keep me logged in.</p>
+              <CheckBox message="Keep me logged in." toggle={v => this.keepMeLoggedIn(v)}/>
               <p><Link to="/">Forgot your password?</Link></p>
             </div>
             <div style={{
@@ -577,6 +576,7 @@ class GetStarted extends Component {
                       sent a confirmation code to: <span>{this.props.email}</span>
                     </p>
                     <Input
+                      characterLimit={5}
                       autofocus
                       onChangeHandler={this.onChangeTokenHandler}
                       type="text"

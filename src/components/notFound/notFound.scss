@@ -1,27 +1,37 @@
+@import "../layout/variables";
+
 .main {
-  background: radial-gradient(ellipse at center, #3076ff 0%, #122e87 99%);
-  width: 100vw;
-  height: 100vh;
   display: flex;
-  flex-direction: column;
   justify-content: center;
+  margin: 90px;
 
   p {
-    color: white;
     margin: 0;
     text-align: center;
   }
 
-  p:first-of-type {
-    font-size: 350px;
-  }
+  .container {
+    background: white;
+    width: 50vw;
+    border-radius: 2px;
+    border: solid 1px $border-color;
+    padding: 20px;
 
-  p:last-of-type {
-    font-size: 20px;
-    font-weight: lighter;
+    .title {
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .sub {
+      font-size: 16px;
+      margin-top: 20px;
+      margin-bottom: 12px
+    }
 
     a {
-      color: white;
+      font-weight: 400;
+      font-size: 14px;
+      margin: 0 auto;
     }
   }
 }

@@ -14,9 +14,15 @@ import Input from "../../../input/input";
 import Select from "../../../select/select";
 import DatePicker from '../../../datePicker/datePicker';
 import Numeric from '../../../numeric/numeric';
+import NotFound from '../../../notFound/notFound';
 
-import {jobOpportunities} from "../../../../api";
+import ViewOpportunity from './viewOpportunity';
+
+import { jobOpportunities } from "../../../../api";
 import TextArea from "../../../textarea/textArea";
+import CheckBox from "../../../checkBox/checkBox";
+
+import { addToast } from "../../../../store/actions/ui/ui";
 
 setConfiguration({ gutterWidth: 15 });
 
@@ -29,7 +35,9 @@ class JobOpportunities extends Component {
     jobOpportunities: [],
     deadline: null,
     vacancies: [],
-    description: ''
+    description: '',
+    isSingleDeadline: false,
+    singleDeadline: null
   };
 
   onCreate = () => {
@@ -56,28 +64,54 @@ class JobOpportunities extends Component {
       .then(res => this.setState({jobOpportunities: res.data.data}))
   };
 
+  reset = () => {
+    this.setState({
+      title: '',
+      selectedJob: [],
+      deadline: null,
+      vacancies: [],
+      description: '',
+      isSingleDeadline: false,
+      singleDeadline: null
+    })
+  };
+
   onChangeTitleHandler = e => {
     this.setState({title: e.target.value})
   };
 
   onChangeJobHandler = o => {
     o.forEach(obj => {
-      if(!(!!obj.vacancies)) {
-        obj.vacancies = 0
+      if(!(!!obj.vacancies) && !(!!obj.deadline) && !(!!obj.isClosed)) {
+        obj.vacancies = 0;
+        obj.deadline = null;
+        obj.isClosed = false
       }
     });
 
     this.setState({selectedJob: o})
   };
 
-  onChangeDeadline = deadline => {
-    this.setState({deadline})
+  onChangeDeadline = (deadline, i) => {
+    if(this.state.isSingleDeadline) {
+      this.setState({singleDeadline: deadline })
+    } else {
+      this.setState(produce(draft => {
+        draft.selectedJob[i].deadline = deadline;
+      }))
+    }
   };
 
   onChangeVacanciesHandler = (vacancies, index) => {
     this.setState(produce(draft => {
       draft.selectedJob[index].vacancies = vacancies
     }))
+  };
+
+  singleDeadlineCheckBoxHandler = v => {
+    this.setState(produce(draft => {
+      draft.isSingleDeadline = v;
+    }));
   };
 
   onChangeDescription = e => {
@@ -89,23 +123,30 @@ class JobOpportunities extends Component {
   onSave = () => {
     axios.post(jobOpportunities.create, {
       employeeId: this.props.employeeId,
-      deadline: moment(this.state.deadline).format(),
+      isSingleDeadline: this.state.isSingleDeadline,
       content: {
         title: this.state.title,
-        jobs: this.state.selectedJob
+        jobs: this.state.selectedJob,
+        singleDeadline: this.state.singleDeadline,
       },
       description: this.state.description
     })
       .then(res => {
-
+        this.props.addToast(`Successfully added ${this.state.title} to job opportunities.`);
+        this.fetch();
+        this.props.history.push(this.state.previousLink);
+        this.reset();
       })
   };
 
   render() {
     const jobOpportunitiesTitleBar =
-      <div className={univStyles.titleBar + ' ' + univStyles.fullWidth + ' ' + (this.props.location.pathname.includes('/new') ? ' ' + univStyles.bottom : '')}>
+      <div className={univStyles.titleBar +
+      ' ' + univStyles.fullWidth +
+      ' ' + (this.props.location.pathname.includes('/new') && this.props.role === 1 ?
+      ' ' + univStyles.bottom : '')}>
         {
-          this.props.location.pathname.includes('/new') ?
+          this.props.location.pathname.includes('/new') && this.props.role === 1 ?
             <React.Fragment>
               <p>Post new job opportunity</p>
               <a onClick={this.onCancel}>Cancel</a>
@@ -122,15 +163,46 @@ class JobOpportunities extends Component {
         }
       </div>;
 
-    const vacancies = this.state.selectedJob.map((job, i) => {
+    // const vacancies = this.state.selectedJob.map((job, i) => {
+    //   return (
+    //     <div className={univStyles.input}>
+    //
+    //     </div>
+    //   )
+    // });
+
+    const vacanciesDeadline = this.state.selectedJob.map((job, i) => {
       return (
-        <div className={univStyles.input}>
+        <div key={i} className={univStyles.input} style={{display: 'flex'}}>
           <Numeric
+            style={{marginRight: 15}}
             value={this.state.selectedJob[i].vacancies}
             bindValue
             onChangeHandler={v => this.onChangeVacanciesHandler(v, i)}
-            width={200}
+            width={300}
             name={`* Vacancies for ${job.label}`}/>
+          {
+            !this.state.isSingleDeadline ?
+              <DatePicker
+                minDate={moment()}
+                style={{width: 300}}
+                selected={this.state.selectedJob[i].deadline}
+                onChange={o => this.onChangeDeadline(o, i)}
+                placeholder={`* Deadline for ${job.label}`} /> :
+              <Fragment>
+                {
+                  i === 0 ?
+                    <DatePicker
+                      minDate={moment()}
+                      style={{width: 300}}
+                      selected={this.state.singleDeadline}
+                      onChange={o => this.onChangeDeadline(o, i)}
+                      placeholder={"* Deadline for all jobs"}/> :
+                        null
+                }
+              </Fragment>
+          }
+
         </div>
       )
     });
@@ -139,7 +211,10 @@ class JobOpportunities extends Component {
       return (
         <Link to={'/announcements/job-opportunities/' + job.id}>
           <div>
-            <p>{job.content.title}</p>
+            <p className={styles.title}>{job.content.title}</p>
+            <p className={styles.subtitle}>
+              {job.content.jobs.length} job{job.content.jobs.length > 1 ? 's' : ''} open
+            </p>
           </div>
         </Link>
       )
@@ -149,7 +224,7 @@ class JobOpportunities extends Component {
       <Fragment>
         {jobOpportunitiesTitleBar}
         <Switch>
-          <Route path={'/announcements/job-opportunities'} exact render={() =>
+          <Route path="/announcements/job-opportunities" exact render={() =>
             <div className={univStyles.main}>
               <div className={univStyles.pageMainNew + ' ' + univStyles.top} />
               <div className={univStyles.pageMain}>
@@ -159,8 +234,11 @@ class JobOpportunities extends Component {
                     <p className={univStyles.subtitle}>{this.state.jobOpportunities.length} records</p>
                   </div>
                   <div className={univStyles.formBody} style={{padding: 15}}>
-                    <div className={styles.jobOpportunities}>
-                      {JobOpportunitiesRow}
+                    <div className={univStyles.groupOfFields}>
+                      <p className={univStyles.title}>On going</p>
+                      <div className={styles.jobOpportunities}>
+                        {JobOpportunitiesRow}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -172,7 +250,7 @@ class JobOpportunities extends Component {
               <Route path={'/announcements/job-opportunities/new'} exact render={() =>
                 <div className={univStyles.main}>
                   <div className={univStyles.pageMainNew}>
-                    <div className={univStyles.form}>
+                    <div className={univStyles.form} style={{marginBottom: 50}}>
                       <div className={univStyles.header}>
                         <p>Job Opportunity Details</p>
                       </div>
@@ -192,13 +270,10 @@ class JobOpportunities extends Component {
                                 options={this.state.jobs}
                                 placeholder="* Job(s)"/>
                             </div>
-                            { vacancies }
-                            <div className={univStyles.input}>
-                              <DatePicker
-                                selected={this.state.deadline}
-                                onChange={o => this.onChangeDeadline(o)}
-                                placeholder="* Deadline" />
+                            <div className={univStyles.input} style={{display: 'flex', alignItems: 'center'}}>
+                              <CheckBox toggle={this.singleDeadlineCheckBoxHandler} message="Single deadline for all selected jobs."/>
                             </div>
+                            { vacanciesDeadline }
                             <div className={univStyles.input}>
                           <TextArea
                             value={this.state.description}
@@ -216,6 +291,14 @@ class JobOpportunities extends Component {
               }/> :
               null
           }
+          <Route path="/announcements/job-opportunities/:id" exact render={() => (
+            <div className={univStyles.main}>
+              <div className={univStyles.pageMainNew + ' ' + univStyles.top} />
+              <div className={univStyles.pageMain}>
+                <Route path="/announcements/job-opportunities/:id" exact component={ViewOpportunity}/>
+              </div>
+            </div>
+          )} />
         </Switch>
       </Fragment>
     );
@@ -229,4 +312,10 @@ const mapStateToProps = state => {
   }
 };
 
-export default withRouter(connect(mapStateToProps)(JobOpportunities));
+const mapDispatchToProps = dispatch => {
+  return {
+    addToast: message => dispatch(addToast(message))
+  }
+};
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(JobOpportunities));

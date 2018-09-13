@@ -28,10 +28,6 @@ class AnnouncementsClass extends Component {
     zeroTop: false
   };
 
-  componentDidMount = () => {
-
-  };
-
   navigate = url => {
     if(url === 'announcements') {
       this.props.history.push('/announcements')

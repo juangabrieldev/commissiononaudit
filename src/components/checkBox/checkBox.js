@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component, Fragment } from 'react';
 
 import styles from './checkBox.scss';
 
@@ -23,12 +23,14 @@ class CheckBox extends Component {
 
   render() {
     return (
-      <div
-        onClick={this.onClickHandler}
-        onKeyPress={e => this.onKeyPress(e)}
-        className={`${styles.checkbox} ` + (this.state.value ? `${styles.selected}` : '')}
-        tabIndex={0}>
-        <div className={styles.check}/>
+      <div onClick={this.onClickHandler} className={styles.checkboxContainer}>
+        <div
+          onKeyPress={e => this.onKeyPress(e)}
+          className={`${styles.checkbox} ` + (this.state.value ? `${styles.selected}` : '')}
+          tabIndex={0}>
+          <div className={styles.check}/>
+        </div>
+        <p>{this.props.message}</p>
       </div>
     );
   }

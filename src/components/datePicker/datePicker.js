@@ -6,11 +6,9 @@ import './styles.scss';
 import styles from "./own.scss";
 
 class datePicker extends Component {
-  state = {};
-
   render() {
     return (
-      <div style={{position: 'relative'}}>
+      <div style={{position: 'relative', ...this.props.style}}>
         <label
           className={this.props.selected != null ? styles.shown : ''}>
           {this.props.placeholder}
@@ -22,6 +20,7 @@ class datePicker extends Component {
           popperPlacement={this.props.popperPlacement}
           popperModifiers={this.props.popperModifiers}
           dateFormat="LL"
+          minDate={this.props.minDate}
           placeholderText={this.props.placeholder}
           selected={this.props.selected}
           onChange={this.props.onChange}/>

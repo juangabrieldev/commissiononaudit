@@ -52,8 +52,6 @@ class Select extends PureComponent {
       show = this.props.value != null;
     }
 
-    console.log('rerender');
-
     return (
       <div className={styles.select}>
         <span className={show ? styles.shown: ''}>{this.props.placeholder}</span>

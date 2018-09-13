@@ -61,6 +61,7 @@
     "react-highlight-words": "^0.13.0",
     "react-image-resizer": "^1.3.0",
     "react-md-spinner": "^0.2.5",
+    "react-no-unmount-hide": "^0.1.4",
     "react-pdf-js": "^4.0.0-alpha.6",
     "react-radio-group": "^3.0.3",
     "react-redux": "^5.0.7",

@@ -194,8 +194,7 @@ class LandingPage extends Component {
               type="password"
               name="Password"/>
             <div className={styles.helper}>
-              <CheckBox toggle={v => this.keepMeLoggedIn(v)}/>
-              <p>Keep me logged in.</p>
+              <CheckBox message="Keep me logged in." toggle={v => this.keepMeLoggedIn(v)}/>
               <p><Link to="/">Forgot your password?</Link></p>
             </div>
             <div style={{

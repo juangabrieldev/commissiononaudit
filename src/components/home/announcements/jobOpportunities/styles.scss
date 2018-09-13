@@ -14,17 +14,27 @@
     > div {
       padding: 15px;
       border-radius: 2px;
-      border: solid 1px $border-color;
       cursor: pointer;
       transition: .05s border-color;
-      display: inline-block;
+      background: darken(#fff, 2);
 
       &:hover {
-        border-color: darken($border-color, 5);
+        background: darken(#fff, 5)
       }
 
       p {
         margin: 0;
+      }
+
+      p.title {
+        font-weight: 600;
+      }
+
+      p.subtitle {
+        font-size: 14px;
+        opacity: .4;
+        font-weight: 600;
+        margin-top: 3px
       }
     }
   }

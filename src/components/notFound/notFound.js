@@ -1,13 +1,19 @@
 import React from 'react';
 import DocumentTitle from 'react-document-title';
+import { Link } from 'react-router-dom';
 
 import styles from './notFound.scss';
 
-const notFound = () =>
+const notFound = ({link, onClick}) =>
   <DocumentTitle title="Page not found">
     <div className={styles.main}>
-      <p>404</p>
-      <p>Take me back <a href="/">home.</a></p>
+      <div className={styles.container}>
+        <p className={styles.title}>Sorry, this page is not found.</p>
+        <p className={styles.sub}>The link you followed may be broken or may have been deleted.</p>
+        <div style={{textAlign: 'center'}}>
+          <Link onClick={onClick} to={link}>Go home.</Link>
+        </div>
+      </div>
     </div>
   </DocumentTitle>;
 

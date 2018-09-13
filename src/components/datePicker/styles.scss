@@ -88,7 +88,7 @@
 }
 
 :global .react-datepicker-popper {
-  z-index: 1;
+  z-index: 2;
 }
 
 :global .react-datepicker-popper[data-placement^="bottom"] {
@@ -147,7 +147,7 @@
 :global .react-datepicker-time__header {
   margin-top: 0;
   color: $text-primary;
-  font-weight: bold;
+  font-weight: 600;
   font-size: 0.944rem;
 }
 

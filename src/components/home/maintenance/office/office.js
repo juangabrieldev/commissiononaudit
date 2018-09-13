@@ -283,7 +283,6 @@ class Office extends Component {
       password: this.state.deleteOffice.password
     })
       .then(res => {
-        console.log(res);
         if(res.data.status === 200) {
           this.setState(produce(draft => {
             draft.deleteOffice.passwordIncorrect = false;

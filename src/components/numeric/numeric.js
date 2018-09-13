@@ -42,7 +42,7 @@ class Numeric extends Component {
 
   render() {
     return (
-      <div onBlur={() => this.setState({focused: false})} style={{width: (this.props.width ? this.props.width + 50 : null)}} className={styles.numeric + (this.state.focused ? ' ' + styles.focused : '')}>
+      <div onBlur={() => this.setState({focused: false})} style={{width: (this.props.width ? this.props.width + 50 : null), ...this.props.style}} className={styles.numeric + (this.state.focused ? ' ' + styles.focused : '')}>
         <label
           className={this.state.value > 0 ? styles.shown : ''}
           htmlFor={this.props.name}>

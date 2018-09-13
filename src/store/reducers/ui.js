@@ -7,7 +7,9 @@ const initialState = {
   showAvatarDropdown: false,
   blockNavigation: false,
   blockNavigationMessage: '',
-  toasts: []
+  toasts: [],
+  notFound: false,
+  notFoundHome: null
 };
 
 const reducer = (state = initialState, action) => {
@@ -40,6 +42,22 @@ const reducer = (state = initialState, action) => {
       return produce(state, draft => {
         draft.toasts.splice(0, 1)
       });
+    }
+
+    case actions.ENABLE_NOT_FOUND: {
+      return {
+        ...state,
+        notFound: true,
+        notFoundHome: action.payload.link
+      }
+    }
+
+    case actions.DISABLE_NOT_FOUND: {
+      return {
+        ...state,
+        notFound: false,
+        notFoundHome: null
+      }
     }
 
     default:
