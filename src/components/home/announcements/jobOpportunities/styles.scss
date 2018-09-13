@@ -39,3 +39,47 @@
     }
   }
 }
+
+.openJobs {
+  color: $primary-color;
+  cursor: pointer;
+  font-weight: 600;
+  margin: 0;
+  font-size: 14px;
+}
+
+.tooltip {
+  opacity: 1 !important;
+  border-radius: 2px !important;
+  border: solid 1px $border-color;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+  padding: 0 !important;
+
+  .container {
+    padding: 15px;
+
+    p {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .comparison {
+      > div {
+        display: flex;
+
+        p:first-of-type {
+          opacity: .8;
+        }
+      }
+    }
+  }
+}
+
+:global {
+  .place-right {
+    &:after {
+      border-right-color: $border-color !important
+    }
+  }
+}
+

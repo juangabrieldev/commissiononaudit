@@ -12,13 +12,14 @@ export const announcements = {
 
 export const jobs = {
   create: rootUrl + '/jobs/',
-  view: rootUrl + '/jobs',
+  view: rootUrl + '/jobs/',
 };
 
 export const jobOpportunities = {
   select: rootUrl + '/job-opportunities/jobs/', //for react-select
   create: rootUrl + '/job-opportunities/',
-  root: rootUrl + '/job-opportunities/'
+  root: rootUrl + '/job-opportunities/',
+  view: rootUrl + '/job-opportunities/view/', //view a job opportunity
 };
 
 export const office = {

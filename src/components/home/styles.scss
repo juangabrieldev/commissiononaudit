@@ -420,11 +420,131 @@
             }
           }
         }
+
+        .fields {
+          border: solid 1px transparent;
+          border-radius: 2px;
+          padding: 15px;
+          box-sizing: border-box;
+          transition: .05s border-color;
+          position: relative;
+          overflow: hidden;
+          background: darken(#fff, 3);
+
+          &.add {
+            border: dashed 1px $primary-color !important;
+
+            > p:only-child {
+              margin: 0;
+              font-size: 14px;
+              font-weight: 600;
+              transition: color .05s;
+              color: $primary-color !important;
+
+              span {
+                color: $primary-color;
+                cursor: pointer;
+
+                &:hover {
+                  text-decoration: underline;
+                }
+              }
+            }
+          }
+
+          &.addActive {
+            padding: 0 8px;
+            display: flex;
+            height: 48.1px;
+            align-items: center;
+            justify-content: center;
+
+            > input {
+              border: solid 1px $input-border-color;
+              border-radius: 2px;
+              height: 25px;
+              width: 100%;
+              padding: 0 6px;
+              font-size: 14px;
+
+              &:focus {
+                border-color: #aaaaaa;
+              }
+            }
+          }
+
+          .edit {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1;
+            cursor: pointer;
+            transition: .05s opacity;
+            opacity: 0;
+            -webkit-text-decoration-style: unset;
+
+            &:hover {
+              opacity: 1;
+            }
+
+            > p {
+              color: white;
+              font-size: 14px;
+              margin: 0;
+              text-align: center;
+
+              > span {
+                font-weight: 600;
+
+                &:hover {
+                  text-decoration: underline;
+                }
+              };
+            }
+          }
+
+          > p {
+            margin: 0;
+            font-size: 14px;
+
+            &.onlyContent {
+              font-size: 14px;
+              color: $text-primary;
+              text-align: center;
+            }
+
+            &.title {
+              margin-bottom: 10px;
+              font-size: 12px;
+              font-weight: 400;
+              color: #969da5;
+            }
+          }
+
+          &:hover {
+            //border-color: darken($border-color, 5);
+          }
+
+          &:not(:first-of-type) {
+            margin-top: 15px;
+          }
+
+          .description {
+            margin-top: 6px;
+            line-height: .8
+          }
+        }
       }
     }
+
   }
 }
-
 
 .rowHeader {
   display: flex;
