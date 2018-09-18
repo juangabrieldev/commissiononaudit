@@ -50,7 +50,8 @@ export const employees = {
   get: rootUrl + '/employees/',
   avatar: rootUrl + '/employees/avatar/',
   registrationProgress: rootUrl + '/employees/registration-progress/',
-  completeRegistration: rootUrl + '/employees/complete-registration/'
+  completeRegistration: rootUrl + '/employees/complete-registration/',
+  personalDataSheet: rootUrl + '/employees/personal-data-sheet/',
 };
 
 export const roles = {

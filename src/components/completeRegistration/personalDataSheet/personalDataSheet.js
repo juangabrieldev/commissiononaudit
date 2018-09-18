@@ -1042,7 +1042,7 @@ class PersonalDataSheet extends Component {
           {
             this.state.workExperience.map((e, i, a) => {
               return (
-                <Fragment>
+                <Fragment key={i}>
                   <div className={styles.workExperience}>
                     <Input
                       onChangeHandler={e => this.onChangeWorkExperience(e, i)}

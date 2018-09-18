@@ -4,19 +4,22 @@ import parse from 'html-react-parser';
 import ReactTooltip from 'react-tooltip';
 
 import NotFoundEnabler from '../../../notFound/notFoundEnabler';
+import Portal from '../../../portal/portal';
+import ViewOpportunityModal from './viewOpportunityModal';
 
 import univStyles from '../../styles.scss'
 import styles from './styles.scss';
 
-import { jobOpportunities, jobs } from "../../../../api";
+import { employees, jobOpportunities, jobs } from "../../../../api";
 import connect from "react-redux/es/connect/connect";
 
 class viewOpportunity extends Component {
   state = {
     jobOpportunity: {},
-    jobInformation: {},
+    data: {},
     isValid: false,
-    hasLoaded: false
+    hasLoaded: false,
+    showModal: false
   };
 
   fetch = () => {
@@ -35,12 +38,22 @@ class viewOpportunity extends Component {
     this.fetch()
   };
 
-  onClickOpenJob = (v, i) => {
-    console.log('hey');
+  onClickOpenJob = v => {
+    let data = {
+      jobInformation: null,
+      employeeData: null
+    };
 
     axios.get(jobs.view + v)
       .then(res => {
-        this.setState({jobInformation: res.data.data})
+        data.jobInformation = res.data.data;
+
+        return axios.get(employees.personalDataSheet + this.props.employeeId)
+      })
+      .then(res => {
+        data.employeeData = res.data.data;
+
+        this.setState({data, showModal: true})
       })
   };
 
@@ -54,17 +67,7 @@ class viewOpportunity extends Component {
         return (
           <Fragment key={i}>
             <div onMouseDown={() => this.onClickOpenJob(job.value)}>
-              <p className={styles.openJobs} data-event='click focus' data-tip data-for={job.value.toString()}>{job.label}</p>
-              <ReactTooltip className={styles.tooltip} place="right" id={job.value.toString()} type='light' effect='solid'>
-                <div className={styles.container}>
-                  <div className={styles.comparison}>
-                    <div>
-                      <p>Position title: </p>
-                      <p>{job.label}</p>
-                    </div>
-                  </div>
-                </div>
-              </ReactTooltip>
+              <p className={styles.openJobs}>- {job.label}</p>
             </div>
           </Fragment>
         )
@@ -91,7 +94,15 @@ class viewOpportunity extends Component {
             </div> :
             null
         }
-
+        {
+          this.state.showModal ?
+            <Portal>
+              <ViewOpportunityModal
+                data={this.state.data}
+                hideModal={() => this.setState({showModal: false})} />
+            </Portal> :
+            null
+        }
       </Fragment>
     )
   }

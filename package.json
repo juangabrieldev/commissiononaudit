@@ -77,6 +77,7 @@
     "react-svg": "^4.1.1",
     "react-tooltip": "^3.6.1",
     "react-transition-group": "^2.3.1",
+    "react-truncate": "^2.4.0",
     "redux": "^4.0.0",
     "redux-thunk": "^2.3.0",
     "resolve": "1.6.0",

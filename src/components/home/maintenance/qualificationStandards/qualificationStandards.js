@@ -5,8 +5,6 @@ import connect from "react-redux/es/connect/connect";
 import { Container, Row, Col, setConfiguration } from 'react-grid-system';
 import produce from 'immer';
 
-import styles from './qualificationStandards.scss';
-
 import Button from '../../../button/button';
 import Select from '../../../select/select';
 
@@ -18,8 +16,6 @@ import {Scrollbars} from "react-custom-scrollbars";
 import {TransitionGroup} from "react-transition-group";
 import Input from "../../../input/input";
 import Numeric from "../../../numeric/numeric";
-
-import edit from '../../../../assets/ui/editPencil.svg';
 
 import * as actions from "../../../../store/actions/ui/actions";
 
@@ -448,33 +444,33 @@ class QualificationStandards extends Component {
                     <div style={{padding: 15}}>
                       <div className={univStyles.groupOfFields}>
                         <p className={univStyles.title}>Specific courses</p>
-                          <Container fluid style={{padding: 0, marginTop: -12}}>
-                            <Row>
-                              {specificCourses}
-                            </Row>
-                          </Container>
+                        <Container fluid style={{padding: 0, marginTop: -12}}>
+                          <Row>
+                            {specificCourses}
+                          </Row>
+                        </Container>
                       </div>
                       <div className={univStyles.groupOfFields}>
                         <p className={univStyles.title}>Custom qualifications</p>
-                          <Container fluid style={{padding: 0, marginTop: -12}}>
-                            <Row>
-                              {
-                                customQualifications.length > 0 ?
-                                  customQualifications :
-                                  <Col xs={4}>
-                                    {
-                                      this.state.customQualifications.add ?
-                                        <div onKeyPress={e => this.onEnter(e, 2)} ref={node => console.log(node)} style={{marginTop: 15}} className={univStyles.fields + ' ' + univStyles.add + ' ' + univStyles.addActive}>
-                                          <input onChange={e => this.onChangeHandler(e, 2)} value={this.state.customQualifications.new} autoFocus type="text"/>
-                                        </div> :
-                                        <div style={{marginTop: 15}} className={univStyles.fields + ' ' + univStyles.add}>
-                                          <p style={{textAlign: 'center'}}>+&nbsp;&nbsp;ADD A <span onClick={() => this.onAdd(2)}>CUSTOM QUALIFICATIONS</span></p>
-                                        </div>
-                                    }
-                                  </Col>
-                              }
-                            </Row>
-                          </Container>
+                        <Container fluid style={{padding: 0, marginTop: -12}}>
+                          <Row>
+                            {
+                              customQualifications.length > 0 ?
+                                customQualifications :
+                                <Col xs={4}>
+                                  {
+                                    this.state.customQualifications.add ?
+                                      <div onKeyPress={e => this.onEnter(e, 2)} ref={node => console.log(node)} style={{marginTop: 15}} className={univStyles.fields + ' ' + univStyles.add + ' ' + univStyles.addActive}>
+                                        <input onChange={e => this.onChangeHandler(e, 2)} value={this.state.customQualifications.new} autoFocus type="text"/>
+                                      </div> :
+                                      <div style={{marginTop: 15}} className={univStyles.fields + ' ' + univStyles.add}>
+                                        <p style={{textAlign: 'center'}}>+&nbsp;&nbsp;ADD A <span onClick={() => this.onAdd(2)}>CUSTOM QUALIFICATIONS</span></p>
+                                      </div>
+                                  }
+                                </Col>
+                            }
+                          </Row>
+                        </Container>
                       </div>
                       <div className={univStyles.groupOfFields}>
                         <p className={univStyles.title}>Trainings</p>
