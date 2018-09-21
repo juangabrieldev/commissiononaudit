@@ -61,7 +61,7 @@
       top: 50px;
       left: 200px;
       width: calc(100vw - 400px - (100vw - 100%));
-      z-index: 1;
+      z-index: 2;
 
       &.noTransition {
         transition: none;
@@ -142,6 +142,11 @@
           font-weight: 600;
           font-size: 18px;
           margin: 0 0 0 12px;
+
+          &.goBack {
+            font-weight: 400;
+            font-size: 14px;
+          }
         }
 
         .subtitle {

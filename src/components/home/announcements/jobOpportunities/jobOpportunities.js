@@ -42,6 +42,7 @@ class JobOpportunities extends Component {
 
   onCreate = () => {
     this.setState({previousLink: this.props.location.pathname});
+
     this.props.history.push('/announcements/job-opportunities/new')
   };
 
@@ -56,12 +57,15 @@ class JobOpportunities extends Component {
 
 
   fetch = () => {
+    let jobs;
+
     axios.get(jobOpportunities.select + this.props.employeeId)
       .then(res => {
-        this.setState({jobs: res.data.data});
+        jobs = res.data.data;
+
         return axios.get(jobOpportunities.root + this.props.employeeId)
       })
-      .then(res => this.setState({jobOpportunities: res.data.data}))
+      .then(res => this.setState({jobOpportunities: res.data.data, jobs}))
   };
 
   reset = () => {
@@ -89,7 +93,11 @@ class JobOpportunities extends Component {
       }
     });
 
-    this.setState({selectedJob: o})
+    if(o.length === 1) { //if there's only one job
+      this.setState({selectedJob: o, isSingleDeadline: false})
+    } else {
+      this.setState({selectedJob: o})
+    }
   };
 
   onChangeDeadline = (deadline, i) => {
@@ -117,17 +125,26 @@ class JobOpportunities extends Component {
   onChangeDescription = e => {
     const value = e.target.value;
 
+    // let text = 'Good day!<br><br>Requirements<br>- Must have at least<br>- Must have at least';
+    //
+    // text = text.replace(/<br ?\/?>/g, "\n");
+    //
+    // console.log(text);
+    //
+    // this.setState({description: text});
+
     this.setState({description: value})
   };
+
+
 
   onSave = () => {
     axios.post(jobOpportunities.create, {
       employeeId: this.props.employeeId,
-      isSingleDeadline: this.state.isSingleDeadline,
       content: {
         title: this.state.title,
         jobs: this.state.selectedJob,
-        singleDeadline: this.state.singleDeadline,
+        isSingleDeadline: this.state.isSingleDeadline,
       },
       description: this.state.description
     })
@@ -270,14 +287,18 @@ class JobOpportunities extends Component {
                                 options={this.state.jobs}
                                 placeholder="* Job(s)"/>
                             </div>
-                            <div className={univStyles.input} style={{display: 'flex', alignItems: 'center'}}>
-                              <CheckBox toggle={this.singleDeadlineCheckBoxHandler} message="Single deadline for all selected jobs."/>
-                            </div>
+                            {
+                              this.state.selectedJob.length > 1 ?
+                                <div className={univStyles.input} style={{display: 'flex', alignItems: 'center'}}>
+                                  <CheckBox toggle={this.singleDeadlineCheckBoxHandler} message="Single deadline for all selected jobs."/>
+                                </div> :
+                                null
+                            }
                             { vacanciesDeadline }
                             <div className={univStyles.input}>
                           <TextArea
                             value={this.state.description}
-                            characterLimit={300}
+                            characterLimit={1000}
                             onChangeHandler={this.onChangeDescription}
                             name="* Description" />
                             </div>

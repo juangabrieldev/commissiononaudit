@@ -527,3 +527,56 @@
     }
   }
 }
+
+.firstRow {
+  display: flex;
+
+  > div {
+    margin-top: 0 !important;
+    flex-basis: 0;
+
+    &:first-child {
+      flex-grow: 1;
+      margin-right: 15px;
+    }
+  }
+}
+
+.secondRow {
+  display: flex;
+  margin-top: 15px;
+}
+
+.viewOpportunity {
+  p {
+    margin: 0;
+
+    &.title {
+      font-size: 24px;
+      font-weight: 600
+    }
+
+    &.description {
+      margin-top: 30px;
+      font-size: 15px;
+      color: darken($text-secondary, 45);
+    }
+  }
+
+  .details {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+
+    > p {
+      font-size: 14px;
+      color: darken($text-secondary, 20);
+    }
+
+    img {
+      opacity: .5;
+    }
+  }
+}
+
+

@@ -1,9 +1,11 @@
 import React, {Component, Fragment} from 'react';
 import produce from 'immer';
-import {RadioGroup, Radio} from 'react-radio-group'
+import {Radio, RadioGroup} from 'react-radio-group'
 import {connect} from 'react-redux';
 import scrollToComponent from 'react-scroll-to-component';
 import axios from 'axios';
+import moment from 'moment';
+import _ from 'lodash';
 
 import Input from "../../input/input";
 import DatePicker from '../../datePicker/datePicker';
@@ -14,7 +16,7 @@ import univStyles from '../../home/styles.scss';
 import Button from "../../button/button";
 import styles from "./personalDataSheet.scss";
 
-import { qualificationStandards, employees } from "../../../api";
+import {employees, qualificationStandards} from "../../../api";
 
 class PersonalDataSheet extends Component {
   state = {
@@ -133,21 +135,32 @@ class PersonalDataSheet extends Component {
       },
     },
     civilServiceEligibility: [],
-    workExperience: [{
-      positionTitle: ''
+    workExperienceOutsideCoa: [{
+      positionTitle: '',
+      isAbleToAdd: false
     }],
-    trainingsAttended: [],
-    trainingsAttendedHours: null,
+    workExperienceWithinCoa: [{
+      positionTitle: '',
+      isAbleToAdd: false
+    }],
+    trainingsAttended: [{
+      training: null,
+      hours: null,
+      date: null,
+      dataSource: [],
+      isAbleToAdd: false
+    }],
 
     //region apiData
     eligibilities: [],
     trainings: [],
+    selectedTrainings: [],
     courses: [],
     //endregion
 
     //region pagination
-    pages: 4,
-    currentPage: 1
+    pages: 5,
+    currentPage: 5
     //endregion
   };
 
@@ -238,6 +251,7 @@ class PersonalDataSheet extends Component {
   };
 
   onChangeElementaryFrom = o => {
+    console.log(o);
     this.setState(produce(draft => {
       draft.educationalBackground.elementary.periodOfAttendance.from = o
     }))
@@ -416,62 +430,189 @@ class PersonalDataSheet extends Component {
   };
   //endregion
 
-  //region workExperience
-  onChangeWorkExperience = (e, i) => {
+  //region workExperienceOutsideCoa
+  onChangeWorkExperienceOutsideCoa = (e, i) => {
     const value = e.target.value;
 
     this.setState(produce(draft => {
-      draft.workExperience[i].positionTitle = value;
+      draft.workExperienceOutsideCoa[i].positionTitle = value;
     }))
   };
 
-  onChangeWorkExperienceOffice = (e, i) => {
+  onChangeWorkExperienceOutsideCoaCompanyName = (e, i) => {
     const value = e.target.value;
 
     this.setState(produce(draft => {
-      draft.workExperience[i].office = value;
+      draft.workExperienceOutsideCoa[i].companyName = value;
     }))
   };
 
-  onChangeWorkExperienceFrom = (o, i) => {
+  onChangeWorkExperienceOutsideCoaFrom = (o, i) => {
 
     this.setState(produce(draft => {
-      draft.workExperience[i].from = o;
+      draft.workExperienceOutsideCoa[i].from = o;
     }))
   };
 
-  onChangeWorkExperienceTo = (o, i) => {
+  onChangeWorkExperienceOutsideCoaTo = (o, i) => {
 
     this.setState(produce(draft => {
-      draft.workExperience[i].to = o;
+      draft.workExperienceOutsideCoa[i].to = o;
     }))
   };
 
-  onAddWorkExperience = () => {
+  onAddWorkExperienceOutsideCoa = () => {
     this.setState(produce(draft => {
-      draft.workExperience.push({positionTitle: ''});
+      draft.workExperienceOutsideCoa.push({positionTitle: ''});
     }))
   };
 
-  onRemoveWorkExperience = () => {
+  onRemoveWorkExperienceOutsideCoa = () => {
     this.setState(produce(draft => {
-      draft.workExperience.pop()
+      draft.workExperienceOutsideCoa.pop()
+    }))
+  };
+  //endregion
+
+  //region workExperienceWithinCoa
+  onChangeWorkExperienceWithinCoa = (e, i) => {
+    const value = e.target.value;
+
+    this.setState(produce(draft => {
+      draft.workExperienceWithinCoa[i].positionTitle = value;
+    }))
+  };
+
+  onChangeWorkExperienceWithinCoaOfficeName = (e, i) => {
+    const value = e.target.value;
+
+    this.setState(produce(draft => {
+      draft.workExperienceWithinCoa[i].officeName = value;
+    }))
+  };
+
+  onChangeWorkExperienceWithinCoaFrom = (o, i) => {
+
+    this.setState(produce(draft => {
+      draft.workExperienceWithinCoa[i].from = o;
+    }))
+  };
+
+  onChangeWorkExperienceWithinCoaTo = (o, i) => {
+
+    this.setState(produce(draft => {
+      draft.workExperienceWithinCoa[i].to = o;
+    }))
+  };
+
+  onAddWorkExperienceWithinCoa = () => {
+    this.setState(produce(draft => {
+      draft.workExperienceWithinCoa.push({positionTitle: ''});
+    }))
+  };
+
+  onRemoveWorkExperienceWithinCoa = () => {
+    this.setState(produce(draft => {
+      draft.workExperienceWithinCoa.pop()
     }))
   };
   //endregion
 
   //region trainingsAttended
-  onChangeTrainingAttended = o => {
-    this.setState({trainingsAttended: o})
+  onChangeTrainingsAttended = (o, i) => {
+    let selectedTrainingsBackup;
+
+    this.setState(produce(draft => {
+      draft.trainingsAttended[i].training = o;
+
+      //if user removes the selected training
+      if(o == null) {
+        //remove the previously selected option to selectedTrainings
+        draft.selectedTrainings = _.differenceWith(this.state.selectedTrainings, [this.state.trainingsAttended[i].training], _.isEqual);
+      } else {
+        draft.selectedTrainings.push(o);
+
+        if(this.state.trainingsAttended[i].training != null) {
+          // draft.selectedTrainings = this.state.selectedTrainings.filter(training => {
+          //   console.log(training, this.state.trainingsAttended[i].training);
+          //   return training.value != this.state.trainingsAttended[i].training.value
+          // })
+
+          selectedTrainingsBackup = this.state.trainingsAttended[i].training
+        }
+      }
+    }), () => this.filterTrainings(selectedTrainingsBackup));
   };
 
-  onChangeTrainingAttendedHours = o => {
-    this.setState({trainingsAttendedHours: o})
+  onChangeTrainingsAttendedHours = (o, i) => {
+    this.setState(produce(draft => {
+      draft.trainingsAttended[i].hours = o
+    }))
+  };
+
+  onChangeTrainingAttendedDate = (o, i) => {
+    this.setState(produce(draft => {
+      draft.trainingsAttended[i].date = o
+    }))
+  };
+
+  onAddTrainingsAttended = () => {
+    this.setState(produce(draft => {
+      const filteredOptions = _.differenceWith(this.state.trainings, this.state.selectedTrainings, _.isEqual);
+
+      draft.trainingsAttended.push({
+        training: null,
+        hours: null,
+        date: null,
+        dataSource: filteredOptions
+      });
+    }))
+  };
+
+  onRemoveTrainingsAttended = () => {
+    this.setState(produce(draft => {
+      draft.trainingsAttended.pop();
+
+      if(this.state.trainingsAttended[this.state.trainingsAttended.length - 1].training != null) {
+        draft.selectedTrainings = draft.selectedTrainings.filter(selectedTraining => {
+          return selectedTraining.value !== this.state.trainingsAttended[this.state.trainingsAttended.length - 1].training.value
+        })
+      }
+    }), this.filterTrainings)
+  };
+
+  filterTrainings = o => {
+    let selectedTrainings = _.cloneDeep(this.state.selectedTrainings);
+
+    if(o != null) {
+      console.log(o.label);
+      selectedTrainings = selectedTrainings.filter(selectedTraining => {
+        return selectedTraining.value !== o.value
+      });
+    }
+
+    this.setState(produce(draft => {
+      this.state.trainingsAttended.forEach((trainingAttended, index) => {
+        let filteredDataSource = _.differenceWith(this.state.trainings, selectedTrainings, _.isEqual);
+
+        if(!!this.state.trainingsAttended[index].training) {
+          filteredDataSource.push(this.state.trainingsAttended[index].training);
+          filteredDataSource = _.orderBy(filteredDataSource, ['label'], ['asc']);
+        }
+
+        draft.trainingsAttended[index].dataSource = filteredDataSource;
+        draft.selectedTrainings = selectedTrainings;
+
+        console.log(selectedTrainings)
+      })
+    }));
   };
   //endregion
 
   componentDidMount = () => {
     let courses, eligibilities, trainings;
+    let personalDataSheet;
+
 
     axios.get(qualificationStandards.courses)
       .then(res => {
@@ -487,12 +628,71 @@ class PersonalDataSheet extends Component {
       .then(res => {
         trainings = res.data.data;
 
-        this.setState({courses, eligibilities, trainings});
+        return axios.get(employees.personalDataSheet + this.props.employeeId)
+      })
+      .then(res => {
+        // this.setState({courses, eligibilities, trainings});
+
+        const { personalDataSheet } = res.data.data;
+
+        //region convert educationalBagckground dates to moment object
+        personalDataSheet.educationalBackground.elementary.periodOfAttendance.from = moment(
+          personalDataSheet.educationalBackground.elementary.periodOfAttendance.from
+        );
+        personalDataSheet.educationalBackground.elementary.periodOfAttendance.to = moment(
+          personalDataSheet.educationalBackground.elementary.periodOfAttendance.to
+        );
+
+        personalDataSheet.educationalBackground.secondary.periodOfAttendance.from = moment(
+          personalDataSheet.educationalBackground.secondary.periodOfAttendance.from
+        );
+        personalDataSheet.educationalBackground.secondary.periodOfAttendance.to = moment(
+          personalDataSheet.educationalBackground.secondary.periodOfAttendance.to
+        );
+
+        personalDataSheet.educationalBackground.vocational.periodOfAttendance.from = moment(
+          personalDataSheet.educationalBackground.vocational.periodOfAttendance.from
+        );
+        personalDataSheet.educationalBackground.vocational.periodOfAttendance.to = moment(
+          personalDataSheet.educationalBackground.vocational.periodOfAttendance.to
+        );
+
+        personalDataSheet.educationalBackground.college.periodOfAttendance.from = moment(
+          personalDataSheet.educationalBackground.college.periodOfAttendance.from
+        );
+        personalDataSheet.educationalBackground.college.periodOfAttendance.to = moment(
+          personalDataSheet.educationalBackground.college.periodOfAttendance.to
+        );
+
+        personalDataSheet.educationalBackground.graduateStudies.periodOfAttendance.from = moment(
+          personalDataSheet.educationalBackground.graduateStudies.periodOfAttendance.from
+        );
+        personalDataSheet.educationalBackground.graduateStudies.periodOfAttendance.to = moment(
+          personalDataSheet.educationalBackground.graduateStudies.periodOfAttendance.to
+        );
+        //endregion
+
+        this.setState({
+          courses,
+          eligibilities,
+          trainings,
+          educationalBackground: {
+            ...personalDataSheet.educationalBackground
+          }
+        });
+
+        this.setState(produce(draft => {
+          draft.courses = courses;
+          draft.eligibilities = eligibilities;
+          draft.trainings = trainings;
+          draft.educationalBackground = {...personalDataSheet.educationalBackground};
+          draft.trainingsAttended[0].dataSource = trainings;
+        }));
       })
   };
 
   onNext = () => {
-    if(this.state.currentPage === 4) {
+    if(this.state.currentPage === 5) {
       axios.post(employees.completeRegistration + this.props.employeeId, {
         personalDataSheet: {
           educationalBackground: this.state.educationalBackground,
@@ -504,7 +704,7 @@ class PersonalDataSheet extends Component {
         .then(res => console.log(res.data.data));
     }
     this.setState(produce(draft => {
-      draft.currentPage < 4 ? draft.currentPage += 1 : null
+      draft.currentPage < 5 ? draft.currentPage += 1 : null
     }), this.switchPage)
   };
 
@@ -539,21 +739,36 @@ class PersonalDataSheet extends Component {
       }
 
       case 3: {
-        scrollToComponent(this.refs.workExperience, {
+        scrollToComponent(this.refs.workExperienceOutsideCoa, {
           duration: 300
         });
 
-        this.refs.workExperience.childNodes[1].childNodes[0].childNodes[0].childNodes[1].focus();
+        this.refs.workExperienceOutsideCoa.childNodes[1].childNodes[0].childNodes[0].childNodes[1].focus();
 
         break;
       }
 
       case 4: {
+        scrollToComponent(this.refs.workExperienceWithinCoa, {
+          duration: 300
+        });
+
+        this.refs.workExperienceWithinCoa.childNodes[1].childNodes[0].childNodes[0].childNodes[1].focus();
+
+        break;
+      }
+
+      case 5: {
         scrollToComponent(this.refs.trainingsAttended, {
           duration: 300
         });
 
-        this.refs.trainingsAttended.childNodes[1].childNodes[0].childNodes[0].childNodes[1].childNodes[0].childNodes[0].childNodes[1].childNodes[0].childNodes[0].focus();
+        this.refs.trainingsAttended.
+          childNodes[1].childNodes[0].
+          childNodes[0].childNodes[1].
+          childNodes[0].childNodes[0].
+          childNodes[1].childNodes[0].
+          childNodes[0].focus();
 
         break;
       }
@@ -1034,34 +1249,34 @@ class PersonalDataSheet extends Component {
         </div>
       </div>;
 
-    const workExperience =
-      <div ref="workExperience"
+    const workExperienceOutsideCoa =
+      <div ref="workExperienceOutsideCoa"
            className={univStyles.groupOfFields + (this.state.currentPage === 3 ? ' ' + univStyles.current : ' ' + univStyles.notCurrent)}>
-        <p className={univStyles.title}>WORK EXPERIENCE</p>
+        <p className={univStyles.title}>WORK EXPERIENCE OUTSIDE COMMISSION ON AUDIT</p>
         <div className={styles.thirteenthRow}>
           {
-            this.state.workExperience.map((e, i, a) => {
+            this.state.workExperienceOutsideCoa.map((e, i, a) => {
               return (
                 <Fragment key={i}>
                   <div className={styles.workExperience}>
                     <Input
-                      onChangeHandler={e => this.onChangeWorkExperience(e, i)}
-                      value={this.state.workExperience[i].positionTitle}
+                      onChangeHandler={e => this.onChangeWorkExperienceOutsideCoa(e, i)}
+                      value={this.state.workExperienceOutsideCoa[i].positionTitle}
                       name="Position title"/>
                     <Input
-                      onChangeHandler={e => this.onChangeWorkExperienceOffice(e, i)}
-                      value={this.state.workExperience[i].office}
-                      name="Office"/>
+                      onChangeHandler={e => this.onChangeWorkExperienceOutsideCoaCompanyName(e, i)}
+                      value={this.state.workExperienceOutsideCoa[i].companyName}
+                      name="Company name"/>
                     <DatePicker
-                      selected={this.state.workExperience[i].from}
-                      onChange={o => this.onChangeWorkExperienceFrom(o, i)}
-                      value={this.state.workExperience[i].from}
+                      selected={this.state.workExperienceOutsideCoa[i].from}
+                      onChange={o => this.onChangeWorkExperienceOutsideCoaFrom(o, i)}
+                      value={this.state.workExperienceOutsideCoa[i].from}
                       showYearDropdown
                       placeholder="From"/>
                     <DatePicker
-                      selected={this.state.workExperience[i].to}
-                      onChange={o => this.onChangeWorkExperienceTo(o, i)}
-                      value={this.state.workExperience[i].to}
+                      selected={this.state.workExperienceOutsideCoa[i].to}
+                      onChange={o => this.onChangeWorkExperienceOutsideCoaTo(o, i)}
+                      value={this.state.workExperienceOutsideCoa[i].to}
                       showYearDropdown
                       placeholder="To"/>
                   </div>
@@ -1075,44 +1290,53 @@ class PersonalDataSheet extends Component {
             })
           }
           {
-            this.state.workExperience[0].positionTitle.length > 0 ?
+            this.state.workExperienceOutsideCoa[0].positionTitle.length > 0 ?
               <p style={{margin: 0, marginTop: 5}}>
                 {
-                  this.state.workExperience.length > 1 ?
+                  this.state.workExperienceOutsideCoa.length > 1 ?
                     <Fragment>
-                      <span onClick={this.onRemoveWorkExperience} className={styles.remove}>REMOVE</span>
+                      <span onClick={this.onRemoveWorkExperienceOutsideCoa} className={styles.remove}>REMOVE</span>
                       &nbsp;&nbsp;or&nbsp;&nbsp;
                     </Fragment> :
                     null
                 }
-                <span onClick={this.onAddWorkExperience} className={styles.addMore}>ADD MORE</span>
+                <span onClick={this.onAddWorkExperienceOutsideCoa} className={styles.addMore}>ADD MORE</span>
               </p> :
               null
           }
         </div>
       </div>;
 
-    const trainingsAttended =
-      <div ref="trainingsAttended"
+    const workExperienceWithinCoa =
+      <div ref="workExperienceWithinCoa"
            className={univStyles.groupOfFields + (this.state.currentPage === 4 ? ' ' + univStyles.current : ' ' + univStyles.notCurrent)}>
-        <p className={univStyles.title}>TRAININGS ATTENDED</p>
+        <p className={univStyles.title}>WORK EXPERIENCE WITHIN COMMISSION ON AUDIT</p>
         <div className={styles.thirteenthRow}>
           {
-            this.state.workExperience.map((e, i, a) => {
+            this.state.workExperienceWithinCoa.map((e, i, a) => {
               return (
-                <Fragment>
-                  <div className={styles.trainingsAttended}>
-                    <Select
-                      isCreatable
-                      value={this.state.trainingsAttended}
-                      options={this.state.trainings}
-                      onChangeHandler={this.onChangeTrainingAttended}
-                      placeholder="Training title"
-                      isMulti
-                      isClearable/>
-                    <Numeric
-                      onChangeHandler={this.onChangeTrainingAttendedHours}
-                      name="Total number of hours"/>
+                <Fragment key={i}>
+                  <div className={styles.workExperience}>
+                    <Input
+                      onChangeHandler={e => this.onChangeWorkExperienceWithinCoa(e, i)}
+                      value={this.state.workExperienceWithinCoa[i].positionTitle}
+                      name="Position title"/>
+                    <Input
+                      onChangeHandler={e => this.onChangeWorkExperienceWithinCoaOfficeName(e, i)}
+                      value={this.state.workExperienceWithinCoa[i].officeName}
+                      name="Office name"/>
+                    <DatePicker
+                      selected={this.state.workExperienceWithinCoa[i].from}
+                      onChange={o => this.onChangeWorkExperienceWithinCoaFrom(o, i)}
+                      value={this.state.workExperienceWithinCoa[i].from}
+                      showYearDropdown
+                      placeholder="From"/>
+                    <DatePicker
+                      selected={this.state.workExperienceWithinCoa[i].to}
+                      onChange={o => this.onChangeWorkExperienceWithinCoaTo(o, i)}
+                      value={this.state.workExperienceWithinCoa[i].to}
+                      showYearDropdown
+                      placeholder="To"/>
                   </div>
                   {
                     a.length > 1 && i < a.length - 1 ?
@@ -1122,6 +1346,76 @@ class PersonalDataSheet extends Component {
                 </Fragment>
               )
             })
+          }
+          {
+            this.state.workExperienceWithinCoa[0].positionTitle.length > 0 ?
+              <p style={{margin: 0, marginTop: 5}}>
+                {
+                  this.state.workExperienceWithinCoa.length > 1 ?
+                    <Fragment>
+                      <span onClick={this.onRemoveWorkExperienceWithinCoa} className={styles.remove}>REMOVE</span>
+                      &nbsp;&nbsp;or&nbsp;&nbsp;
+                    </Fragment> :
+                    null
+                }
+                <span onClick={this.onAddWorkExperienceWithinCoa} className={styles.addMore}>ADD MORE</span>
+              </p> :
+              null
+          }
+        </div>
+      </div>;
+
+    const trainingsAttended =
+      <div ref="trainingsAttended"
+           className={univStyles.groupOfFields + (this.state.currentPage === 5 ? ' ' + univStyles.current : ' ' + univStyles.notCurrent)}>
+        <p className={univStyles.title}>TRAININGS ATTENDED</p>
+        <div className={styles.thirteenthRow}>
+          {
+            this.state.trainingsAttended.map((e, i, a) => {
+              return (
+                <Fragment>
+                  <div className={styles.trainingsAttended}>
+                    <Select
+                      isCreatable
+                      value={this.state.trainingsAttended[i].training}
+                      options={this.state.trainingsAttended[i].dataSource}
+                      onChangeHandler={o => this.onChangeTrainingsAttended(o, i)}
+                      placeholder="Training title"
+                      isClearable/>
+                    <Numeric
+                      bindValue
+                      onChangeHandler={v => this.onChangeTrainingsAttendedHours(v, i)}
+                      name="Number of hours"/>
+                    <DatePicker
+                      maxDate={moment()}
+                      selected={this.state.trainingsAttended[i].date}
+                      onChange={o => this.onChangeTrainingAttendedDate(o, i)}
+                      showYearDropdown
+                      placeholder="Date"/>
+                  </div>
+                  {
+                    a.length > 1 && i < a.length - 1 ?
+                      <div className={styles.hr}/> :
+                      null
+                  }
+                </Fragment>
+              )
+            })
+          }
+          {
+            this.state.trainingsAttended[0].training != null ?
+              <p style={{margin: 0, marginTop: 5}}>
+                {
+                  this.state.trainingsAttended.length > 1 ?
+                    <Fragment>
+                      <span onClick={this.onRemoveTrainingsAttended} className={styles.remove}>REMOVE</span>
+                      &nbsp;&nbsp;or&nbsp;&nbsp;
+                    </Fragment> :
+                    null
+                }
+                <span onClick={this.onAddTrainingsAttended} className={styles.addMore}>ADD MORE</span>
+              </p> :
+              null
           }
         </div>
       </div>;
@@ -1141,7 +1435,8 @@ class PersonalDataSheet extends Component {
                   <div className={styles.left}>
                     {educationalBackground}
                     {civilServiceEligibility}
-                    {workExperience}
+                    {workExperienceOutsideCoa}
+                    {workExperienceWithinCoa}
                     {trainingsAttended}
                   </div>
                   <div className={styles.right}>

@@ -40,7 +40,11 @@ class Select extends PureComponent {
   };
 
   onChangeHandler = o => {
-    this.props.onChangeHandler(o)
+    // if(!Array.isArray(o)) {
+    //   this.props.onChangeHandler(o);
+    // }
+
+    this.props.onChangeHandler(o);
   };
 
   render = () => {

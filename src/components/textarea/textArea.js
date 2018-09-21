@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
+import React, { PureComponent } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 
 import styles from './textArea.scss';
 
-class TextArea extends Component {
+class TextArea extends PureComponent {
   state = {
     value: '',
     borderColor: '#e1e1e1',
@@ -70,7 +70,16 @@ class TextArea extends Component {
             </div> :
             null
         }
-        <textarea ref="textarea" onChange={e => this.onChangeHandler(e)} onFocus={this.onFocus} onBlur={this.onBlur} name={this.props.name} rows="6" placeholder={this.props.name} />
+        <textarea
+          value={this.props.value}
+          ref="textarea"
+          onChange={e => this.onChangeHandler(e)}
+          onFocus={this.onFocus} onBlur={this.onBlur}
+          name={this.props.name}
+          rows="6"
+          placeholder={this.props.name}>
+
+        </textarea>
       </div>
     );
   }

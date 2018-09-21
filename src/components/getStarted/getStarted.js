@@ -253,9 +253,9 @@ class GetStarted extends Component {
     })
   };
 
-  onChangePasswordHandler = (e, s) => {
+  onChangePasswordHandler = (e, switcher) => {
     const value = e.target.value;
-    switch (s) {
+    switch (switcher) {
       case 1:
         this.setState(produce(draft => {
           draft.login.password = value;
@@ -301,13 +301,13 @@ class GetStarted extends Component {
     }
   };
 
-  onChangeEmployeeIdHandler = (e, s) => {
+  onChangeEmployeeIdHandler = (e, switcher) => {
     const reg = /^[0-9]*$/;
     const value = e.target.value;
 
     if(value.length > 7) return 0;
 
-    switch(s) {
+    switch(switcher) {
       case 1: {
         if(reg.test(value) && value.length < 8) {
           this.setState(produce(draft => {

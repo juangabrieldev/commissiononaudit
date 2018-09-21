@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { PureComponent } from 'react';
 import Tooltip from 'react-tooltip';
 
 import Aux from '../auxillary/auxillary';
@@ -8,7 +8,7 @@ import styles from './input.scss';
 import checked from '../../assets/ui/checked.svg';
 import warning from '../../assets/ui/warning.svg';
 
-class Input extends Component {
+class Input extends PureComponent {
   state = {
     value: this.props.value != null ? this.props.value : '',
     borderColor: '#e1e1e1',

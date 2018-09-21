@@ -21,6 +21,7 @@ class datePicker extends Component {
           popperModifiers={this.props.popperModifiers}
           dateFormat="LL"
           minDate={this.props.minDate}
+          maxDate={this.props.maxDate}
           placeholderText={this.props.placeholder}
           selected={this.props.selected}
           onChange={this.props.onChange}/>
