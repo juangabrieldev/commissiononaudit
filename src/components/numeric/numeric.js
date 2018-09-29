@@ -10,6 +10,13 @@ class Numeric extends Component {
     focused: false
   };
 
+  componentDidUpdate = prev => {
+    // //checks if the initial value of value prop is null and the current is not
+    // if(!!this.props.value && prev.value == null) {
+    //   this.setState({value: this.props.value})
+    // }
+  };
+
   subtract = () => {
     if(this.state.value > 0) {
       this.setState({value: this.state.value - 1}, () => {

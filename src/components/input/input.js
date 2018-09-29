@@ -11,7 +11,7 @@ import warning from '../../assets/ui/warning.svg';
 class Input extends PureComponent {
   state = {
     value: this.props.value != null ? this.props.value : '',
-    borderColor: '#e1e1e1',
+    borderColor: '#d7d7d7',
     didFocus: false,
     onFocus: false,
     show: false,
@@ -46,7 +46,7 @@ class Input extends PureComponent {
 
   onBlur = () => {
     if(this.props.passwordStrength === null || this.props.passwordStrength === undefined) {
-      this.setState({borderColor: '#e1e1e1', didFocus: true, onFocus: false});
+      this.setState({borderColor: '#d7d7d7', didFocus: true, onFocus: false});
     }
 
     if(this.props.onBlur != null) {

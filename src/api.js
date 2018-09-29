@@ -10,6 +10,10 @@ export const announcements = {
   scrape: rootUrl + '/announcements/scrape'
 };
 
+export const applications = {
+  create: rootUrl + '/applications/'
+};
+
 export const jobs = {
   create: rootUrl + '/jobs/',
   view: rootUrl + '/jobs/',

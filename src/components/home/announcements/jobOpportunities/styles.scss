@@ -40,14 +40,6 @@
   }
 }
 
-.openJobs {
-  color: $primary-color;
-  cursor: pointer;
-  font-weight: 600;
-  margin: 0;
-  font-size: 14px;
-}
-
 .background {
   height: 100%;
   width: 100%;
@@ -520,9 +512,15 @@
       .buttonContainer {
         padding: 15px;
         display: flex;
-        justify-content: flex-end;
+        justify-content: space-between;
+        align-items: center;
         border-top: solid 1px lighten($border-color, 6);
         box-sizing: border-box;
+
+        p {
+          margin: 0;
+          font-size: 14px;
+        }
       }
     }
   }
@@ -545,6 +543,51 @@
 .secondRow {
   display: flex;
   margin-top: 15px;
+
+  .openJobsContainer {
+    .openJobs {
+      border-radius: 2px;
+      display: flex;
+      padding: 15px;
+      transition: background-color .1s;
+      cursor: pointer;
+      align-items: center;
+
+      p {
+        margin: 0
+      }
+
+      &:hover {
+        background-color: $primary-color;
+
+        > p {
+          color: white
+        }
+
+        .viewJob {
+          opacity: 1;
+        }
+      }
+
+      .viewJob {
+        opacity: 0;
+        margin-right: 0;
+        margin-left: auto;
+        padding: 6px;
+        border-radius: 2px;
+        background: rgba(255, 255, 255, 0.8);
+        transition: opacity .1s;
+
+        &:hover {
+          background: white;
+        }
+
+        p {
+          font-size: 14px;
+        }
+      }
+    }
+  }
 }
 
 .viewOpportunity {
@@ -553,7 +596,13 @@
 
     &.title {
       font-size: 24px;
-      font-weight: 600
+      font-weight: 600;
+      display: inline;
+    }
+
+    &.closed {
+      display: inline;
+      line-height: 2.5;
     }
 
     &.description {
@@ -564,7 +613,7 @@
   }
 
   .details {
-    margin-top: 10px;
+    margin-top: 5px;
     display: flex;
     align-items: center;
 
@@ -576,6 +625,40 @@
     img {
       opacity: .5;
     }
+  }
+}
+
+.comparison {
+  display: flex;
+  padding: 15px;
+  border-radius: 2px;
+  background: lighten($border-color, 10);
+  align-items: center;
+
+  p {
+    margin: 0;
+  }
+
+  .block {
+    flex-grow: 1;
+    flex-basis: 0;
+
+    p {
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .blockNumber {
+      font-size: 50px;
+      font-weight: 600
+    }
+  }
+
+  .divider {
+    margin: 0 10px;
+    height: 80px;
+    width: 1px;
+    background: $border-color;
   }
 }
 

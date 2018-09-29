@@ -61,21 +61,27 @@ class viewOpportunity extends Component {
   };
 
   render() {
-    let description, jobs;
+    let description, jobs, currentNumberOfApplicants, totalVacancies = 0;
 
     if(this.state.hasLoaded) {
       description = parse(this.state.jobOpportunity.description);
 
       jobs = this.state.jobOpportunity.content.jobs.map((job, i) => {
         return (
-          <Fragment key={i}>
-            <div onMouseDown={() => this.onClickOpenJob(job.value)}>
-              <p className={styles.openJobs}>- {job.label}</p>
+          <div className={styles.openJobs} key={i}>
+            <p>{job.label}</p>
+            <div className={styles.viewJob} onMouseDown={() => this.onClickOpenJob(job.value)}>
+              <p>VIEW</p>
             </div>
-          </Fragment>
+          </div>
         )
       });
+
+      this.state.jobOpportunity.content.jobs.forEach(job => {
+        totalVacancies += job.vacancies
+      })
     }
+
     return (
       <Fragment>
         {
@@ -89,7 +95,9 @@ class viewOpportunity extends Component {
                   <div className={univStyles.groupOfFields}>
                     <p className={univStyles.title}>PRIMARY DETAILS</p>
                     <div className={styles.viewOpportunity}>
-                      <p className={styles.title}>{this.state.jobOpportunity.content.title}</p>
+                      <p className={styles.title}>
+                        {this.state.jobOpportunity.content.title}
+                      </p>
                       <div className={styles.details}>
                         <img src={building} alt="" height={14}/>
                         <p>&nbsp;&nbsp;{this.state.jobOpportunity.officename}</p>
@@ -107,13 +115,26 @@ class viewOpportunity extends Component {
                   <div className={univStyles.groupOfFields}>
                     <p className={univStyles.title}>ADDITIONAL INFORMATION</p>
                     <div style={{width: 300}}>
-
+                      <div className={styles.comparison}>
+                        <div className={styles.block}>
+                          <p style={{opacity: .5}}>TOTAL NUMBER OF VACANCIES</p>
+                          <p className={styles.blockNumber}>{totalVacancies}</p>
+                        </div>
+                        <div className={styles.divider}/>
+                        <div className={styles.block}>
+                          <p style={{opacity: .5}}>CURRENT NUMBER OF APPLICANTS</p>
+                          <p className={styles.blockNumber}>0</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
                 <div className={styles.secondRow}>
                   <div className={univStyles.groupOfFields} style={{width: 400}}>
                     <p className={univStyles.title}>OPEN JOBS</p>
+                    <div className={styles.openJobsContainer}>
+                      {jobs}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -125,7 +146,7 @@ class viewOpportunity extends Component {
             <Portal>
               <ViewOpportunityModal
                 data={this.state.data}
-                hideModal={() => this.setState({showModal: false})} />
+                hideModal={() => this.setState({showModal: false, data: null})} />
             </Portal> :
             null
         }

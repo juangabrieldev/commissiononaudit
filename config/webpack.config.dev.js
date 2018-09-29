@@ -207,6 +207,12 @@ module.exports = {
               name: 'static/media/[name].[hash:8].[ext]',
             },
           },
+          {
+            test: /\.(gif|eot|woff|woff2|ttf|svg)$/,
+            loaders: [
+              'url-loader'
+            ]
+          }
         ],
       },
       // ** STOP ** Are you adding a new loader?

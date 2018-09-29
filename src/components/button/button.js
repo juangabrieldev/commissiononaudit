@@ -17,7 +17,7 @@ const button = props => {
 
   return (
     <input
-      onClick={e => props.onClick(e)}
+      onClick={props.onClick}
       disabled={props.disabled}
       type={props.type || 'button'}
       style={{width: props.width, padding: props.width ? '0 5px' : '0 10px', ...props.style}}

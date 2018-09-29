@@ -6,7 +6,7 @@ import Aux from '../auxillary/auxillary';
 import Landing from '../landingPage/landingPage';
 import LoginHelper from './loginHelper/loginHelper';
 import Not from '../notFound/notFound';
-import NotificationBar from '../notificationBar/notificationBar';
+import NotificationLeft from '../home/notificationLeft/notificationLeft';
 import PrivateRoute from '../privateRoute/privateRoute';
 import CompleteRegistration from '../completeRegistration/completeRegistration';
 import Home from '../home/home';
@@ -93,7 +93,7 @@ class Layout extends Component {
             <Route component={Not}/>
           </Switch>
           <LoginHelper/>
-          <NotificationBar/>
+          <NotificationLeft/>
           <Toaster />
         </Aux>
       </Router>

@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { connect } from 'react-redux';
@@ -12,7 +12,7 @@ import logo from '../../../assets/landingPage/appIcon.svg';
 
 import * as actions from '../../../store/actions/ui/actions';
 
-class NavigationBar extends PureComponent {
+class NavigationBar extends Component {
   constructor(props) {
     super(props);
 
@@ -20,7 +20,7 @@ class NavigationBar extends PureComponent {
       switch(this.props.role) {
         case 1:
         case 2: {
-          this.state = {tabs: ['Announcements']};
+          this.state = {tabs: ['Announcements', 'Applications']};
           break;
         }
 

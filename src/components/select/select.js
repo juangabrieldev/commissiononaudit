@@ -29,7 +29,7 @@ class Select extends PureComponent {
         zIndex: 2,
         borderRadius: 2,
         border: 'solid 1px',
-        borderColor: state.isFocused ? '#aaaaaa' : '#e1e1e1',
+        borderColor: state.isFocused ? '#aaaaaa' : '#d7d7d7',
         boxShadow: 'none'
       }
     },

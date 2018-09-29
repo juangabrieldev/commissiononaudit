@@ -30,7 +30,11 @@ class CheckBox extends Component {
           tabIndex={0}>
           <div className={styles.check}/>
         </div>
-        <p>{this.props.message}</p>
+        {
+          !!this.props.message ?
+            <p>{this.props.message}</p> :
+            null
+        }
       </div>
     );
   }

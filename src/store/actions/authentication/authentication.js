@@ -106,6 +106,30 @@ export const chooseRole = role => dispatch => {
   });
 };
 
+export const completeRegistration = token => dispatch => {
+  cookies.remove('session');
+  cookies.set('session', token, {
+    path: '/',
+    expires: 0
+  });
+
+  const tokenDecoded = jwt.decode(token);
+
+  dispatch({
+    type: actions.CHECK_AUTHENTICATION,
+    payload: {
+      firstName: tokenDecoded.firstName,
+      lastName: tokenDecoded.lastName,
+      middleInitial: tokenDecoded.middleInitial,
+      mode: tokenDecoded.mode,
+      email: tokenDecoded.email,
+      role: tokenDecoded.role,
+      employeeId: tokenDecoded.employeeId,
+      imageUrl: tokenDecoded.imageUrl
+    }
+  });
+};
+
 export const login = (employeeId, password) => dispatch => {
   dispatch({type: actions.LOG_IN});
   axios.post(authentication.login, {

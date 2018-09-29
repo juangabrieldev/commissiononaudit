@@ -219,14 +219,13 @@ class JobOpportunities extends Component {
                 }
               </Fragment>
           }
-
         </div>
       )
     });
 
     const JobOpportunitiesRow = this.state.jobOpportunities.map(job => {
       return (
-        <Link to={'/announcements/job-opportunities/' + job.id}>
+        <Link key={job.id} to={'/announcements/job-opportunities/' + job.id}>
           <div>
             <p className={styles.title}>{job.content.title}</p>
             <p className={styles.subtitle}>

@@ -1,6 +1,32 @@
-@import url('https://fonts.googleapis.com/css?family=Assistant:300,400,600,700,800');
-@import url('https://fonts.googleapis.com/css?family=Cinzel:700');
 @import "variables";
+
+@font-face {
+  font-family: 'Assistant';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../../fonts/Assistant-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Assistant';
+  font-style: normal;
+  font-weight: 600;
+  src: url('../../fonts/Assistant-SemiBold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Assistant';
+  font-style: normal;
+  font-weight: 700;
+  src: url('../../fonts/Assistant-Bold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Cinzel';
+  font-style: normal;
+  font-weight: 700;
+  src: url('../../fonts/Cinzel-Bold.ttf') format('truetype');
+}
 
 body {
   margin: 0;

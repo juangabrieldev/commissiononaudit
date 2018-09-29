@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from 'react';
+import React, {PureComponent, Fragment} from 'react';
 import produce from 'immer';
 import {Radio, RadioGroup} from 'react-radio-group'
 import {connect} from 'react-redux';
@@ -16,9 +16,10 @@ import univStyles from '../../home/styles.scss';
 import Button from "../../button/button";
 import styles from "./personalDataSheet.scss";
 
-import {employees, qualificationStandards} from "../../../api";
+import { employees, qualificationStandards } from "../../../api";
+import { completeRegistration } from "../../../store/actions/authentication/authentication";
 
-class PersonalDataSheet extends Component {
+class PersonalDataSheet extends PureComponent {
   state = {
     personalInformation: {
       firstName: '',
@@ -86,7 +87,6 @@ class PersonalDataSheet extends Component {
           to: null
         },
         highestLevelUnitsEarned: '', //if not graduated. for example 'Third year'
-        yearGraduated: null,
         scholarshipAcademicHonorsReceived: ['']
       },
       secondary: {
@@ -97,7 +97,6 @@ class PersonalDataSheet extends Component {
           to: null
         },
         highestLevelUnitsEarned: '', //if not graduated. for example 'Third year'
-        yearGraduated: null,
         scholarshipAcademicHonorsReceived: ['']
       },
       vocational: {
@@ -108,7 +107,6 @@ class PersonalDataSheet extends Component {
           to: null
         },
         highestLevelUnitsEarned: '', //if not graduated. for example 'Third year'
-        yearGraduated: null,
         scholarshipAcademicHonorsReceived: ['']
       },
       college: {
@@ -119,7 +117,6 @@ class PersonalDataSheet extends Component {
           to: null
         },
         highestLevelUnitsEarned: '', //if not graduated. for example 'Third year'
-        yearGraduated: null,
         scholarshipAcademicHonorsReceived: ['']
       },
       graduateStudies: {
@@ -130,7 +127,6 @@ class PersonalDataSheet extends Component {
           to: null
         },
         highestLevelUnitsEarned: '', //if not graduated. for example 'Third year'
-        yearGraduated: null,
         scholarshipAcademicHonorsReceived: ['']
       },
     },
@@ -160,7 +156,7 @@ class PersonalDataSheet extends Component {
 
     //region pagination
     pages: 5,
-    currentPage: 5
+    currentPage: 1,
     //endregion
   };
 
@@ -251,7 +247,6 @@ class PersonalDataSheet extends Component {
   };
 
   onChangeElementaryFrom = o => {
-    console.log(o);
     this.setState(produce(draft => {
       draft.educationalBackground.elementary.periodOfAttendance.from = o
     }))
@@ -476,6 +471,9 @@ class PersonalDataSheet extends Component {
 
   //region workExperienceWithinCoa
   onChangeWorkExperienceWithinCoa = (e, i) => {
+    if(i === 0)
+      return;
+
     const value = e.target.value;
 
     this.setState(produce(draft => {
@@ -484,6 +482,9 @@ class PersonalDataSheet extends Component {
   };
 
   onChangeWorkExperienceWithinCoaOfficeName = (e, i) => {
+    if(i === 0)
+      return;
+
     const value = e.target.value;
 
     this.setState(produce(draft => {
@@ -492,14 +493,12 @@ class PersonalDataSheet extends Component {
   };
 
   onChangeWorkExperienceWithinCoaFrom = (o, i) => {
-
     this.setState(produce(draft => {
       draft.workExperienceWithinCoa[i].from = o;
     }))
   };
 
   onChangeWorkExperienceWithinCoaTo = (o, i) => {
-
     this.setState(produce(draft => {
       draft.workExperienceWithinCoa[i].to = o;
     }))
@@ -522,12 +521,17 @@ class PersonalDataSheet extends Component {
   onChangeTrainingsAttended = (o, i) => {
     let selectedTrainingsBackup;
 
+    //check if the selected training is equal from previous
+    const isEqualFromPrevious = _.isEqual(this.state.trainingsAttended[i].training, o);
+
+    if(isEqualFromPrevious) return;
+
     this.setState(produce(draft => {
       draft.trainingsAttended[i].training = o;
 
       //if user removes the selected training
       if(o == null) {
-        //remove the previously selected option to selectedTrainings
+        //remove the previously selected option from selectedTrainings
         draft.selectedTrainings = _.differenceWith(this.state.selectedTrainings, [this.state.trainingsAttended[i].training], _.isEqual);
       } else {
         draft.selectedTrainings.push(o);
@@ -602,17 +606,17 @@ class PersonalDataSheet extends Component {
 
         draft.trainingsAttended[index].dataSource = filteredDataSource;
         draft.selectedTrainings = selectedTrainings;
-
-        console.log(selectedTrainings)
       })
     }));
   };
   //endregion
 
   componentDidMount = () => {
-    let courses, eligibilities, trainings;
-    let personalDataSheet;
+    this.fetch();
+  };
 
+  fetch = () => {
+    let courses, eligibilities, trainings;
 
     axios.get(qualificationStandards.courses)
       .then(res => {
@@ -631,78 +635,48 @@ class PersonalDataSheet extends Component {
         return axios.get(employees.personalDataSheet + this.props.employeeId)
       })
       .then(res => {
-        // this.setState({courses, eligibilities, trainings});
-
         const { personalDataSheet } = res.data.data;
 
-        //region convert educationalBagckground dates to moment object
-        personalDataSheet.educationalBackground.elementary.periodOfAttendance.from = moment(
-          personalDataSheet.educationalBackground.elementary.periodOfAttendance.from
-        );
-        personalDataSheet.educationalBackground.elementary.periodOfAttendance.to = moment(
-          personalDataSheet.educationalBackground.elementary.periodOfAttendance.to
-        );
-
-        personalDataSheet.educationalBackground.secondary.periodOfAttendance.from = moment(
-          personalDataSheet.educationalBackground.secondary.periodOfAttendance.from
-        );
-        personalDataSheet.educationalBackground.secondary.periodOfAttendance.to = moment(
-          personalDataSheet.educationalBackground.secondary.periodOfAttendance.to
-        );
-
-        personalDataSheet.educationalBackground.vocational.periodOfAttendance.from = moment(
-          personalDataSheet.educationalBackground.vocational.periodOfAttendance.from
-        );
-        personalDataSheet.educationalBackground.vocational.periodOfAttendance.to = moment(
-          personalDataSheet.educationalBackground.vocational.periodOfAttendance.to
-        );
-
-        personalDataSheet.educationalBackground.college.periodOfAttendance.from = moment(
-          personalDataSheet.educationalBackground.college.periodOfAttendance.from
-        );
-        personalDataSheet.educationalBackground.college.periodOfAttendance.to = moment(
-          personalDataSheet.educationalBackground.college.periodOfAttendance.to
-        );
-
-        personalDataSheet.educationalBackground.graduateStudies.periodOfAttendance.from = moment(
-          personalDataSheet.educationalBackground.graduateStudies.periodOfAttendance.from
-        );
-        personalDataSheet.educationalBackground.graduateStudies.periodOfAttendance.to = moment(
-          personalDataSheet.educationalBackground.graduateStudies.periodOfAttendance.to
-        );
-        //endregion
-
-        this.setState({
-          courses,
-          eligibilities,
-          trainings,
-          educationalBackground: {
-            ...personalDataSheet.educationalBackground
-          }
-        });
-
         this.setState(produce(draft => {
+          //data sources
           draft.courses = courses;
           draft.eligibilities = eligibilities;
           draft.trainings = trainings;
-          draft.educationalBackground = {...personalDataSheet.educationalBackground};
-          draft.trainingsAttended[0].dataSource = trainings;
+
+          // actual personalDataSheet
+          draft.educationalBackground = personalDataSheet.educationalBackground;
+          draft.trainingsAttended = personalDataSheet.trainingsAttended;
+          draft.civilServiceEligibility = personalDataSheet.civilServiceEligibility;
+          draft.workExperienceOutsideCoa = personalDataSheet.workExperienceOutsideCoa;
+          draft.workExperienceWithinCoa = personalDataSheet.workExperienceWithinCoa;
+
+          //checks if the data source is empty
+          if(draft.trainingsAttended[0].dataSource.length === 0) {
+            draft.trainingsAttended[0].dataSource = trainings;
+          }
         }));
+      })
+      .catch(err => {
+        console.log(err)
       })
   };
 
   onNext = () => {
-    if(this.state.currentPage === 5) {
+    if(this.state.currentPage === this.state.pages) {
       axios.post(employees.completeRegistration + this.props.employeeId, {
         personalDataSheet: {
           educationalBackground: this.state.educationalBackground,
-          eligibilities: this.state.eligibilities,
-          workExperience: this.state.workExperience,
+          civilServiceEligibility: this.state.civilServiceEligibility,
+          workExperienceOutsideCoa: this.state.workExperienceOutsideCoa,
+          workExperienceWithinCoa: this.state.workExperienceWithinCoa,
           trainingsAttended: this.state.trainingsAttended
         }
       })
-        .then(res => console.log(res.data.data));
+        .then(res => {
+          this.props.completeRegistration(res.data.token)
+        });
     }
+
     this.setState(produce(draft => {
       draft.currentPage < 5 ? draft.currentPage += 1 : null
     }), this.switchPage)
@@ -775,27 +749,21 @@ class PersonalDataSheet extends Component {
     }
   };
 
-  handleScroll = e => {
-    if (e.pageY > 59) {
-      this.setState({isFixed: true})
-    } else {
-      this.setState({isFixed: false})
-    }
-  };
-
   render() {
     const pdsTitleBar =
       <div className={univStyles.titleBar + ' ' + univStyles.fullWidth}>
         <p>Personal Data Sheet</p>
       </div>;
 
+    const bottomBarNextTitle = this.state.currentPage === this.state.pages ? 'SAVE' : 'NEXT';
+
     const bottomBar =
       <div
         className={univStyles.titleBar + ' ' + univStyles.fullWidth + ' ' + univStyles.bottom + ' ' + univStyles.noTransition}>
-        <p style={{fontSize: 16}}>Page {this.state.currentPage} of 4</p>
+        <p style={{fontSize: 16}}>Page {this.state.currentPage} of {this.state.pages}</p>
         <div style={{marginLeft: 'auto', marginRight: 15}}>
           <Button onClick={this.onGoBack} width={70} classNames={['cancel']} name="GO BACK"/>
-          <Button style={{marginLeft: 15}} onClick={this.onNext} width={70} classNames={['tertiary']} name="NEXT"/>
+          <Button style={{marginLeft: 15}} onClick={this.onNext} width={70} classNames={['tertiary']} name={bottomBarNextTitle}/>
         </div>
       </div>;
 
@@ -1023,6 +991,8 @@ class PersonalDataSheet extends Component {
               value={this.state.educationalBackground.secondary.nameOfSchool}
               name="* Name of school (Write in full)"/>
             <DatePicker
+              openToDate={this.state.educationalBackground.elementary.periodOfAttendance.to}
+              minDate={moment(this.state.educationalBackground.elementary.periodOfAttendance.to)}
               onChange={this.onChangeSecondaryFrom}
               selected={this.state.educationalBackground.secondary.periodOfAttendance.from}
               showYearDropdown
@@ -1268,12 +1238,15 @@ class PersonalDataSheet extends Component {
                       value={this.state.workExperienceOutsideCoa[i].companyName}
                       name="Company name"/>
                     <DatePicker
+                      openToDate={i > 0 ? this.state.workExperienceOutsideCoa[i-1].to : null}
+                      minDate={i > 0 ? moment(this.state.workExperienceOutsideCoa[i-1].to) : null}
                       selected={this.state.workExperienceOutsideCoa[i].from}
                       onChange={o => this.onChangeWorkExperienceOutsideCoaFrom(o, i)}
                       value={this.state.workExperienceOutsideCoa[i].from}
                       showYearDropdown
                       placeholder="From"/>
                     <DatePicker
+                      openToDate={this.state.workExperienceOutsideCoa[i].from}
                       selected={this.state.workExperienceOutsideCoa[i].to}
                       onChange={o => this.onChangeWorkExperienceOutsideCoaTo(o, i)}
                       value={this.state.workExperienceOutsideCoa[i].to}
@@ -1328,15 +1301,21 @@ class PersonalDataSheet extends Component {
                     <DatePicker
                       selected={this.state.workExperienceWithinCoa[i].from}
                       onChange={o => this.onChangeWorkExperienceWithinCoaFrom(o, i)}
-                      value={this.state.workExperienceWithinCoa[i].from}
                       showYearDropdown
                       placeholder="From"/>
-                    <DatePicker
-                      selected={this.state.workExperienceWithinCoa[i].to}
-                      onChange={o => this.onChangeWorkExperienceWithinCoaTo(o, i)}
-                      value={this.state.workExperienceWithinCoa[i].to}
-                      showYearDropdown
-                      placeholder="To"/>
+                    {
+                      i === 0 ?
+                        <Input
+                          onChangeHandler={e => {}}
+                          value="Present"
+                          name="To"/> :
+                        <DatePicker
+                          selected={this.state.workExperienceWithinCoa[i].to}
+                          onChange={o => this.onChangeWorkExperienceWithinCoaTo(o, i)}
+                          showYearDropdown
+                          placeholder="To"/>
+                    }
+
                   </div>
                   {
                     a.length > 1 && i < a.length - 1 ?
@@ -1373,7 +1352,7 @@ class PersonalDataSheet extends Component {
           {
             this.state.trainingsAttended.map((e, i, a) => {
               return (
-                <Fragment>
+                <Fragment key={i}>
                   <div className={styles.trainingsAttended}>
                     <Select
                       isCreatable
@@ -1383,6 +1362,7 @@ class PersonalDataSheet extends Component {
                       placeholder="Training title"
                       isClearable/>
                     <Numeric
+                      value={this.state.trainingsAttended[i].hours}
                       bindValue
                       onChangeHandler={v => this.onChangeTrainingsAttendedHours(v, i)}
                       name="Number of hours"/>
@@ -1458,4 +1438,10 @@ const mapStateToProps = state => {
   }
 };
 
-export default connect(mapStateToProps)(PersonalDataSheet);
+const mapDispatchToProps = dispatch => {
+  return {
+    completeRegistration: token => dispatch(completeRegistration(token))
+  }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(PersonalDataSheet);

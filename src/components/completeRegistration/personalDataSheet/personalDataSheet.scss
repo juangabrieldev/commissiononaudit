@@ -209,7 +209,7 @@
   height: 1px;
   width: 100%;
   margin: 15px 0;
-  background: lighten($border-color, 8);
+  background: $border-color;
 }
 
 .workExperience {
