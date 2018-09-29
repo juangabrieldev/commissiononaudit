@@ -8,6 +8,7 @@ import ReactNoUnmountHide from 'react-no-unmount-hide';
 import DeleteConfirmationModal from '../confirmationModal/deleteConfirmationModal';
 import NavigationBar from './navigationBar/navigationBar';
 import Announcements from './announcements/announcements';
+import Applications from './applications/applications';
 import Maintenance from './maintenance/maintenance';
 import NavigationModal from '../navigationModal/navigationModal';
 import SideBarRight from './sideBarRight/sideBarRight';
@@ -39,6 +40,7 @@ class Home extends Component {
           <Switch>
             <Route path="/announcements" component={Announcements}/>
             <Route path="/maintenance" component={Maintenance}/>
+            <Route path="/applications" component={Applications}/>
           </Switch>
         </div>
         {
