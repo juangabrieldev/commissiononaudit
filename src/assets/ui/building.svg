@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 202 196">
+  <defs>
+    <style>
+      .cls-1, .cls-3 {
+        fill: none;
+      }
+
+      .cls-1 {
+        stroke: #000;
+        stroke-width: 16px;
+      }
+
+      .cls-2 {
+        stroke: none;
+      }
+    </style>
+  </defs>
+  <g id="building" transform="translate(-361 -441)">
+    <g id="Rectangle_11" data-name="Rectangle 11" class="cls-1" transform="translate(427 441)">
+      <rect class="cls-2" width="136" height="196"/>
+      <rect class="cls-3" x="8" y="8" width="120" height="180"/>
+    </g>
+    <path id="Path_72" data-name="Path 72" class="cls-1" d="M70,0H0" transform="translate(361.5 629)"/>
+    <line id="Line_2" data-name="Line 2" class="cls-1" y1="133.2" transform="translate(369 503.7)"/>
+    <path id="Path_71" data-name="Path 71" class="cls-1" d="M0,.8,75,0" transform="translate(361.5 510.7)"/>
+    <rect id="Rectangle_12" data-name="Rectangle 12" width="25" height="25" transform="translate(482 498)"/>
+    <rect id="Rectangle_13" data-name="Rectangle 13" width="25" height="25" transform="translate(482 559)"/>
+  </g>
+</svg>
