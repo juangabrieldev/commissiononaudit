@@ -21,7 +21,7 @@ class Select extends PureComponent {
       ...base,
       fontWeight: 400,
       fontSize: 14,
-      color: '#b3b3b3'
+      opacity: .8
     }),
     menu: (base, state) => {
       return {
@@ -57,7 +57,7 @@ class Select extends PureComponent {
     }
 
     return (
-      <div className={styles.select}>
+      <div className={styles.select} style={{...this.props.customStyles}}>
         <span className={show ? styles.shown: ''}>{this.props.placeholder}</span>
         {
           this.props.isCreatable ?

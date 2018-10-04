@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'axios';
+import readXlsxFile from 'read-excel-file'
+import _ from 'lodash';
 
 class Test extends Component {
   state = {
@@ -8,20 +10,30 @@ class Test extends Component {
   };
 
   onChangeFileHandler = () => {
-    const formData = new FormData();
+    // const formData = new FormData();
+    //
+    // formData.append('file', this.refs.file.files[0]);
+    // formData.append('applicationId', '5891568898');
 
-    formData.append('file', this.refs.file.files[0]);
-    formData.append('applicationId', '5891568898');
+    // axios.post('http://localhost:4000/documents/', formData)
+    //   .then(res => {
+    //     if(res.data.status === 200) {
+    //       // this.setState({
+    //       //   showPreview: true,
+    //       //   url: res.data.url
+    //       // })
+    //     }
+    //   })
 
-    axios.post('http://localhost:4000/documents/', formData)
-      .then(res => {
-        if(res.data.status === 200) {
-          // this.setState({
-          //   showPreview: true,
-          //   url: res.data.url
-          // })
-        }
+    readXlsxFile(this.refs.file.files[0])
+      .then(rows => {
+        const index = _.findIndex(rows, o => {
+          return o[0] === 'Final Rating:'
+        });
+
+        console.log(rows[index][1]);
       })
+      .catch(e => console.log(e))
   };
 
   render() {

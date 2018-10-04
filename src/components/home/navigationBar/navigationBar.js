@@ -24,6 +24,12 @@ class NavigationBar extends Component {
           break;
         }
 
+        case 3:
+        case 4: {
+          this.state = {tabs: ['Applications']};
+          break;
+        }
+
         case 7: {
           this.state = {tabs: ['Maintenance']};
           break;
@@ -41,6 +47,11 @@ class NavigationBar extends Component {
           case 1:
           case 2: {
             this.props.history.push('/announcements');
+            break;
+          }
+
+          case 3: {
+            this.props.history.push('/applications');
             break;
           }
 

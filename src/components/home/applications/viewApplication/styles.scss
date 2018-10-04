@@ -1,0 +1,221 @@
+@import "../../../layout/variables";
+
+.uploadContainer {
+  border: solid 1px $border-color;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: border-color .1s;
+
+  &.valid {
+    border-color: $primary-color;
+
+    .validity {
+      visibility: visible !important;
+    }
+  }
+
+  input {
+    display: none;
+  }
+
+  &:hover:not(.valid) {
+    border-color: darken($border-color, 15)
+  }
+
+  .iconContainer {
+    height: 150px;
+    position: relative;
+
+    .validity {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      visibility: hidden;
+    }
+  }
+
+  .bottom {
+    border-top: 1px solid $border-color;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    p {
+      margin: 0;
+      font-size: 14px;
+      text-align: center;
+    }
+  }
+}
+
+.background {
+  height: 100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 4;
+
+  .form {
+    background: white;
+    border-radius: 2px;
+
+    .header {
+      border: 1px solid $border-color;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      border-top-left-radius: 2px;
+      border-top-right-radius: 2px;
+      padding: 0 12px;
+
+      > p {
+        font-weight: 600;
+        font-size: 18px;
+        margin: 0
+      }
+    }
+
+    .formBody {
+      border: 1px solid $border-color;
+      border-top: none;
+      border-bottom-left-radius: 2px;
+      border-bottom-right-radius: 2px;
+      width: 400px;
+
+      > div {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 15px;
+
+        p {
+          font-size: 14px;
+          margin: 0 0 0 15px;
+        }
+      }
+
+    }
+  }
+}
+
+.applicationOverviewContainer {
+  height: calc(100vh - 255px);
+  width: 100%;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  .bigIconContainer {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+    p {
+      margin: 0;
+
+      &.submitted {
+        font-size: 30px;
+        font-weight: 600;
+        line-height: 1.5;
+        margin-top: 5px
+      }
+
+      &.description {
+        font-size: 16px;
+      }
+    }
+  }
+
+  .timelineContainer {
+    margin: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .timeline {
+      display: flex;
+      align-items: center;
+
+      .circle.blue, .line.blue {
+        background-color: $primary-color;
+      }
+
+      .circle {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background-color: darken(#fff, 15);
+        z-index: 1;
+
+        &:not(:first-child) {
+          margin-left: -1px;
+        }
+      }
+
+      .line {
+        height: 3px;
+        width: 200px;
+        background-color: darken(#fff, 15);
+        margin-left: -1px;
+      }
+    }
+
+    .textContainer {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+
+      p {
+        margin: 10px 0;
+        line-height: 1;
+        font-size: 14px;
+        color: $text-secondary;
+
+        &:first-child {
+          margin-left: -58px;
+        }
+
+        &:nth-child(2) {
+          margin-left: -40px;
+        }
+
+        &:nth-child(3) {
+          margin-right: -20px
+        }
+
+        &.black {
+          color: $text-primary;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}
+
+.tooltip {
+  opacity: 1 !important;
+  padding: 8px !important;
+
+  p {
+    color: white !important;
+    font-size: 14px;
+    margin: 2px;
+  }
+
+  .row {
+    display: flex;
+    justify-content: space-between;
+
+    p:nth-child(2) {
+      margin-left: 30px;
+    }
+  }
+}

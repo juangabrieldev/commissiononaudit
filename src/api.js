@@ -11,7 +11,16 @@ export const announcements = {
 };
 
 export const applications = {
-  create: rootUrl + '/applications/'
+  create: rootUrl + '/applications/',
+  view: rootUrl + '/applications/',
+  overview: rootUrl + '/applications/overview/',
+  applicants: rootUrl + '/applications/applicants/',
+  evaluators: rootUrl + '/applications/evaluator/',
+};
+
+export const evaluations = {
+  create: rootUrl + '/evaluations/',
+  get: rootUrl + '/evaluations/'
 };
 
 export const jobs = {
@@ -19,11 +28,17 @@ export const jobs = {
   view: rootUrl + '/jobs/',
 };
 
+export const documents = {
+  post: rootUrl + '/documents/',
+  get: rootUrl + '/documents/',
+};
+
 export const jobOpportunities = {
   select: rootUrl + '/job-opportunities/jobs/', //for react-select
   create: rootUrl + '/job-opportunities/',
   root: rootUrl + '/job-opportunities/',
   view: rootUrl + '/job-opportunities/view/', //view a job opportunity
+  evaluators: rootUrl + '/job-opportunities/evaluators/', //for react-select
 };
 
 export const office = {

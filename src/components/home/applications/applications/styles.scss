@@ -1,0 +1,68 @@
+@import "../../../layout/variables";
+
+.noApplicationContainer {
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  p {
+    margin: 0;
+  }
+}
+
+.application {
+  border: solid 1px $border-color;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: border-color .1s;
+
+  &.valid {
+    border-color: $primary-color;
+
+    .validity {
+      visibility: visible !important;
+    }
+  }
+
+  input {
+    display: none;
+  }
+
+  &:hover:not(.valid) {
+    border-color: darken($border-color, 15)
+  }
+
+  .iconContainer {
+    height: 150px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    > div {
+      height: 80px;
+      display: flex;
+      align-items: center;
+
+      > div {
+        display: flex;
+      }
+    }
+  }
+
+  .bottom {
+    border-top: 1px solid $border-color;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    p {
+      margin: 0 5px;
+      font-size: 14px;
+      text-align: center;
+      font-weight: 600;
+    }
+  }
+}

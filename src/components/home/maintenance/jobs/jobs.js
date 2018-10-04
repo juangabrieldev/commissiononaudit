@@ -26,7 +26,7 @@ setConfiguration({ gutterWidth: 15 });
 class Jobs extends Component {
   state = {
     jobs: [],
-    previousLink: '/maintenance/jobs',
+    previousLink: '/maintenance/applicants',
     jobName: '',
     yearsOfExperience: null,
     hoursOfTraining: null,
@@ -56,7 +56,7 @@ class Jobs extends Component {
   };
 
   fetch = () => {
-    axios.get(office.get + '?jobs=1') //for react-select
+    axios.get(office.get + '?applicants=1') //for react-select
       .then(res => {
         this.setState({office: res.data.data})
       });
@@ -92,7 +92,7 @@ class Jobs extends Component {
 
   onCreate = () => {
     this.setState({previousLink: this.props.location.pathname});
-    this.props.history.push('/maintenance/jobs/new')
+    this.props.history.push('/maintenance/applicants/new')
   };
 
   onCancel = () => {
@@ -164,7 +164,7 @@ class Jobs extends Component {
       .then(res => {
         this.reset();
         if(res.data.status === 200) {
-          this.props.history.push('/maintenance/jobs');
+          this.props.history.push('/maintenance/applicants');
         }
       })
   };
@@ -193,7 +193,7 @@ class Jobs extends Component {
     const jobs = this.state.jobs.map(job => {
       return (
         <Col key={job.key} xs={4}>
-          <Link to={'/maintenance/jobs/' + job.slug}>
+          <Link to={'/maintenance/applicants/' + job.slug}>
             <div className={styles.jobs}>
               <p style={{fontSize: 14}}>{job.jobtitle}</p>
               <p className={styles.sub}>{job.count} employees</p>
@@ -207,7 +207,7 @@ class Jobs extends Component {
       <React.Fragment>
         {jobsTitleBar}
         <Switch>
-          <Route path={'/maintenance/jobs'} exact render={() =>
+          <Route path={'/maintenance/applicants'} exact render={() =>
             <div className={univStyles.main}>
               <div className={univStyles.pageMainNew + ' ' + univStyles.top} />
               <div className={univStyles.pageMain}>
@@ -236,7 +236,7 @@ class Jobs extends Component {
               </div>
             </div>
           }/>
-          <Route path={'/maintenance/jobs/new'} exact render={() =>
+          <Route path={'/maintenance/applicants/new'} exact render={() =>
             <div className={univStyles.main}>
               <div className={univStyles.pageMainNew}>
                 <div className={univStyles.form}>
@@ -303,7 +303,7 @@ class Jobs extends Component {
               <div className={univStyles.pageMain + ' ' + univStyles.bottom} />
             </div>
           }/>
-          <Route path={'/maintenance/jobs/:slug'} exact render={() =>
+          <Route path={'/maintenance/applicants/:slug'} exact render={() =>
             <div className={univStyles.main}>
               <div className={univStyles.pageMainNew + ' ' + univStyles.top} />
               <div className={univStyles.pageMain}>

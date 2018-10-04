@@ -643,14 +643,32 @@
     flex-grow: 1;
     flex-basis: 0;
 
+    > div {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      //icon
+      > div {
+        height: 20px;
+        margin-right: 5px;
+        display: flex;
+        align-items: center;
+
+        > div {
+          display: flex;
+        }
+      }
+    }
+
     p {
       font-size: 12px;
       text-align: center;
     }
 
     .blockNumber {
-      font-size: 50px;
-      font-weight: 600
+      font-size: 40px;
+      margin-right: 4px
     }
   }
 

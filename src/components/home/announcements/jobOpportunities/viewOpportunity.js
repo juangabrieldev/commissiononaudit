@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react';
 import axios from 'axios';
 import parse from 'html-react-parser';
 import moment from 'moment';
+import ReactSVG from "react-svg";
 
 import NotFoundEnabler from '../../../notFound/notFoundEnabler';
 import Portal from '../../../portal/portal';
@@ -16,13 +17,17 @@ import connect from "react-redux/es/connect/connect";
 import building from '../../../../assets/ui/building.svg';
 import calendar from '../../../../assets/ui/calendar.svg';
 
+import user from '../../../../assets/ui/user.svg';
+import vacancy from '../../../../assets/ui/openBox.svg';
+
 class viewOpportunity extends Component {
   state = {
     jobOpportunity: {},
     data: {},
     isValid: false,
     hasLoaded: false,
-    showModal: false
+    showModal: false,
+    officeId: null,
   };
 
   fetch = () => {
@@ -31,7 +36,7 @@ class viewOpportunity extends Component {
         if(res.data.status === 200) {
           this.setState({
             jobOpportunity: res.data.data[0],
-            hasLoaded: true
+            hasLoaded: true,
           })
         }
       })
@@ -41,13 +46,15 @@ class viewOpportunity extends Component {
     this.fetch()
   };
 
-  onClickOpenJob = v => {
+  onClickOpenJob = (jobId, evaluatorEmployeeId) => {
     let data = {
       jobInformation: null,
-      employeeData: null
+      employeeData: null,
+      evaluatorEmployeeId,
+      officeId: this.state.jobOpportunity.officeid
     };
 
-    axios.get(jobs.view + v)
+    axios.get(jobs.view + jobId)
       .then(res => {
         data.jobInformation = res.data.data;
 
@@ -55,6 +62,9 @@ class viewOpportunity extends Component {
       })
       .then(res => {
         data.employeeData = res.data.data;
+
+        //get the id of job opportunity and pass it to modal
+        data.jobInformation.jobOpportunityId = parseInt(this.props.match.params.id, 10);
 
         this.setState({data, showModal: true})
       })
@@ -70,7 +80,7 @@ class viewOpportunity extends Component {
         return (
           <div className={styles.openJobs} key={i}>
             <p>{job.label}</p>
-            <div className={styles.viewJob} onMouseDown={() => this.onClickOpenJob(job.value)}>
+            <div className={styles.viewJob} onMouseDown={() => this.onClickOpenJob(job.value, job.evaluator.value)}>
               <p>VIEW</p>
             </div>
           </div>
@@ -117,13 +127,29 @@ class viewOpportunity extends Component {
                     <div style={{width: 300}}>
                       <div className={styles.comparison}>
                         <div className={styles.block}>
-                          <p style={{opacity: .5}}>TOTAL NUMBER OF VACANCIES</p>
-                          <p className={styles.blockNumber}>{totalVacancies}</p>
+                          <div>
+                            <p className={styles.blockNumber}>{totalVacancies}</p>
+                            <ReactSVG
+                              path={vacancy}
+                              svgStyle={{
+                                fill: '#4688FF',
+                                height: 15,
+                              }}/>
+                          </div>
+                          <p style={{opacity: .8}}>TOTAL NUMBER OF VACANCIES</p>
                         </div>
                         <div className={styles.divider}/>
                         <div className={styles.block}>
-                          <p style={{opacity: .5}}>CURRENT NUMBER OF APPLICANTS</p>
-                          <p className={styles.blockNumber}>0</p>
+                          <div>
+                            <p className={styles.blockNumber}>0</p>
+                            <ReactSVG
+                              path={user}
+                              svgStyle={{
+                                fill: '#4688FF',
+                                height: 20,
+                              }}/>
+                          </div>
+                          <p style={{opacity: .8}}>CURRENT NUMBER OF APPLICANTS</p>
                         </div>
                       </div>
                     </div>

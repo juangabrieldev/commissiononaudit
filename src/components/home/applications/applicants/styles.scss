@@ -1,0 +1,149 @@
+@import "../../../layout/variables";
+
+.startEvaluationContainer {
+  margin-right: 12px;
+  margin-left: auto;
+}
+
+.applicantsContainer {
+  > div {
+    &:not(:first-of-type) {
+      margin-top: 15px;
+    }
+
+    padding: 15px;
+    background: darken(#fff, 2);
+
+    p {
+      margin: 0;
+    }
+  }
+}
+
+.evaluationContainer {
+  .pdsJob {
+    display: flex;
+    height: 400px;
+    margin-top: 8px;
+
+    > div {
+      background-color: rgb(250, 250, 250);
+      height: 100%;
+      width: 100%;
+      border-radius: 1px;
+
+      &:first-child {
+        margin-right: 15px;
+      }
+    }
+  }
+
+}
+
+p.annotation {
+  font-size: 14px;
+  margin: 0;
+  color: #737373;
+  font-weight: 600;
+
+  &:not(:first-of-type) {
+    margin-top: 25px
+  }
+}
+
+.uploadContainer {
+  border: solid 1px $border-color;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: border-color .1s;
+
+  &.valid {
+    border-color: $primary-color;
+
+    .validity {
+      visibility: visible !important;
+    }
+  }
+
+  input {
+    display: none;
+  }
+
+  &:hover:not(.valid) {
+    border-color: darken($border-color, 15)
+  }
+
+  .iconContainer {
+    height: 150px;
+    position: relative;
+
+    .validity {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      visibility: hidden;
+    }
+  }
+
+  .bottom {
+    border-top: 1px solid $border-color;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    p {
+      margin: 0;
+      font-size: 14px;
+      text-align: center;
+    }
+  }
+}
+
+.modal {
+  z-index: 4;
+  background: rgba(0, 0, 0, .8);
+  box-sizing: border-box;
+  width: 100%;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  padding: 20px 0;
+
+  > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:not(.preview) {
+      width: 100px;
+      color: white
+    }
+  }
+
+  .preview {
+    flex-grow: 1;
+    background: white;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+}
+
+.demo {
+  border:1px solid #C0C0C0;
+  border-collapse:collapse;
+  padding:5px;
+  margin: 0 auto
+}
+.demo th {
+  border:1px solid #C0C0C0;
+  padding:5px;
+  background:#F0F0F0;
+}
+.demo td {
+  border:1px solid #C0C0C0;
+  text-align:left;
+  padding:5px;
+}

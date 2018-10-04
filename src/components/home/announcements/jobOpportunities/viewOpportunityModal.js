@@ -4,6 +4,7 @@ import _ from 'lodash';
 import produce from 'immer';
 import moment from 'moment';
 import axios from 'axios';
+import { withRouter } from 'react-router-dom';
 
 import styles from './styles.scss';
 
@@ -56,7 +57,7 @@ class viewOpportunityModal extends Component {
     const mySalaryGrade = job.salaryGrade;
     const jobSalaryGrade = this.props.data.jobInformation.salarygrade;
 
-    this.setState({isSalaryGradeQualified: jobSalaryGrade - mySalaryGrade <= 5}, this.compareEducation)
+    this.setState({isSalaryGradeQualified: (jobSalaryGrade - mySalaryGrade) <= 5}, this.compareEducation)
 
     // const ranges = [[6, 9], [9, 11], [11, 15], [15, 18], [18, 22]];
     //
@@ -163,8 +164,19 @@ class viewOpportunityModal extends Component {
 
   onClickSubmitButton = () => {
     const { employeeId } = this.props.data.employeeData;
-    console.log(employeeId)
-    // axios.post(applications + '')
+    const { jobid, jobOpportunityId } = this.props.data.jobInformation;
+    const { evaluatorEmployeeId, officeId } = this.props.data;
+
+    axios.post(applications.create, {
+      applicantId: employeeId,
+      jobId: jobid,
+      jobOpportunityId,
+      evaluatorEmployeeId,
+      officeId
+    })
+      .then(res => {
+        this.props.history.push('/applications/' + res.data.token)
+      })
   };
 
   render() {
@@ -284,4 +296,4 @@ class viewOpportunityModal extends Component {
   }
 }
 
-export default viewOpportunityModal;
+export default withRouter(viewOpportunityModal);

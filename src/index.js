@@ -7,11 +7,11 @@ import thunk from 'redux-thunk';
 
 import Layout from './components/layout/layout';
 import rootReducer from './store/reducers/rootReducer';
-import Test from "./test";
+import GeneratePDF from './generatePdf';
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 export const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)));
 
 ReactDOM.render(<Provider store={store}><Layout /></Provider>, document.getElementById('root'));
-// ReactDOM.render(<Test />, document.getElementById('root'));
+// ReactDOM.render(<GeneratePDF />, document.getElementById('root'));
 registerServiceWorker();

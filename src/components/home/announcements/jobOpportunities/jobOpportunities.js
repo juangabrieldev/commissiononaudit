@@ -35,6 +35,7 @@ class JobOpportunities extends Component {
     jobOpportunities: [],
     deadline: null,
     vacancies: [],
+    evaluators: [],
     description: '',
     isSingleDeadline: false,
     singleDeadline: null
@@ -57,7 +58,7 @@ class JobOpportunities extends Component {
 
 
   fetch = () => {
-    let jobs;
+    let jobs, jobOpportunitiesData, evaluators;
 
     axios.get(jobOpportunities.select + this.props.employeeId)
       .then(res => {
@@ -65,7 +66,19 @@ class JobOpportunities extends Component {
 
         return axios.get(jobOpportunities.root + this.props.employeeId)
       })
-      .then(res => this.setState({jobOpportunities: res.data.data, jobs}))
+      .then(res => {
+        jobOpportunitiesData = res.data.data;
+
+        return axios.get(jobOpportunities.evaluators + this.props.employeeId)
+      })
+      .then(res => {
+        evaluators = res.data.data;
+
+        const jobOpportunities = jobOpportunitiesData;
+
+        this.setState({jobs, jobOpportunities, evaluators})
+      })
+      .catch(e => console.log(e))
   };
 
   reset = () => {
@@ -85,18 +98,24 @@ class JobOpportunities extends Component {
   };
 
   onChangeJobHandler = o => {
-    o.forEach(obj => {
+    const jobs = [ ...o ];
+
+    const processedJobs = jobs.map(obj => {
+      const newObj = { ...obj };
+
       if(!(!!obj.vacancies) && !(!!obj.deadline) && !(!!obj.isClosed)) {
-        obj.vacancies = 0;
-        obj.deadline = null;
-        obj.isClosed = false
+        newObj.vacancies = 0;
+        newObj.deadline = null;
+        newObj.isClosed = false
       }
+
+      return newObj;
     });
 
-    if(o.length === 1) { //if there's only one job
-      this.setState({selectedJob: o, isSingleDeadline: false})
+    if(processedJobs.length === 1) { //if there's only one job
+      this.setState({selectedJob: processedJobs, isSingleDeadline: false})
     } else {
-      this.setState({selectedJob: o})
+      this.setState({selectedJob: processedJobs})
     }
   };
 
@@ -113,6 +132,12 @@ class JobOpportunities extends Component {
   onChangeVacanciesHandler = (vacancies, index) => {
     this.setState(produce(draft => {
       draft.selectedJob[index].vacancies = vacancies
+    }))
+  };
+
+  onChangeEvaluatorHandler = (evaluator, index) => {
+    this.setState(produce(draft => {
+      draft.selectedJob[index].evaluator = evaluator
     }))
   };
 
@@ -136,8 +161,6 @@ class JobOpportunities extends Component {
     this.setState({description: value})
   };
 
-
-
   onSave = () => {
     axios.post(jobOpportunities.create, {
       employeeId: this.props.employeeId,
@@ -148,12 +171,12 @@ class JobOpportunities extends Component {
       },
       description: this.state.description
     })
-      .then(res => {
+      .then(() => {
         this.props.addToast(`Successfully added ${this.state.title} to job opportunities.`);
         this.fetch();
         this.props.history.push(this.state.previousLink);
         this.reset();
-      })
+      });
   };
 
   render() {
@@ -180,19 +203,11 @@ class JobOpportunities extends Component {
         }
       </div>;
 
-    // const vacancies = this.state.selectedJob.map((job, i) => {
-    //   return (
-    //     <div className={univStyles.input}>
-    //
-    //     </div>
-    //   )
-    // });
-
-    const vacanciesDeadline = this.state.selectedJob.map((job, i) => {
+    const vacanciesDeadlineEvaluator = this.state.selectedJob.map((job, i) => {
       return (
         <div key={i} className={univStyles.input} style={{display: 'flex'}}>
           <Numeric
-            style={{marginRight: 15}}
+            style={{marginRight: 15, flex: 1}}
             value={this.state.selectedJob[i].vacancies}
             bindValue
             onChangeHandler={v => this.onChangeVacanciesHandler(v, i)}
@@ -202,7 +217,7 @@ class JobOpportunities extends Component {
             !this.state.isSingleDeadline ?
               <DatePicker
                 minDate={moment()}
-                style={{width: 300}}
+                style={{width: 300, flex: 1, marginRight: 15}}
                 selected={this.state.selectedJob[i].deadline}
                 onChange={o => this.onChangeDeadline(o, i)}
                 placeholder={`* Deadline for ${job.label}`} /> :
@@ -211,14 +226,26 @@ class JobOpportunities extends Component {
                   i === 0 ?
                     <DatePicker
                       minDate={moment()}
-                      style={{width: 300}}
+                      style={{width: 300, flex: 1, marginRight: 15}}
                       selected={this.state.singleDeadline}
                       onChange={o => this.onChangeDeadline(o, i)}
                       placeholder={"* Deadline for all jobs"}/> :
-                        null
+                    <DatePicker
+                      minDate={moment()}
+                      style={{width: 300, opacity: 0, pointerEvents: 'none', flex: 1, marginRight: 15}}
+                      selected={this.state.singleDeadline}
+                      onChange={o => {}}
+                      placeholder={"* Deadline for all jobs"}/>
                 }
               </Fragment>
           }
+          <Select
+            customStyles={{flex: 1}}
+            isClearable
+            value={this.state.selectedJob[i].evaluator}
+            onChangeHandler={o => this.onChangeEvaluatorHandler(o, i)}
+            options={this.state.evaluators}
+            placeholder={`* Evaluator for ${job.label}`}/>
         </div>
       )
     });
@@ -293,7 +320,7 @@ class JobOpportunities extends Component {
                                 </div> :
                                 null
                             }
-                            { vacanciesDeadline }
+                            { vacanciesDeadlineEvaluator }
                             <div className={univStyles.input}>
                           <TextArea
                             value={this.state.description}

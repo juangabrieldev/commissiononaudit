@@ -8,6 +8,8 @@ import univStyles from '../styles.scss';
 
 import SideBar from "../sideBar/sideBar";
 import ApplicationsOverView from '../applications/applications/applications';
+import Applicants from './applicants/applicants';
+import ViewApplication from './viewApplication/viewApplication';
 
 import applicationsIcon from '../../../assets/ui/documents.svg';
 
@@ -53,7 +55,7 @@ class Applications extends Component {
               fill: '#a3abaf'
             };
 
-            if(index === 0 && this.props.location.pathname === ('/applications')) {
+            if(index === 0 && this.props.location.pathname.includes('/applications')) {
               className = univStyles.active;
               style.fill = '#4688FF'
             } else if(index !== 0 && this.props.location.pathname.includes('/' + slug(tab.toLowerCase()))) {
@@ -83,7 +85,9 @@ class Applications extends Component {
             </SideBar>
             <div className={univStyles.container + ' ' + univStyles.fullWidth + (this.state.zeroTop ? ' ' + univStyles.zeroTop : '')}>
               <Switch>
-                <Route path={'/applications'} component={ApplicationsOverView}/>
+                <Route path={'/applications'} exact component={ApplicationsOverView}/>
+                <Route path={'/applications/:token'} exact component={ViewApplication}/>
+                <Route path={'/applications/applicants/:jobId/:jobOpportunityId'} exact component={Applicants}/>
               </Switch>
             </div>
           </div>

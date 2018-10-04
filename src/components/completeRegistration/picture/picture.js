@@ -15,7 +15,7 @@ import avatar from '../../../assets/ui/avatar.svg';
 //import actionCreators
 import { uploadImage, clickedUploadImage, editCroppedImage, replaceProgress } from "../../../store/actions/completeRegistration/completeRegistration";
 
-import {employees, publicFolder} from "../../../api";
+import { employees, publicFolder } from "../../../api";
 
 class Picture extends Component {
   state = {
