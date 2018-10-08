@@ -7,7 +7,6 @@ import thunk from 'redux-thunk';
 
 import Layout from './components/layout/layout';
 import rootReducer from './store/reducers/rootReducer';
-import GeneratePDF from './generatePdf';
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 export const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)));
