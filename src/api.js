@@ -20,7 +20,8 @@ export const applications = {
 
 export const evaluations = {
   create: rootUrl + '/evaluations/',
-  get: rootUrl + '/evaluations/'
+  get: rootUrl + '/evaluations/',
+  update: rootUrl + '/evaluations/update/'
 };
 
 export const jobs = {

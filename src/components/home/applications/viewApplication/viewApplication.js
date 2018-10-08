@@ -27,46 +27,71 @@ class Applications extends Component {
     uploadContainers: [
       {
         name: 'Application letter',
+        fileName: null,
+        fileSize: null,
         isValid: false,
         accept: '.docx, .doc'
       },
       {
         name: 'Diploma',
+        fileName: null,
+        fileSize: null,
         isValid: false,
         accept: 'image/*'
       },
       {
         name: 'Memorandum of recommendation',
+        fileName: null,
+        fileSize: null,
         isValid: false,
         accept: '.xlsx, .xls'
       },
       {
-        name: 'Performance ratings',
+        name: 'Performance ratings 1',
+        fileName: null,
+        fileSize: null,
+        isValid: false,
+        accept: '.xlsx, .xls'
+      },
+      {
+        name: 'Performance ratings 2',
+        fileName: null,
+        fileSize: null,
         isValid: false,
         accept: '.xlsx, .xls'
       },
       {
         name: 'Position description form',
+        fileName: null,
+        fileSize: null,
         isValid: false,
         accept: '.xlsx, .xls'
       },
       {
         name: 'Sworn statement',
+        fileName: null,
+        fileSize: null,
         isValid: false,
         accept: '.docx, .doc'
       },
       {
         name: 'Training certificate',
+        fileName: null,
+        fileSize: null,
         isValid: false,
         accept: '.docx, .doc'
       },
       {
         name: 'Work experience',
+        fileName: null,
+        fileSize: null,
         isValid: false,
         accept: '.docx, .doc'
       },
       {
         name: 'Work Assignment history',
+        fileName: null,
+        fileSize: null,
         isValid: false,
         accept: '.docx, .doc'
       }
@@ -75,10 +100,16 @@ class Applications extends Component {
     pages: 2,
     showModal: false,
     applicationTitle: null,
+
     isApplicationSubmitted: false,
     hasEvaluationStarted: false,
     isComplete: false,
-    rating: null,
+
+    ratings: {
+      first: null,
+      second: null,
+      average: null
+    },
 
     applicationSubmitted: {
       applicationId: null,
@@ -118,93 +149,96 @@ class Applications extends Component {
     this.fetch();
   };
 
-  onClickUploadContainer = i => {
-    this.refs[this.state.uploadContainers[i].name].click();
-  };
-
   onChangeUploadContainer = i => {
-    if(i === 3) {
-      let isValid;
-      let ratings = [];
+    const notValid = () => {
+      alert('Please upload a valid Performance sheet.');
 
-      const fileList = this.refs[this.state.uploadContainers[i].name].files;
+      this.refs[this.state.uploadContainers[i].name].value = null;
 
-      if(fileList.length !== 2) {
-        alert('Please upload your last two Performance ratings.');
+      this.setState(produce(draft => {
+        draft.uploadContainers[i].isValid = false
+      }));
+    };
 
-        this.refs[this.state.uploadContainers[i].name].value = null;
-        this.setState(produce(draft => {
-          draft.uploadContainers[i].isValid = false
-        }))
-      } else {
-        readExcel(fileList[0])
+    if(this.refs[this.state.uploadContainers[i].name].value) {
+      const fileName = this.refs[this.state.uploadContainers[i].name].files[0].name;
+      const fileSize = this.refs[this.state.uploadContainers[i].name].files[0].size;
+
+      if(i === 3 || i === 4) {
+        readExcel(this.refs[this.state.uploadContainers[i].name].files[0])
           .then(rows => {
             const index = _.findIndex(rows, o => {
               return o[0] === 'Final Rating:'
             });
 
             if(index < 0) {
-              alert('Please upload a valid Performance ratings sheet');
-
-              this.refs[this.state.uploadContainers[i].name].value = null;
-              this.setState(produce(draft => {
-                draft.uploadContainers[i].isValid = false
-              }))
+              notValid();
             } else {
-              ratings.push(rows[index][1]);
+              //if out of range
+              if(rows[index][1] <= 5 && rows[index][1] >= 0) {
+                const first = this.refs[this.state.uploadContainers[3].name].files[0];
+                const second = this.refs[this.state.uploadContainers[4].name].files[0];
 
-              return readExcel(fileList[1])
-            }
-          })
-          .then(rows => {
-            const index = _.findIndex(rows, o => {
-              return o[0] === 'Final Rating:'
-            });
+                if(first && second) {
+                  if(first.lastModified === second.lastModified) {
+                    notValid()
+                  } else {
+                    this.setState(produce(draft => {
+                      //switch between performance ratings
+                      switch(i) {
+                        case 3: {
+                          draft.ratings.first = rows[index][1];
+                          break;
+                        }
 
-            if(index < 0) {
-              alert('Please upload a valid Performance ratings sheet');
+                        case 4: {
+                          draft.ratings.second = rows[index][1];
+                        }
+                      }
 
-              this.refs[this.state.uploadContainers[i].name].value = null;
-              this.setState(produce(draft => {
-                draft.uploadContainers[i].isValid = false
-              }))
-            } else {
-              ratings.push(rows[index][1]);
+                      draft.uploadContainers[i].isValid = true;
+                      draft.uploadContainers[i].fileName = fileName;
+                      draft.uploadContainers[i].fileSize = fileSize;
+                    }));
+                  }
+                } else {
+                  this.setState(produce(draft => {
+                    //switch between performance ratings
+                    switch(i) {
+                      case 3: {
+                        draft.ratings.first = rows[index][1];
+                        break;
+                      }
 
-              console.log(ratings);
+                      case 4: {
+                        draft.ratings.second = rows[index][1];
+                      }
+                    }
 
-              if(ratings[0] != null && ratings[1] != null) {
-                let average = (ratings[0] + ratings[1]) / 2;
-
-                console.log(average);
-
-                this.setState(produce(draft => {
-                  draft.uploadContainers[i].isValid = true;
-                  draft.rating = average;
-                }))
+                    draft.uploadContainers[i].isValid = true;
+                    draft.uploadContainers[i].fileName = fileName;
+                    draft.uploadContainers[i].fileSize = fileSize;
+                  }));
+                }
               } else {
-                alert('Please upload a valid Performance ratings sheet');
-
-                this.refs[this.state.uploadContainers[i].name].value = null;
-                this.setState(produce(draft => {
-                  draft.uploadContainers[i].isValid = false
-                }))
+                notValid()
               }
             }
           })
-          .catch(e => {
-            alert('Please upload a valid Performance ratings sheet');
-
-            this.refs[this.state.uploadContainers[i].name].value = null;
-            this.setState(produce(draft => {
-              draft.uploadContainers[i].isValid = false
-            }))
-          })
+          .catch(notValid)
+      } else {
+        this.setState(produce(draft => {
+          draft.uploadContainers[i].isValid = true;
+          draft.uploadContainers[i].fileName = fileName;
+          draft.uploadContainers[i].fileSize = fileSize;
+        }));
       }
     } else {
       this.setState(produce(draft => {
-        draft.uploadContainers[i].isValid = true
-      }))
+        draft.uploadContainers[i].isValid = false;
+        draft.uploadContainers[i].fileName = null;
+        draft.uploadContainers[i].fileSize = null;
+      }));
     }
   };
 
@@ -212,19 +246,16 @@ class Applications extends Component {
     if(this.state.currentPage === 1) {
       const files = new FormData();
 
-      this.state.uploadContainers.forEach((con, i) => {
+      this.state.uploadContainers.forEach(con => {
         const name = _.camelCase(con.name);
 
-        if(i === 3) {
-          files.append(name + '1', this.refs[con.name].files[0]);
-          files.append(name + '2', this.refs[con.name].files[1]);
-        } else {
-          files.append(name, this.refs[con.name].files[0]);
-        }
+        files.append(name, this.refs[con.name].files[0]);
       });
 
       files.append('applicationId', this.props.match.params.token);
-      files.append('rating', this.state.rating.toString());
+      files.append('firstRating', this.state.ratings.first.toString());
+      files.append('secondRating', this.state.ratings.second.toString());
+      files.append('averageRating', ((this.state.ratings.first + this.state.ratings.second) / 2).toString());
 
       this.setState({showModal: true});
 
@@ -246,7 +277,9 @@ class Applications extends Component {
     let uploadDisabled = false;
 
     this.state.uploadContainers.forEach(con => {
-      uploadDisabled = !con.isValid
+      if(!con.isValid) {
+        uploadDisabled = true
+      }
     });
 
     const bottomBar =
@@ -271,40 +304,54 @@ class Applications extends Component {
 
     const uploadContainers = this.state.uploadContainers.map((container, i) => {
       return (
-        <Col xs={2} style={{marginTop: 15}}>
-          <div
-            onClick={() => this.onClickUploadContainer(i)}
-            className={styles.uploadContainer + (container.isValid ? ' ' + styles.valid : '')}>
-            <div className={styles.iconContainer}>
-              <div className={styles.validity}>
-                <img src={check} height={16} alt=""/>
-              </div>
-            </div>
-            <input
-              multiple={i === 3}
-              accept={container.accept}
-              onChange={() => this.onChangeUploadContainer(i)}
-              ref={container.name}
-              type="file"/>
-            <div className={styles.bottom}>
-              <p>{container.name}</p>
-            </div>
+        <div className={styles.uploadContainer}>
+          <input
+            accept={container.accept}
+            onChange={() => this.onChangeUploadContainer(i)}
+            ref={container.name}
+            type="file"/>
+          <div className={styles.iconContainer}>
           </div>
-        </Col>
-        )
-  });
+          <div>
+            <p className={styles.uploadContainerName}>{ container.name }</p>
+            <p className={styles.metaData}>
+              {
+                container.isValid ?
+                  Math.round(container.fileSize / 1000) + ' KB' :
+                  'File size'
+              }
+            </p>
+            <p className={styles.metaData}>&#8226;</p>
+            <p className={styles.metaData}>
+              {
+                container.isValid ?
+                  container.fileName :
+                  'File name'
+              }
+            </p>
+          </div>
+          {
+            container.isValid ?
+              <Button
+                onClick={() => this.refs[container.name].click()}
+                classNames={['tertiary']}
+                name="CHANGE FILE"/> :
+              <Button
+                onClick={() => this.refs[container.name].click()}
+                classNames={['primary']}
+                name="UPLOAD FILE"/>
+          }
+        </div>
+      )
+    });
 
     const uploadDocuments =
-      <div className={univStyles.form}>
+      <div className={univStyles.form} style={{marginBottom: 50}}>
         <div className={univStyles.header}>
           <p>Upload documents</p>
         </div>
         <div className={univStyles.formBody} style={{padding: 15}}>
-          <Container fluid style={{padding: 0, marginTop: '-15px'}}>
-            <Row>
-              {uploadContainers}
-            </Row>
-          </Container>
+          { uploadContainers }
         </div>
       </div>;
 

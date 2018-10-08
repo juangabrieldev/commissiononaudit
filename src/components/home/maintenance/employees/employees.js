@@ -64,7 +64,7 @@ class Employees extends Component {
       employees: null
     };
 
-    axios.get(office.get + '?applicants=1') //for react-select
+    axios.get(office.get + '?jobs=1') //for react-select
       .then(res => {
         data.office = res.data.data;
         return axios.get(roles.select);

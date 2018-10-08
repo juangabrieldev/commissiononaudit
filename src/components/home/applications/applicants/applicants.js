@@ -16,6 +16,7 @@ import Button from "../../../button/button";
 import styles from "./styles.scss";
 import Portal from "../../../portal/portal";
 import check from "../../../../assets/ui/check.svg";
+import Select from '../../../select/select';
 
 setConfiguration({ gutterWidth: 15 });
 
@@ -30,12 +31,20 @@ class Applicants extends Component {
       }
     }],
     hasStartedEvaluation: false,
+    evaluationIsDone: false,
     currentNumberOfApplicant: 1,
     showModal: false,
     currentNumberOfDoc: 0,
     documentUrl: null,
-    approved: [],
-    rejected: []
+    approved: [{}],
+    rejected: [{}],
+    rankingList: [{
+      details: {
+        ratings: {
+          average: "0"
+        }
+      }
+    }]
   };
 
   componentDidMount = () => {
@@ -43,9 +52,10 @@ class Applicants extends Component {
     .then(res => {
       this.setState(produce(draft => {
         draft.employees = res.data.data.data;
-        draft.hasStartedEvaluation = res.data.data.hasStartedEvaluation
+        draft.hasStartedEvaluation = res.data.data.hasStartedEvaluation;
+        draft.evaluationIsDone = res.data.data.evaluationIsDone;
       }), () => {
-        if(this.state.hasStartedEvaluation) {
+        if(this.state.hasStartedEvaluation || this.state.evaluationIsDone) {
           this.fetchEvaluation(this.props.match.params.jobId, this.props.match.params.jobOpportunityId)
         }
       })
@@ -60,28 +70,13 @@ class Applicants extends Component {
 
   handleClickOutside = e => {
     if (this.refs.preview && !this.refs.preview.contains(e.target)) {
+      document.body.style.overflow = "visible";
+
       this.setState({
         showModal: false,
         documentUrl: null
       })
     }
-  };
-
-  print = () => {
-    console.log('hehe');
-
-    const input = document.getElementById('report');
-    html2canvas(input)
-      .then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPdf();
-        pdf.scaleFactor = 5;
-
-        pdf.addImage(imgData, 'JPEG', 0, 0);
-        // pdf.output('dataurlnewwindow');
-        pdf.save("download.pdf");
-      })
-    ;
   };
 
   startEvaluation = () => {
@@ -98,8 +93,12 @@ class Applicants extends Component {
     axios.get(evaluations.get + `${jobId}/${jobOpportunityId}`)
       .then(res => {
         this.setState(produce(draft => {
-          draft.hasStartedEvaluation = true;
+          draft.hasStartedEvaluation = res.data.hasStarted;
+          draft.evaluationIsDone = res.data.isDone;
           draft.evaluationData = res.data.data;
+          draft.approved = res.data.contenders;
+          draft.rankingList = res.data.rankingList;
+          draft.rejected = res.data.rejected;
         }))
       })
   };
@@ -107,6 +106,8 @@ class Applicants extends Component {
   onDocumentClick = (url) => {
     axios.get(documents.get + url.replace('https://anonfile.com/', ''))
       .then(res => {
+        document.body.style.overflow = "hidden";
+
         this.setState({
           showModal: this.state.showModal ? null : true,
           documentUrl: res.data.remoteUrl
@@ -117,18 +118,103 @@ class Applicants extends Component {
     // })
   };
 
+  saveEvaluation = () => {
+    axios.post(evaluations.update, {
+      jobId: this.props.match.params.jobId,
+      jobOpportunityId: this.props.match.params.jobOpportunityId,
+      approved: this.state.approved,
+      rejected: this.state.rejected
+    })
+      .then(() => {
+        this.fetchEvaluation(this.props.match.params.jobId, this.props.match.params.jobOpportunityId)
+      })
+  };
+
   onReject = () => {
-    console.log()
+    this.setState(produce(draft => {
+      draft.rejected.push(this.state.evaluationData[this.state.currentNumberOfApplicant - 1]);
+    }), () => {
+      window.scrollTo(0, 0);
+
+      if(this.state.currentNumberOfApplicant < this.state.evaluationData.length) {
+        this.setState(produce(draft => {
+          draft.currentNumberOfApplicant++
+        }))
+      } else {
+        this.saveEvaluation();
+      }
+    })
   };
 
   onAccept = () => {
-    console.log(this.state.employees)
+    this.setState(produce(draft => {
+      draft.approved.push(this.state.evaluationData[this.state.currentNumberOfApplicant - 1]);
+    }), () => {
+      window.scrollTo(0, 0);
+
+      if(this.state.currentNumberOfApplicant < this.state.evaluationData.length) {
+        this.setState(produce(draft => {
+          draft.currentNumberOfApplicant++
+        }))
+      } else {
+        this.saveEvaluation();
+      }
+    })
+  };
+
+  openContext = () => {
+    this.openContextBool = true;
+    this.forceUpdate();
+  };
+
+  generate = switcher => {
+    let input;
+
+    console.log(switcher);
+
+    switch(switcher) {
+      case 1: input = document.getElementById('listOfApplicantsReport');
+        break;
+      case 2: input = document.getElementById('listOfQualifiedAndNotQualifiedReport');
+        break;
+      case 3: input = document.getElementById('rankingListReport');
+    }
+
+    html2canvas(input, { scale: 2.115 })
+      .then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPdf();
+
+        pdf.internal.scaleFactor = 6;
+
+        pdf.addImage(imgData, 'JPEG', 0, 0);
+
+        this.openContextBool = false;
+        this.forceUpdate();
+
+        pdf.save("download.pdf");
+      });
   };
 
   render() {
     const jobsTitleBar =
       <div className={univStyles.titleBar + ' ' + univStyles.fullWidth}>
         <p>Application for { this.state.employees[0].jobtitle }</p>
+        <div onClick={this.openContext} className={styles.generate}>
+          <div />
+          <div />
+          <div />
+
+          {
+            this.openContextBool ?
+              <div className={styles.context}>
+                <p onClick={() => this.generate(1)}>Generate list of applicants</p>
+                <p onClick={() => this.generate(2)}>Generate list of qualified and not qualified applicants</p>
+                <p onClick={() => this.generate(3)}>Generate ranking list</p>
+              </div> :
+              null
+          }
+        </div>
       </div>;
 
     const applications = this.state.employees.map((employee, i) => {
@@ -201,7 +287,16 @@ class Applicants extends Component {
                     <div className={styles.evaluationContainer}>
                       <p className={styles.annotation}>PDS - JOB REQUIREMENTS COMPARISON</p>
                       <div className={styles.pdsJob}>
-                        <div/>
+                        <div>
+                          <div>
+                            <p className={styles.annotation}>Education</p>
+                            <p>Bachelor of Science in Accountancy</p>
+                          </div>
+                          <div className={styles.hr}/>
+                          <div>
+                            <p className={styles.annotation}>Relative experience</p>
+                          </div>
+                        </div>
                         <div/>
                       </div>
                       <p className={styles.annotation}>DOCUMENTS</p>
@@ -242,7 +337,7 @@ class Applicants extends Component {
       </div>
     );
 
-    const reportsRow = this.state.employees.map(emp => {
+    const listOfApplicantsReportRow = this.state.approved.map(emp => {
       return (
         <tr>
           <td>{ emp.employeeid }</td>
@@ -260,18 +355,18 @@ class Applicants extends Component {
       )
     });
 
-    const reports = (
-      <div id="report"  style={{
+    const listOfApplicantsReport = (
+      <div id="listOfApplicantsReport"  style={{
         backgroundColor: '#fff',
         width: '210mm',
         minHeight: '297mm',
         marginLeft: 'auto',
         marginRight: 'auto',
-        padding: 10,
+        padding: 20,
         boxSizing: 'border-box'
       }}>
         <p style={{fontSize: 25, fontWeight: 600, textAlign: 'center'}}>LIST OF APPLICANTS APPLYING FOR { this.state.employees[0].jobtitle.toUpperCase() }</p>
-        <p style={{marginLeft: 52}}>Total number of applicants: { this.state.employees.length }</p>
+        <p>Total number of applicants: { this.state.employees.length }</p>
         <table className={styles.demo}>
           <thead>
           <tr>
@@ -283,7 +378,124 @@ class Applicants extends Component {
           </tr>
           </thead>
           <tbody>
-          { reportsRow }
+          { listOfApplicantsReportRow }
+          </tbody>
+        </table>
+      </div>
+    );
+
+    const listOfQualifiedAndNotQualifiedReportRow1 = this.state.approved.map(emp => {
+      return (
+        <tr>
+          <td>{ emp.applicantid }</td>
+          <td>
+            {
+              ' ' + emp.firstname +
+              ( emp.middleinitial != null ? ' ' + emp.middleinitial + '.' : '' ) +
+              ' ' + emp.lastname
+            }
+          </td>
+          <td>Accountant II</td>
+          <td>Administration Sector</td>
+          <td>{ moment(emp.dateofsubmission).format('dddd, MMMM D YYYY') }</td>
+          <td>Approved</td>
+        </tr>
+      )
+    });
+
+    const listOfQualifiedAndNotQualifiedReportRow2 = this.state.rejected.map(emp => {
+      return (
+        <tr>
+          <td>{ emp.applicantid }</td>
+          <td>
+            {
+              ' ' + emp.firstname +
+              ( emp.middleinitial != null ? ' ' + emp.middleinitial + '.' : '' ) +
+              ' ' + emp.lastname
+            }
+          </td>
+          <td>Accountant II</td>
+          <td>Administration Sector</td>
+          <td>{ moment(emp.dateofsubmission).format('dddd, MMMM D YYYY') }</td>
+          <td>Rejected</td>
+        </tr>
+      )
+    });
+
+    const listOfQualifiedAndNotQualifiedReport = (
+      <div id="listOfQualifiedAndNotQualifiedReport"  style={{
+        backgroundColor: '#fff',
+        width: '210mm',
+        minHeight: '297mm',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        padding: 20,
+        boxSizing: 'border-box'
+      }}>
+        <p style={{fontSize: 25, fontWeight: 600, textAlign: 'center'}}>LIST OF QUALIFIED / NOT QUALIFIED APPLICANTS APPLYING FOR { this.state.employees[0].jobtitle.toUpperCase() }</p>
+        <p>Total number of applicants: { this.state.employees.length }</p>
+        <p>Total number of qualified applicants: { this.state.approved.length }</p>
+        <p>Total number of not qualified applicants: { this.state.rejected.length }</p>
+        <table className={styles.demo}>
+          <thead>
+          <tr>
+            <th>Employee ID</th>
+            <th>Name</th>
+            <th>Current position</th>
+            <th>Current office</th>
+            <th>Date of submission</th>
+            <th>Status</th>
+          </tr>
+          </thead>
+          <tbody>
+          { listOfQualifiedAndNotQualifiedReportRow1 }
+          { listOfQualifiedAndNotQualifiedReportRow2 }
+          </tbody>
+        </table>
+      </div>
+    );
+
+    console.log(this.state.rankingList);
+
+    const rankingListReportRow = this.state.rankingList.map((emp, i) => {
+      return (
+        <tr>
+          <td>{ emp.applicantid }</td>
+          <td>
+            {
+              ' ' + emp.firstname +
+              ( emp.middleinitial != null ? ' ' + emp.middleinitial + '.' : '' ) +
+              ' ' + emp.lastname
+            }
+          </td>
+          <td>{ parseFloat(emp.details.ratings.average).toFixed(2) }</td>
+          <td># {i + 1}</td>
+        </tr>
+      )
+    });
+
+    const rankingListReport = (
+      <div id="rankingListReport"  style={{
+        backgroundColor: '#fff',
+        width: '210mm',
+        minHeight: '297mm',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        padding: 20,
+        boxSizing: 'border-box'
+      }}>
+        <p style={{fontSize: 25, fontWeight: 600, textAlign: 'center'}}>RANKING LIST FOR { this.state.employees[0].jobtitle.toUpperCase() }</p>
+        <table className={styles.demo}>
+          <thead>
+          <tr>
+            <th>Employee ID</th>
+            <th>Name</th>
+            <th>Rating</th>
+            <th>Rank</th>
+          </tr>
+          </thead>
+          <tbody>
+          { rankingListReportRow }
           </tbody>
         </table>
       </div>
@@ -300,10 +512,12 @@ class Applicants extends Component {
         }
         { jobsTitleBar }
         <div style={{position: 'fixed', top: -4000}}>
-          { reports }
+          { listOfApplicantsReport }
+          { listOfQualifiedAndNotQualifiedReport }
+          { rankingListReport }
         </div>
         {
-          this.state.hasStartedEvaluation ?
+          this.state.hasStartedEvaluation && !this.state.evaluationIsDone ?
             evaluationWindow :
             <div className={univStyles.main}>
               <div className={univStyles.pageMain}>
@@ -311,16 +525,14 @@ class Applicants extends Component {
                   <div className={univStyles.header}>
                     <p>List of applicants</p>
                     <div className={styles.startEvaluationContainer}>
-                      <Button
-                        style={{marginRight: 12}}
-                        onClick={this.print}
-                        classNames={['cancel']}
-                        name="GENERATE REPORT"
-                      />
-                      <Button
-                        onClick={this.startEvaluation}
-                        classNames={['primary']}
-                        name="START EVALUATION" />
+                      {
+                        !this.state.evaluationIsDone ?
+                          <Button
+                            onClick={this.startEvaluation}
+                            classNames={['primary']}
+                            name="START EVALUATION" /> :
+                          null
+                      }
                       <div>
 
                       </div>
@@ -328,7 +540,7 @@ class Applicants extends Component {
                   </div>
                   <div className={univStyles.formBody} style={{padding: 15}}>
                     <div className={styles.applicantsContainer}>
-                      {applications}
+                      { applications }
                     </div>
                   </div>
                 </div>

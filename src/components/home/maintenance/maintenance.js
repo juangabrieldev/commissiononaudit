@@ -95,7 +95,7 @@ class Maintenance extends Component {
           <div className={styles.container + (this.state.zeroTop ? ' ' + styles.zeroTop : '')}>
             <Switch>
               <Route path={this.props.match.path + '/employees'} component={Employees}/>
-              <Route path={this.props.match.path + '/applicants'} component={Jobs}/>
+              <Route path={this.props.match.path + '/jobs'} component={Jobs}/>
               <Route path={this.props.match.path + '/office'} component={Office}/>
               <Route path={this.props.match.path + '/qualification-standards'} component={QualificationStandards}/>
             </Switch>

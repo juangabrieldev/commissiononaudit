@@ -92,7 +92,7 @@ class Applications extends Component {
             onClick={() => this.onClickApplication(application.token)}
             className={styles.application}>
             <div className={styles.iconContainer}>
-              <ReactSVG path={files} svgStyle={{fill: '#4688FF', height: 80}} />
+              <ReactSVG path={files} svgStyle={{fill: '#4688FF', height: 60}} />
             </div>
             <div className={styles.bottom}>
               <p>Application for {application.jobtitle}</p>
@@ -109,7 +109,7 @@ class Applications extends Component {
             onClick={() => this.onClickJob(job.jobid, job.jobopportunityid)}
             className={styles.application}>
             <div className={styles.iconContainer}>
-              <ReactSVG path={jobIcon} svgStyle={{fill: '#4688FF', height: 80}} />
+              <ReactSVG path={jobIcon} svgStyle={{fill: '#4688FF', height: 60}} />
             </div>
             <div className={styles.bottom}>
               <p>Applications for {job.jobtitle}</p>

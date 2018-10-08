@@ -57,7 +57,10 @@ class viewOpportunityModal extends Component {
     const mySalaryGrade = job.salaryGrade;
     const jobSalaryGrade = this.props.data.jobInformation.salarygrade;
 
-    this.setState({isSalaryGradeQualified: (jobSalaryGrade - mySalaryGrade) <= 5}, this.compareEducation)
+    this.setState({isSalaryGradeQualified: (jobSalaryGrade - mySalaryGrade) <= 5}, () => {
+      this.compareEducation();
+      console.log(this.state);
+    });
 
     // const ranges = [[6, 9], [9, 11], [11, 15], [15, 18], [18, 22]];
     //
@@ -121,6 +124,8 @@ class viewOpportunityModal extends Component {
     trainingsAttended.forEach(a => {
       currentTrainingHours += a.hours;
     });
+
+    console.log(currentTrainingHours);
 
     this.setState({
       currentTrainingHours,

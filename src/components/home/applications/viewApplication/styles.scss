@@ -1,51 +1,97 @@
 @import "../../../layout/variables";
 
+//.uploadContainer {
+//  border: solid 1px $border-color;
+//  border-radius: 2px;
+//  cursor: pointer;
+//  transition: border-color .1s;
+//
+//  &.valid {
+//    border-color: $primary-color;
+//
+//    .validity {
+//      visibility: visible !important;
+//    }
+//  }
+//
+//  input {
+//    display: none;
+//  }
+//
+//  &:hover:not(.valid) {
+//    border-color: darken($border-color, 15)
+//  }
+//
+//  .iconContainer {
+//    height: 150px;
+//    position: relative;
+//
+//    .validity {
+//      position: absolute;
+//      top: 10px;
+//      right: 10px;
+//      visibility: hidden;
+//    }
+//  }
+//
+//  .bottom {
+//    border-top: 1px solid $border-color;
+//    height: 45px;
+//    display: flex;
+//    align-items: center;
+//    justify-content: center;
+//
+//    p {
+//      margin: 0;
+//      font-size: 14px;
+//      text-align: center;
+//    }
+//  }
+//}
+
 .uploadContainer {
+  &:not(:first-child) {
+    margin-top: 15px;
+  }
+
+  padding: 15px;
   border: solid 1px $border-color;
   border-radius: 2px;
-  cursor: pointer;
-  transition: border-color .1s;
+  display: flex;
+  align-items: center;
 
-  &.valid {
-    border-color: $primary-color;
+  p {
+    margin: 0;
+    line-height: 1.4;
 
-    .validity {
-      visibility: visible !important;
+    &.uploadContainerName {
+      font-weight: 600;
+      font-size: 16px
+    }
+
+    &.metaData {
+      font-size: 14px;
+      font-weight: 600;
+      opacity: .5;
+      display: inline;
+      margin-right: 4px
     }
   }
 
-  input {
-    display: none;
+  input[type="button"] {
+    margin-right: 0;
+    margin-left: auto
   }
 
-  &:hover:not(.valid) {
-    border-color: darken($border-color, 15)
+  input[type="file"] {
+    display: none
   }
 
   .iconContainer {
-    height: 150px;
-    position: relative;
-
-    .validity {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      visibility: hidden;
-    }
-  }
-
-  .bottom {
-    border-top: 1px solid $border-color;
-    height: 45px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    p {
-      margin: 0;
-      font-size: 14px;
-      text-align: center;
-    }
+    height: 50px;
+    width: 50px;
+    margin-right: 15px;
+    border: solid 1px rgb(230, 230, 230)
   }
 }
 
