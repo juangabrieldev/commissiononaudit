@@ -8,6 +8,7 @@ import _ from 'lodash';
 import moment from "moment";
 import html2canvas from 'html2canvas';
 import jsPdf from 'jspdf';
+import ReactToPrint from "react-to-print";
 
 import { applications, evaluations, documents } from "../../../../api";
 
@@ -42,7 +43,12 @@ class Applicants extends Component {
       details: {
         ratings: {
           average: "0"
-        }
+        },
+      },
+      personaldatasheet: {
+        workExperienceWithinCoa: [{
+          positionTitle: ''
+        }]
       }
     }]
   };
@@ -104,15 +110,17 @@ class Applicants extends Component {
   };
 
   onDocumentClick = (url) => {
-    axios.get(documents.get + url.replace('https://anonfile.com/', ''))
-      .then(res => {
-        document.body.style.overflow = "hidden";
+    this.setState({showModal: true}, () => {
+      axios.get(documents.get + url.replace('https://anonfile.com/', ''))
+        .then(res => {
+          document.body.style.overflow = "hidden";
 
-        this.setState({
-          showModal: this.state.showModal ? null : true,
-          documentUrl: res.data.remoteUrl
+          this.setState({
+            documentUrl: res.data.remoteUrl
+          })
         })
-      })
+    })
+
     // this.setState({
     //   showModal: this.state.showModal ? null : true
     // })
@@ -169,21 +177,24 @@ class Applicants extends Component {
 
   generate = switcher => {
     let input;
+    let pdf;
 
     console.log(switcher);
 
     switch(switcher) {
       case 1: input = document.getElementById('listOfApplicantsReport');
+        pdf = new jsPdf();
         break;
       case 2: input = document.getElementById('listOfQualifiedAndNotQualifiedReport');
+        pdf = new jsPdf();
         break;
       case 3: input = document.getElementById('rankingListReport');
+        pdf = new jsPdf('l');
     }
 
     html2canvas(input, { scale: 2.115 })
       .then((canvas) => {
         const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPdf();
 
         pdf.internal.scaleFactor = 6;
 
@@ -208,9 +219,10 @@ class Applicants extends Component {
           {
             this.openContextBool ?
               <div className={styles.context}>
-                <p onClick={() => this.generate(1)}>Generate list of applicants</p>
-                <p onClick={() => this.generate(2)}>Generate list of qualified and not qualified applicants</p>
-                <p onClick={() => this.generate(3)}>Generate ranking list</p>
+                <ReactToPrint
+                  trigger={() => <p href="#">Generate ranking list</p>}
+                  content={() => this.refs.byClusterEvaluatorRankingListReport}
+                />
               </div> :
               null
           }
@@ -337,7 +349,7 @@ class Applicants extends Component {
       </div>
     );
 
-    const listOfApplicantsReportRow = this.state.approved.map(emp => {
+    const listOfApplicantsReportRow = this.state.employees.map(emp => {
       return (
         <tr>
           <td>{ emp.employeeid }</td>
@@ -398,7 +410,7 @@ class Applicants extends Component {
           <td>Accountant II</td>
           <td>Administration Sector</td>
           <td>{ moment(emp.dateofsubmission).format('dddd, MMMM D YYYY') }</td>
-          <td>Approved</td>
+          <td>Qualified</td>
         </tr>
       )
     });
@@ -417,7 +429,7 @@ class Applicants extends Component {
           <td>Accountant II</td>
           <td>Administration Sector</td>
           <td>{ moment(emp.dateofsubmission).format('dddd, MMMM D YYYY') }</td>
-          <td>Rejected</td>
+          <td>Not qualified</td>
         </tr>
       )
     });
@@ -432,7 +444,9 @@ class Applicants extends Component {
         padding: 20,
         boxSizing: 'border-box'
       }}>
-        <p style={{fontSize: 25, fontWeight: 600, textAlign: 'center'}}>LIST OF QUALIFIED / NOT QUALIFIED APPLICANTS APPLYING FOR { this.state.employees[0].jobtitle.toUpperCase() }</p>
+        <p style={{fontSize: 25, fontWeight: 600, textAlign: 'center'}}>
+          LIST OF QUALIFIED / NOT QUALIFIED APPLICANTS APPLYING FOR { this.state.employees[0].jobtitle.toUpperCase() }
+        </p>
         <p>Total number of applicants: { this.state.employees.length }</p>
         <p>Total number of qualified applicants: { this.state.approved.length }</p>
         <p>Total number of not qualified applicants: { this.state.rejected.length }</p>
@@ -455,47 +469,192 @@ class Applicants extends Component {
       </div>
     );
 
-    console.log(this.state.rankingList);
-
-    const rankingListReportRow = this.state.rankingList.map((emp, i) => {
+    const byClusterEvaluatorRankingListRow = this.state.rankingList.map((emp, i) => {
       return (
         <tr>
-          <td>{ emp.applicantid }</td>
           <td>
-            {
-              ' ' + emp.firstname +
-              ( emp.middleinitial != null ? ' ' + emp.middleinitial + '.' : '' ) +
-              ' ' + emp.lastname
-            }
+            <strong>
+              {
+                ' ' + emp.firstname +
+                ( emp.middleinitial != null ? ' ' + emp.middleinitial + '.' : '' ) +
+                ' ' + emp.lastname
+              }
+            </strong>
           </td>
-          <td>{ parseFloat(emp.details.ratings.average).toFixed(2) }</td>
-          <td># {i + 1}</td>
+          <td>&nbsp;</td>
+          <td>{ emp.personaldatasheet.workExperienceWithinCoa[0].positionTitle }</td>
+          <td>{ this.state.employees[0].jobtitle }</td>
+          <td style={{padding: 0}}>
+
+          </td>
+          <td><strong>RA 1080 (CPA)</strong></td>
+          <td></td>
+          <td style={{padding: 0}}>
+            <div style={{display: 'flex', justifyContent: 'space-around'}}>
+              <p>{ emp.details.ratings.first }</p>
+              <p>{ emp.details.ratings.second }</p>
+              <p>{ emp.details.ratings.average.substring(1, 4) }</p>
+            </div>
+          </td>
+          <td>&nbsp;</td>
+          <td>{ i + 1 }</td>
         </tr>
       )
     });
 
-    const rankingListReport = (
-      <div id="rankingListReport"  style={{
+    const byClusterEvaluatorRankingListReport = (
+      <div ref="byClusterEvaluatorRankingListReport"  style={{
         backgroundColor: '#fff',
-        width: '210mm',
-        minHeight: '297mm',
-        marginLeft: 'auto',
-        marginRight: 'auto',
         padding: 20,
         boxSizing: 'border-box'
       }}>
-        <p style={{fontSize: 25, fontWeight: 600, textAlign: 'center'}}>RANKING LIST FOR { this.state.employees[0].jobtitle.toUpperCase() }</p>
+        <p style={{fontSize: 16, fontWeight: 600, textAlign: 'center'}}>
+          PROPOSAL FOR PROMOTION / RANKING LIST OF CONTENDERS
+          <br/>
+          as of { moment().format('MMMM DD, YYYY') }
+        </p>
         <table className={styles.demo}>
-          <thead>
-          <tr>
-            <th>Employee ID</th>
-            <th>Name</th>
-            <th>Rating</th>
-            <th>Rank</th>
-          </tr>
-          </thead>
+          {/*<tbody>*/}
+          {/*{ rankingListReportRow }*/}
+          {/*</tbody>*/}
           <tbody>
-          { rankingListReportRow }
+            <tr>
+              <td colSpan={2}>
+                &nbsp;
+              </td>
+              <td colSpan={8}>
+                Qualification Standards
+              </td>
+            </tr>
+            <tr>
+              <td>Recommending office / Sector</td>
+              <td><strong>Administration Sector</strong></td>
+              <td colSpan={8}>&nbsp;</td>
+            </tr>
+            <tr>
+              <td>Proposed position :</td>
+              <td><strong>{ this.state.employees[0].jobtitle }</strong></td>
+              <td>Education</td>
+              <td colSpan={11}><strong>Bachelor of Science in Accountancy</strong></td>
+            </tr>
+            <tr>
+              <td>Number of contenders</td>
+              <td><strong>{ this.state.approved.length }</strong></td>
+              <td>Experience</td>
+              <td colSpan={11}><strong>2 years of relevant experience</strong></td>
+            </tr>
+            <tr>
+              <td>Number of vacancies</td>
+              <td><strong>{ 3 }</strong></td>
+              <td>Training</td>
+              <td colSpan={11}><strong>8 hours of relevant training</strong></td>
+            </tr>
+            <tr>
+              <td>Data of publication of vacancies <br/> in the CSC website</td>
+              <td>&nbsp;</td>
+              <td>Eligibility</td>
+              <td colSpan={11}><strong>RA 1080 (CPA)</strong></td>
+            </tr>
+            <tr>
+              <td colSpan={7}>Contenders' Profile</td>
+              <td colSpan={3}>Ranking list</td>
+            </tr>
+            <tr>
+              <td>Name</td>
+              <td>Date of birth</td>
+              <td>Present position / <br/> SG / Place of assignment</td>
+              <td>Proposed <br/>place of assignment</td>
+              <td style={{padding: 0}}>
+                <table style={{borderSpacing: 0}}>
+                  <tr>
+                    <td style={{
+                      border: 'none',
+                      borderBottom: 'solid 1px #C0C0C0'
+                    }}
+                        colSpan={2}>
+                      Educational attainment
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{border: 'none', borderRight: 'solid 1px #C0C0C0'}}>
+                      Basic / Honors
+                    </td>
+                    <td style={{border: 'none'}}>
+                      Master's / Honors
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td>Eligibility</td>
+              <td style={{padding: 0}}>
+                <table style={{borderSpacing: 0}}>
+                  <tr>
+                    <td style={{
+                      border: 'none',
+                      borderBottom: 'solid 1px #C0C0C0'
+                    }}
+                        colSpan={2}>
+                      Relevant training
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{border: 'none', borderRight: 'solid 1px #C0C0C0'}}>
+                      Title <br/> of training
+                    </td>
+                    <td style={{border: 'none'}}>
+                      No. of hours
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td style={{padding: 0}}>
+                <table style={{borderSpacing: 0, borderCollapse: 'collapse'}}>
+                  <tr>
+                    <td style={{
+                      border: 'none',
+                      borderBottom: 'solid 1px #C0C0C0'
+                    }}
+                        colSpan={3}>
+                      Performance
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{border: 'none', borderRight: 'solid 1px #C0C0C0'}}>
+                      1st <br/> sem. June
+                    </td>
+                    <td style={{border: 'none', borderRight: 'solid 1px #C0C0C0'}}>
+                      2nd <br/> sem. Dec
+                    </td>
+                    <td style={{border: 'none'}}>
+                      Average
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td style={{padding: 0}}>
+                <table style={{borderSpacing: 0, borderCollapse: 'collapse'}}>
+                  <tr>
+                    <td style={{
+                      border: 'none',
+                      borderBottom: 'solid 1px #C0C0C0'
+                    }}
+                        colSpan={2}>
+                      Tie breaker
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{border: 'none', borderRight: 'solid 1px #C0C0C0'}}>
+                      Merit
+                    </td>
+                    <td style={{border: 'none', borderRight: 'solid 1px #C0C0C0'}}>
+                      Length of <br/> service
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td>Rank</td>
+            </tr>
+            { byClusterEvaluatorRankingListRow }
           </tbody>
         </table>
       </div>
@@ -511,10 +670,12 @@ class Applicants extends Component {
             null
         }
         { jobsTitleBar }
-        <div style={{position: 'fixed', top: -4000}}>
-          { listOfApplicantsReport }
-          { listOfQualifiedAndNotQualifiedReport }
-          { rankingListReport }
+        <div style={{position: 'absolute', top: 0, left: 0, zIndex: 1000}}>
+          {/*{ listOfApplicantsReport }*/}
+          {/*{ listOfQualifiedAndNotQualifiedReport }*/}
+          <Portal>
+            { byClusterEvaluatorRankingListReport }
+          </Portal>
         </div>
         {
           this.state.hasStartedEvaluation && !this.state.evaluationIsDone ?
