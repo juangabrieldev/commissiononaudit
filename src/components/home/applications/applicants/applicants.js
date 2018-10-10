@@ -6,18 +6,17 @@ import produce from 'immer';
 import {Container, Row, Col, setConfiguration} from "react-grid-system";
 import _ from 'lodash';
 import moment from "moment";
-import html2canvas from 'html2canvas';
-import jsPdf from 'jspdf';
 import ReactToPrint from "react-to-print";
 
 import { applications, evaluations, documents } from "../../../../api";
+
+import logo from '../../../../assets/logo.png';
 
 import univStyles from "../../styles.scss";
 import Button from "../../../button/button";
 import styles from "./styles.scss";
 import Portal from "../../../portal/portal";
 import check from "../../../../assets/ui/check.svg";
-import Select from '../../../select/select';
 
 setConfiguration({ gutterWidth: 15 });
 
@@ -175,38 +174,6 @@ class Applicants extends Component {
     this.forceUpdate();
   };
 
-  generate = switcher => {
-    let input;
-    let pdf;
-
-    console.log(switcher);
-
-    switch(switcher) {
-      case 1: input = document.getElementById('listOfApplicantsReport');
-        pdf = new jsPdf();
-        break;
-      case 2: input = document.getElementById('listOfQualifiedAndNotQualifiedReport');
-        pdf = new jsPdf();
-        break;
-      case 3: input = document.getElementById('rankingListReport');
-        pdf = new jsPdf('l');
-    }
-
-    html2canvas(input, { scale: 2.115 })
-      .then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-
-        pdf.internal.scaleFactor = 6;
-
-        pdf.addImage(imgData, 'JPEG', 0, 0);
-
-        this.openContextBool = false;
-        this.forceUpdate();
-
-        pdf.save("download.pdf");
-      });
-  };
-
   render() {
     const jobsTitleBar =
       <div className={univStyles.titleBar + ' ' + univStyles.fullWidth}>
@@ -220,8 +187,17 @@ class Applicants extends Component {
             this.openContextBool ?
               <div className={styles.context}>
                 <ReactToPrint
+                  trigger={() => <p href="#">Generate list of applicants</p>}
+                  content={() => this.refs.listOfApplicantsReport}
+                />
+                <ReactToPrint
+                  trigger={() => <p href="#">Generate list of qualified and not qualified applicants</p>}
+                  content={() => this.refs.listOfQualifiedAndNotQualifiedReport}
+                />
+                <ReactToPrint
                   trigger={() => <p href="#">Generate ranking list</p>}
                   content={() => this.refs.byClusterEvaluatorRankingListReport}
+                  pageStyle="margin: 10px"
                 />
               </div> :
               null
@@ -368,7 +344,7 @@ class Applicants extends Component {
     });
 
     const listOfApplicantsReport = (
-      <div id="listOfApplicantsReport"  style={{
+      <div ref="listOfApplicantsReport"  style={{
         backgroundColor: '#fff',
         width: '210mm',
         minHeight: '297mm',
@@ -377,9 +353,18 @@ class Applicants extends Component {
         padding: 20,
         boxSizing: 'border-box'
       }}>
-        <p style={{fontSize: 25, fontWeight: 600, textAlign: 'center'}}>LIST OF APPLICANTS APPLYING FOR { this.state.employees[0].jobtitle.toUpperCase() }</p>
+        <p style={{marginBottom: 4, textAlign: 'right'}}>{ moment().format('MMMM DD, YYYY') }</p>
+        <div style={{width: '100%', height: 1, backgroundColor: 'rgb(230, 230, 230)'}}/>
+        <div style={{marginTop: 20, display: 'flex', alignItems: 'center', marginBottom: 40}}>
+          <img src={logo} height={60} alt=""/>
+          <div style={{marginLeft: 10}}>
+            <p style={{fontFamily: 'Cinzel', fontSize: 24, margin: 0}}>Commission on Audit</p>
+            <p style={{fontFamily: 'Segoe UI', fontSize: 16, margin: 0}}>PROMOTION MANAGEMENT SYSTEM</p>
+          </div>
+        </div>
+        <p style={{fontSize: 20, fontWeight: 600, textAlign: 'center'}}>LIST OF APPLICANTS APPLYING FOR { this.state.employees[0].jobtitle.toUpperCase() }</p>
         <p>Total number of applicants: { this.state.employees.length }</p>
-        <table className={styles.demo}>
+        <table style={{width: '100%'}} className={styles.demo}>
           <thead>
           <tr>
             <th>Employee ID</th>
@@ -435,7 +420,7 @@ class Applicants extends Component {
     });
 
     const listOfQualifiedAndNotQualifiedReport = (
-      <div id="listOfQualifiedAndNotQualifiedReport"  style={{
+      <div ref="listOfQualifiedAndNotQualifiedReport"  style={{
         backgroundColor: '#fff',
         width: '210mm',
         minHeight: '297mm',
@@ -444,7 +429,16 @@ class Applicants extends Component {
         padding: 20,
         boxSizing: 'border-box'
       }}>
-        <p style={{fontSize: 25, fontWeight: 600, textAlign: 'center'}}>
+        <p style={{marginBottom: 4, textAlign: 'right'}}>{ moment().format('MMMM DD, YYYY') }</p>
+        <div style={{width: '100%', height: 1, backgroundColor: 'rgb(230, 230, 230)'}}/>
+        <div style={{marginTop: 20, display: 'flex', alignItems: 'center', marginBottom: 40}}>
+          <img src={logo} height={60} alt=""/>
+          <div style={{marginLeft: 10}}>
+            <p style={{fontFamily: 'Cinzel', fontSize: 24, margin: 0}}>Commission on Audit</p>
+            <p style={{fontFamily: 'Segoe UI', fontSize: 16, margin: 0}}>PROMOTION MANAGEMENT SYSTEM</p>
+          </div>
+        </div>
+        <p style={{fontSize: 20, fontWeight: 600, textAlign: 'center'}}>
           LIST OF QUALIFIED / NOT QUALIFIED APPLICANTS APPLYING FOR { this.state.employees[0].jobtitle.toUpperCase() }
         </p>
         <p>Total number of applicants: { this.state.employees.length }</p>
@@ -493,7 +487,7 @@ class Applicants extends Component {
             <div style={{display: 'flex', justifyContent: 'space-around'}}>
               <p>{ emp.details.ratings.first }</p>
               <p>{ emp.details.ratings.second }</p>
-              <p>{ emp.details.ratings.average.substring(1, 4) }</p>
+              <p>{ emp.details.ratings.average.substring(0, 4) }</p>
             </div>
           </td>
           <td>&nbsp;</td>
@@ -670,13 +664,13 @@ class Applicants extends Component {
             null
         }
         { jobsTitleBar }
-        <div style={{position: 'absolute', top: 0, left: 0, zIndex: 1000}}>
-          {/*{ listOfApplicantsReport }*/}
-          {/*{ listOfQualifiedAndNotQualifiedReport }*/}
-          <Portal>
+        <Portal>
+          <div style={{position: 'absolute', display: 'none', left: 0}}>
+            { listOfApplicantsReport }
+            { listOfQualifiedAndNotQualifiedReport }
             { byClusterEvaluatorRankingListReport }
-          </Portal>
-        </div>
+          </div>
+        </Portal>
         {
           this.state.hasStartedEvaluation && !this.state.evaluationIsDone ?
             evaluationWindow :

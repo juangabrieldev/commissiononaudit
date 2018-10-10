@@ -37,7 +37,9 @@ class Avatar extends Component {
           })
         }
       });
+  };
 
+  componentWillMount = () => {
     switch(this.props.role) {
       case 1: {
         this.role = 'Admin Officer';
@@ -100,7 +102,7 @@ class Avatar extends Component {
             <div className={styles.online}/>
           </div>
           <div className={styles.username}>
-            <p>{this.props.firstName}</p>
+            <p>{this.props.firstName} ({this.role})</p>
           </div>
           <img src={downArrow} height={4} alt=""/>
         </div>
