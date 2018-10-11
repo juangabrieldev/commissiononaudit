@@ -49,6 +49,40 @@
         display: flex;
       }
     }
+
+    .labelContainer {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .label {
+      font-size: 10px;
+      padding: 3px 6px;
+      border-radius: 20px;
+      color: white;
+      border: solid 1px;
+      margin: 0;
+      font-weight: 600;
+
+      &:not(:first-child) {
+        margin-left: 5px;
+      }
+
+      &.green {
+        background-color: transparentize(#00c23a, .95);
+        color: darken(#00c23a, 8);
+        border-color: #00c23a;
+      }
+
+      &.blue {
+        background-color: transparentize($primary-color, .95);
+        color: darken($primary-color, 8);
+        border-color: $primary-color;
+      }
+    }
   }
 
   .bottom {

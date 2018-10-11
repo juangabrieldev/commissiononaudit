@@ -10,47 +10,89 @@ import ReactToPrint from "react-to-print";
 
 import { applications, evaluations, documents } from "../../../../api";
 
-import logo from '../../../../assets/logo.png';
-
 import univStyles from "../../styles.scss";
-import Button from "../../../button/button";
 import styles from "./styles.scss";
+
+import Button from "../../../button/button";
+import Checkbox from '../../../checkBox/checkBox';
 import Portal from "../../../portal/portal";
+
+import calendar from '../../../../assets/ui/calendar.svg';
 import check from "../../../../assets/ui/check.svg";
+import clock from '../../../../assets/ui/clock.svg';
+import diploma from '../../../../assets/ui/diploma.svg';
+import eligibility from '../../../../assets/ui/eligibility.svg';
+import logo from '../../../../assets/logo.png';
+import mortarBoard from '../../../../assets/ui/mortarboard.svg';
 
 setConfiguration({ gutterWidth: 15 });
 
 class Applicants extends Component {
-  state = {
-    employees: [{
-      jobtitle: ''
-    }],
-    evaluationData: [{
-      details: {
-        files: {}
-      }
-    }],
-    hasStartedEvaluation: false,
-    evaluationIsDone: false,
-    currentNumberOfApplicant: 1,
-    showModal: false,
-    currentNumberOfDoc: 0,
-    documentUrl: null,
-    approved: [{}],
-    rejected: [{}],
-    rankingList: [{
-      details: {
-        ratings: {
-          average: "0"
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      employees: [{
+        jobtitle: ''
+      }],
+      evaluationData: [{
+        details: {
+          files: {}
         },
-      },
-      personaldatasheet: {
-        workExperienceWithinCoa: [{
-          positionTitle: ''
-        }]
+        personaldatasheet: {
+          educationalBackground: {
+            college: {
+              nameOfSchool: null
+            },
+            secondary: {
+              nameOfSchool: null
+            },
+            elementary: {
+              nameOfSchool: null
+            },
+            vocational: {
+              nameOfSchool: null
+            },
+            graduateStudies: {
+              nameOfSchool: null
+            },
+          },
+          civilServiceEligibility: []
+        }
+      }],
+
+      hasStartedEvaluation: false,
+      evaluationIsDone: false,
+
+      currentNumberOfApplicant: 1,
+
+      showModal: false,
+      currentNumberOfDoc: 0,
+      documentUrl: null,
+
+      approved: [{}],
+      rejected: [{}],
+      rankingList: [{
+        details: {
+          ratings: {
+            average: "dasdasd"
+          },
+        },
+        personaldatasheet: {
+          workExperienceWithinCoa: [{
+            positionTitle: ''
+          }]
+        }
+      }],
+
+      height: {
+        education: null,
+        training: null,
+        eligibility: null,
+        workExperience: null
       }
-    }]
-  };
+    }
+  }
 
   componentDidMount = () => {
     axios.get(applications.applicants + `${this.props.employeeId}/${this.props.match.params.jobId}/${this.props.match.params.jobOpportunityId}`)
@@ -95,16 +137,32 @@ class Applicants extends Component {
   };
 
   fetchEvaluation = (jobId, jobOpportunityId) => {
+    let isDone;
     axios.get(evaluations.get + `${jobId}/${jobOpportunityId}`)
       .then(res => {
         this.setState(produce(draft => {
           draft.hasStartedEvaluation = res.data.hasStarted;
-          draft.evaluationIsDone = res.data.isDone;
-          draft.evaluationData = res.data.data;
           draft.approved = res.data.contenders;
           draft.rankingList = res.data.rankingList;
           draft.rejected = res.data.rejected;
-        }))
+          draft.evaluationData = res.data.data;
+
+          isDone = res.data.isDone;
+        }), () => {
+          this.setState(produce(draft => {
+            draft.evaluationIsDone = isDone;
+          }), () => {
+            this.setState(produce(draft => {
+              draft.height.education = this.refs.pdsEducation.clientHeight > this.refs.jobEducation.clientHeight ?
+                this.refs.pdsEducation.clientHeight : this.refs.jobEducation.clientHeight;
+
+              draft.height.eligibility = this.refs.pdsEligibility.clientHeight > this.refs.jobEligibility.clientHeight ?
+                this.refs.pdsEligibility.clientHeight : this.refs.jobEligibility.clientHeight;
+
+              draft.height.workExperience = this.refs.workExperienceInside.clientHeight + this.refs.workExperienceOutside.clientHeight + 18
+            }))
+          });
+        })
       })
   };
 
@@ -174,7 +232,13 @@ class Applicants extends Component {
     this.forceUpdate();
   };
 
+  onCheckRelativeExperience = i => {
+
+  };
+
   render() {
+    console.log(this.state.evaluationData);
+
     const jobsTitleBar =
       <div className={univStyles.titleBar + ' ' + univStyles.fullWidth}>
         <p>Application for { this.state.employees[0].jobtitle }</p>
@@ -182,7 +246,6 @@ class Applicants extends Component {
           <div />
           <div />
           <div />
-
           {
             this.openContextBool ?
               <div className={styles.context}>
@@ -228,7 +291,7 @@ class Applicants extends Component {
     if(this.state.hasStartedEvaluation && this.state.evaluationData != null) {
       const files = this.state.evaluationData[this.state.currentNumberOfApplicant - 1].details.files;
 
-      Object.keys(files).forEach((key, i) => {
+      Object.keys(files).forEach(key => {
         const containerName = _.upperFirst(_.lowerCase(key));
 
         const con = (
@@ -252,56 +315,306 @@ class Applicants extends Component {
       });
     }
 
-    const evaluationWindow = this.state.evaluationData.map((evaluation, i) => {
-      if(i === this.state.currentNumberOfApplicant - 1) {
-        return (
-          <Fragment key={i}>
-            { bottomBar }
-            <div className={univStyles.main}>
-              <div className={univStyles.pageMainNew + ' ' + univStyles.top} />
-              <div className={univStyles.pageMain}>
-                <div className={univStyles.form} style={{marginBottom: 200}}>
-                  <div className={univStyles.header}>
-                    <p>
-                      Applicant:
-                      {
-                        ' ' + evaluation.firstname +
-                        ( evaluation.middleinitial != null ? ' ' + evaluation.middleinitial + '.' : '' ) +
-                        ' ' + evaluation.lastname
-                      }
-                    </p>
-                  </div>
-                  <div className={univStyles.formBody} style={{padding: 15}}>
-                    <div className={styles.evaluationContainer}>
-                      <p className={styles.annotation}>PDS - JOB REQUIREMENTS COMPARISON</p>
-                      <div className={styles.pdsJob}>
-                        <div>
+    const evaluationWindow = () => {
+      const e = this.state.evaluationData.map((evaluation, i) => {
+        if(i === this.state.currentNumberOfApplicant - 1) {
+          return (
+            <Fragment key={i}>
+              { bottomBar }
+              <div className={univStyles.main}>
+                <div className={univStyles.pageMainNew + ' ' + univStyles.top} />
+                <div className={univStyles.pageMain}>
+                  <div className={univStyles.form} style={{marginBottom: 200}}>
+                    <div className={univStyles.header}>
+                      <p>
+                        Applicant:
+                        <span style={{fontWeight: 700}}>
+                          {
+                            ' ' + evaluation.firstname +
+                            ( evaluation.middleinitial != null ? ' ' + evaluation.middleinitial + '.' : '' ) +
+                            ' ' + evaluation.lastname
+                          }
+                        </span>
+                      </p>
+                    </div>
+                    <div className={univStyles.formBody} style={{padding: 15}}>
+                      <div className={styles.evaluationContainer}>
+                        <p className={styles.annotation}>PDS - JOB REQUIREMENTS COMPARISON</p>
+                        <div className={styles.pdsJob}>
                           <div>
-                            <p className={styles.annotation}>Education</p>
-                            <p>Bachelor of Science in Accountancy</p>
+                            <div
+                              ref="pdsEducation"
+                              style={{
+                                height: this.state.height.education
+                              }}>
+                              <p className={styles.annotation}>Education</p>
+                              {
+                                evaluation.personaldatasheet.educationalBackground.college.nameOfSchool ?
+                                  <div>
+                                    <img src={mortarBoard} height={20} alt=""/>
+                                    <div>
+                                      <p>
+                                        Studied <strong>Bachelor of Science in Accountancy</strong> at <span>Polytechnic University of the Philippines</span>
+                                      </p>
+                                      <p style={{opacity: .8, marginTop: 1}}>(2015 - 2019)</p>
+                                    </div>
+                                  </div> :
+                                  null
+                              }
+                              {
+                                evaluation.personaldatasheet.educationalBackground.secondary.nameOfSchool ?
+                                  <div style={{marginLeft: 4}}>
+                                    <img src={diploma} height={16} alt=""/>
+                                    <div>
+                                      <p>
+                                        Went to <span>Ramon Magsaysay High School</span>
+                                      </p>
+                                      <p style={{opacity: .8, marginTop: 1}}>(2011 - 2015)</p>
+                                    </div>
+                                  </div> :
+                                  null
+                              }
+                              {
+                                evaluation.personaldatasheet.educationalBackground.elementary.nameOfSchool ?
+                                  <div style={{marginLeft: 4}}>
+                                    <img src={diploma} height={16} alt=""/>
+                                    <div>
+                                      <p>
+                                        Went to <span>Moises Salvador Elementary School</span>
+                                      </p>
+                                      <p style={{opacity: .8, marginTop: 1}}>(2006 - 2006)</p>
+                                    </div>
+                                  </div> :
+                                  null
+                              }
+                              <div className={styles.dotDotDot}/>
+                            </div>
+                            <div
+                              ref="pdsEligibility"
+                              style={{
+                                height: this.state.height.eligibility
+                              }}>
+                              <p className={styles.annotation}>Eligibility</p>
+                              <div style={{marginLeft: 4}}>
+                                <img src={eligibility} height={18} style={{opacity: 1}} alt=""/>
+                                <div style={{marginLeft: -4}}>
+                                  {
+                                    evaluation.personaldatasheet.civilServiceEligibility.length > 0 ?
+                                      evaluation.personaldatasheet.civilServiceEligibility.map(c => {
+                                        return (
+                                          <p>
+                                            <strong>{ c.label }</strong>
+                                          </p>
+                                        )
+                                      }) :
+                                      <p>
+                                        No available Civil Service eligibility
+                                      </p>
+                                  }
+                                  <p>&nbsp;</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div ref="workExperienceInside">
+                              <p className={styles.annotation}>
+                                Relevant work experience - Inside Commission on Audit &nbsp;
+                                <span style={{fontWeight: 400}}>(Check those that apply)</span>
+                              </p>
+                              <div className={styles.summary}>
+                                <img src={calendar} alt=""/>
+                                <p><span>3</span> years of total relevant work experience inside COA</p>
+                              </div>
+                              {
+                                evaluation.personaldatasheet.workExperienceWithinCoa != undefined ?
+                                  evaluation.personaldatasheet.workExperienceWithinCoa.map(w => {
+                                    return (
+                                      <div style={{marginLeft: 5}}>
+                                        <Checkbox toggle={() => {}}/>
+                                        <div style={{marginLeft: 1}}>
+                                          <p>
+                                            <strong>{ w.positionTitle }</strong>
+                                          </p>
+                                          <p style={{marginTop: 2}}>{ w.officeName }</p>
+                                          <p
+                                            style={{
+                                              opacity: .8,
+                                              marginTop: 2
+                                            }}>
+                                            (
+                                              {
+                                                moment(w.from).format('YYYY')
+                                              } - &nbsp;
+                                              {
+                                                w.to != undefined ?
+                                                  moment(w.to).format('YYYY') :
+                                                  'Present'
+                                              }
+                                            )
+                                          </p>
+                                        </div>
+                                      </div>
+                                    )
+                                  }) :
+                                  null
+                              }
+                            </div>
+                            <div ref="workExperienceOutside">
+                              <p className={styles.annotation}>
+                                Relevant work experience - Outside Commission on Audit &nbsp;
+                                <span style={{fontWeight: 400}}>(Check those that apply)</span>
+                              </p>
+                              <div className={styles.summary}>
+                                <img src={calendar} alt=""/>
+                                <p><span>3</span> years of total relevant work experience outside COA</p>
+                              </div>
+                              {
+                                evaluation.personaldatasheet.workExperienceOutsideCoa != undefined ?
+                                  evaluation.personaldatasheet.workExperienceOutsideCoa.slice(0).reverse().map(w => {
+                                    return (
+                                      <div style={{marginLeft: 5}}>
+                                        <Checkbox toggle={() => {}}/>
+                                        <div style={{marginLeft: 1}}>
+                                          <p>
+                                            <strong>{ w.positionTitle }</strong>
+                                          </p>
+                                          <p style={{marginTop: 2}}>{ w.companyName }</p>
+                                          <p
+                                            style={{
+                                              opacity: .8,
+                                              marginTop: 2
+                                            }}>
+                                            (
+                                            {
+                                              moment(w.from).format('YYYY')
+                                            } - &nbsp;
+                                            {
+                                              w.to != undefined ?
+                                                moment(w.to).format('YYYY') :
+                                                'Present'
+                                            }
+                                            )
+                                          </p>
+                                        </div>
+                                      </div>
+                                    )
+                                  }) :
+                                  null
+                              }
+                            </div>
+                            <div ref="training">
+                              <p className={styles.annotation}>
+                                Relevant training &nbsp;
+                                <span style={{fontWeight: 400}}>(Check those that apply)</span>
+                              </p>
+                              <div className={styles.summary}>
+                                <img src={clock} alt=""/>
+                                <p>Total of <span>8</span> hours relevant training</p>
+                              </div>
+                              {
+                                evaluation.personaldatasheet.trainingsAttended != undefined ?
+                                  evaluation.personaldatasheet.trainingsAttended.map(t => {
+                                    return (
+                                      <div style={{marginLeft: 5}}>
+                                        <Checkbox toggle={() => {}}/>
+                                        <div style={{marginLeft: 1}}>
+                                          <p>
+                                            <strong>{ t.training.label }</strong>
+                                          </p>
+                                          <p style={{opacity: .8, marginTop: 1}}>{ t.hours } hours</p>
+                                          <p style={{opacity: .8, marginTop: 1}}>{ moment(t.date).format('MMMM DD, YYYY') }</p>
+                                        </div>
+                                      </div>
+                                    )
+                                  }) :
+                                  null
+                              }
+                            </div>
                           </div>
-                          <div className={styles.hr}/>
                           <div>
-                            <p className={styles.annotation}>Relative experience</p>
+                            <div
+                              ref="jobEducation"
+                              style={{
+                                height: this.state.height.education,
+                              }}>
+                              <p className={styles.annotation}>Education</p>
+                              <div>
+                                <img src={mortarBoard} height={20} alt=""/>
+                                <div>
+                                  <p>
+                                    <strong>Bachelor of Science in Accountancy</strong>
+                                  </p>
+                                </div>
+                              </div>
+                              <div className={styles.dotDotDot}/>
+                            </div>
+                            <div
+                              ref="jobEligibility"
+                              style={{
+                                height: this.state.height.eligibility
+                              }}>
+                              <p className={styles.annotation}>Eligibility</p>
+                              <div style={{marginLeft: 4}}>
+                                <img src={eligibility} height={18} style={{opacity: 1}} alt=""/>
+                                <div style={{marginLeft: -4}}>
+                                  <p>
+                                    <strong>RA 1080 (CPA)</strong>
+                                  </p>
+                                  <p>&nbsp;</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div
+                              style={{
+                                height: this.state.height.workExperience
+                              }}
+                            >
+                              <p className={styles.annotation}>
+                                Relevant working experience
+                              </p>
+                              <div className={styles.summary}>
+                                <img src={calendar} alt=""/>
+                                <p><span>3</span> years of relevant experience is required</p>
+                              </div>
+                              <div
+                                style={{
+                                  height: `calc(100% - 92px)`
+                                }}
+                                className={styles.dotDotDot}/>
+                            </div>
+                            <div>
+                              <p className={styles.annotation}>
+                                Relevant training
+                              </p>
+                              <div className={styles.summary}>
+                                <img src={clock} alt=""/>
+                                <p>Total of <span>8</span> hours is required</p>
+                              </div>
+                              <div
+                                style={{
+                                  height: `calc(100% - 95px)`
+                                }}
+                                className={styles.dotDotDot}/>
+                            </div>
                           </div>
                         </div>
-                        <div/>
+                        <p className={styles.annotation}>DOCUMENTS</p>
+                        <Container fluid style={{padding: 0, marginTop: '-7px'}}>
+                          <Row>
+                            { documentsContainer }
+                          </Row>
+                        </Container>
                       </div>
-                      <p className={styles.annotation}>DOCUMENTS</p>
-                      <Container fluid style={{padding: 0, marginTop: '-7px'}}>
-                        <Row>
-                          { documentsContainer }
-                        </Row>
-                      </Container>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </Fragment>
-        )
-      } else return null
-    });
+            </Fragment>
+          )
+        } else return null
+      });
+
+      return e
+    };
 
     const documentsModal = (
       <div className={styles.modal}>
@@ -487,7 +800,7 @@ class Applicants extends Component {
             <div style={{display: 'flex', justifyContent: 'space-around'}}>
               <p>{ emp.details.ratings.first }</p>
               <p>{ emp.details.ratings.second }</p>
-              <p>{ emp.details.ratings.average.substring(0, 4) }</p>
+              {/*<p>{ emp.details.ratings.average.substring(0, 4) }</p>*/}
             </div>
           </td>
           <td>&nbsp;</td>
@@ -673,7 +986,7 @@ class Applicants extends Component {
         </Portal>
         {
           this.state.hasStartedEvaluation && !this.state.evaluationIsDone ?
-            evaluationWindow :
+            evaluationWindow() :
             <div className={univStyles.main}>
               <div className={univStyles.pageMain}>
                 <div className={univStyles.form}>

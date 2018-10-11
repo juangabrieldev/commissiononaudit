@@ -18,51 +18,29 @@ setConfiguration({ gutterWidth: 15 });
 
 class Applications extends Component {
   state = {
-    applicantApplications: [],
     hasLoaded: false,
-    evaluatorJobs: []
+
+    applicant: {
+      applicants: []
+    },
+    evaluator: {
+      currentApplications: [],
+      pastApplications: []
+    }
   };
 
   componentDidMount = () => {
-    let url;
-
     //switch between who is looking for applications
     switch(this.props.role) {
       //applicant
       case 2:
-        url = applications.overview + this.props.employeeId;
         break;
 
       //byClusterEvaluator
       case 3:
-        url = applications.evaluators + this.props.employeeId;
-        break;
-
-      case 4:
-        url = '';
+        this.evaluatorFetch();
         break;
     }
-
-    //get the overview of applications
-    axios.get(url)
-      .then(res => {
-        if(res.data.status === 200) {
-          this.setState(produce(draft => {
-            //switch between who is looking for applications
-            switch(this.props.role) {
-              case 2:
-                draft.applicantApplications = res.data.data;
-                break;
-              case 3:
-                draft.evaluatorJobs = res.data.data;
-                break;
-            }
-            draft.hasLoaded = true;
-          }))
-        } else {
-          this.setState({hasLoaded: true})
-        }
-      })
   };
 
   onClickApplication = token => {
@@ -71,6 +49,22 @@ class Applications extends Component {
 
   onClickJob = (jobId, jobOpportunityId) => {
     this.props.history.push(`/applications/applicants/${jobId}/${jobOpportunityId}`);
+  };
+
+  evaluatorFetch = () => {
+    axios.get(applications.evaluators + this.props.employeeId)
+      .then(res => {
+        if(res.data.status === 200) {
+          this.setState(produce(draft => {
+            draft.evaluator.currentApplications = res.data.data.current;
+            draft.evaluator.pastApplications = res.data.data.past;
+
+            draft.hasLoaded = true;
+          }))
+        } else {
+          this.setState({hasLoaded: true})
+        }
+      })
   };
 
   render() {
@@ -85,47 +79,89 @@ class Applications extends Component {
         </p>
       </div>;
 
-    const applicantApplications = this.state.applicantApplications.map(application => {
-      return (
-        <Col key={application.token} xs={2} style={{marginTop: 15}}>
-          <div
-            onClick={() => this.onClickApplication(application.token)}
-            className={styles.application}>
-            <div className={styles.iconContainer}>
-              <ReactSVG path={files} svgStyle={{fill: '#4688FF', height: 60}} />
-            </div>
-            <div className={styles.bottom}>
-              <p>Application for {application.jobtitle}</p>
-            </div>
-          </div>
-        </Col>
-      )
-    });
+    const byClusterEvaluatorApplications = () => {
+      const current = this.state.evaluator.currentApplications.map(app => {
 
-    const byClusterEvaluatorApplications = this.state.evaluatorJobs.map(job => {
+        return (
+          <Col key={app.jobid} xs={2} style={{marginTop: 15}}>
+            <div
+              onClick={() => this.onClickJob(app.jobid, app.jobopportunityid)}
+              className={styles.application}>
+              <div className={styles.iconContainer}>
+                <div className={styles.labelContainer}>
+                  <p className={`${styles.label} ${styles.green}`}>{ app.numberofapplicants } APPLICANTS</p>
+                  {
+                    parseInt(app.isstarted, 10) === 1 ?
+                      <p className={`${styles.label} ${styles.blue}`}>STARTED</p> :
+                      null
+                  }
+                </div>
+                <ReactSVG path={jobIcon} svgStyle={{fill: '#4688FF', height: 60}}/>
+              </div>
+              <div className={styles.bottom}>
+                <p>Applications for {app.jobtitle}</p>
+              </div>
+            </div>
+          </Col>
+        )
+      });
+
+      const past = this.state.evaluator.pastApplications.map(app => {
+        return (
+          <Col key={app.jobid} xs={2} style={{marginTop: 15}}>
+            <div
+              onClick={() => this.onClickJob(app.jobid, app.jobopportunityid)}
+              className={styles.application}>
+              <div className={styles.iconContainer}>
+                <p className={`${styles.label} ${styles.green}`}>SUBMITTED</p>
+                <ReactSVG path={jobIcon} svgStyle={{fill: '#4688FF', height: 60}}/>
+              </div>
+              <div className={styles.bottom}>
+                <p>Applications for {app.jobtitle}</p>
+              </div>
+            </div>
+          </Col>
+        )
+      });
+
       return (
-        <Col xs={2} style={{marginTop: 15}}>
-          <div
-            onClick={() => this.onClickJob(job.jobid, job.jobopportunityid)}
-            className={styles.application}>
-            <div className={styles.iconContainer}>
-              <ReactSVG path={jobIcon} svgStyle={{fill: '#4688FF', height: 60}} />
-            </div>
-            <div className={styles.bottom}>
-              <p>Applications for {job.jobtitle}</p>
-            </div>
+        <Fragment>
+          <p className={univStyles.groupLabel}>CURRENT APPLICATIONS</p>
+          <div style={{marginTop: 15}}>
+            {
+              this.state.evaluator.currentApplications.length > 0 ?
+                <Container fluid style={{padding: 0, marginTop: '-15px'}}>
+                  <Row>
+                    { current }
+                  </Row>
+                </Container> :
+                <p style={{margin: 0, textAlign: 'center', fontSize: 14}}>There are no current applications yet.</p>
+            }
           </div>
-        </Col>
+          <p className={univStyles.groupLabel}>PAST APPLICATIONS</p>
+          <div style={{marginTop: 15}}>
+            {
+              this.state.evaluator.pastApplications.length > 0 ?
+                <Container fluid style={{padding: 0, marginTop: '-15px'}}>
+                  <Row>
+                { past }
+                  </Row>
+                </Container> :
+                <p style={{margin: 0, textAlign: 'center', fontSize: 14}}>There are no past applications yet.</p>
+            }
+
+          </div>
+        </Fragment>
       )
-    });
+    };
 
     //switcher component to switch between roles
     const switcher = () => {
       switch(this.props.role) {
         case 2:
-          return applicantApplications;
+          return null;
         case 3:
-          return byClusterEvaluatorApplications
+          return byClusterEvaluatorApplications()
       }
     };
 
@@ -146,17 +182,18 @@ class Applications extends Component {
                   </p>
                 </div>
                 <div className={univStyles.formBody} style={{padding: 15, position: 'relative'}}>
-                  {
-                    this.state.applicantApplications.length > 0 || this.state.evaluatorJobs.length > 0 ?
-                      <Container fluid style={{padding: 0, marginTop: '-15px'}}>
-                        <Row>
-                          { switcher() }
-                        </Row>
-                      </Container> :
-                      <div className={styles.noApplicationContainer}>
-                        <p>You don't have any applications yet.</p>
-                      </div>
-                  }
+                  {/*{*/}
+                    {/*this.state.applicantApplications.length > 0 || this.state.evaluatorJobs.length > 0 ?*/}
+                      {/*<Container fluid style={{padding: 0, marginTop: '-15px'}}>*/}
+                        {/*<Row>*/}
+                          {/*{ switcher() }*/}
+                        {/*</Row>*/}
+                      {/*</Container> :*/}
+                      {/*<div className={styles.noApplicationContainer}>*/}
+                        {/*<p>You don't have any applications yet.</p>*/}
+                      {/*</div>*/}
+                  {/*}*/}
+                  { switcher() }
                 </div>
               </div>
             </div>
