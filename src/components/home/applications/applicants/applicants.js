@@ -85,6 +85,10 @@ class Applicants extends Component {
         }
       }],
 
+      relevantWorkInside: [],
+      relevantWorkOutside: [],
+      relevantTraining: [],
+
       height: {
         education: null,
         training: null,
@@ -153,13 +157,16 @@ class Applicants extends Component {
             draft.evaluationIsDone = isDone;
           }), () => {
             this.setState(produce(draft => {
-              draft.height.education = this.refs.pdsEducation.clientHeight > this.refs.jobEducation.clientHeight ?
-                this.refs.pdsEducation.clientHeight : this.refs.jobEducation.clientHeight;
+              //checks if evaluation is already done before setting height
+              if(!isDone) {
+                draft.height.education = this.refs.pdsEducation.clientHeight > this.refs.jobEducation.clientHeight ?
+                  this.refs.pdsEducation.clientHeight : this.refs.jobEducation.clientHeight;
 
-              draft.height.eligibility = this.refs.pdsEligibility.clientHeight > this.refs.jobEligibility.clientHeight ?
-                this.refs.pdsEligibility.clientHeight : this.refs.jobEligibility.clientHeight;
+                draft.height.eligibility = this.refs.pdsEligibility.clientHeight > this.refs.jobEligibility.clientHeight ?
+                  this.refs.pdsEligibility.clientHeight : this.refs.jobEligibility.clientHeight;
 
-              draft.height.workExperience = this.refs.workExperienceInside.clientHeight + this.refs.workExperienceOutside.clientHeight + 18
+                draft.height.workExperience = this.refs.workExperienceInside.clientHeight + this.refs.workExperienceOutside.clientHeight + 18
+              }
             }))
           });
         })
@@ -232,12 +239,47 @@ class Applicants extends Component {
     this.forceUpdate();
   };
 
-  onCheckRelativeExperience = i => {
+  onClickRelativeWorkInsideCoa = (value, work) => {
+    if(value) {
+      this.setState(produce(draft => {
+        draft.relevantWorkInside.push(work)
+      }))
+    } else {
+      //remove the work from relevant work
+      this.setState(produce(draft => {
+        draft.relevantWorkInside = draft.relevantWorkInside.filter(w => w.positionTitle != work.positionTitle)
+      }))
+    }
+  };
 
+  onClickRelativeWorkOutsideCoa = (value, work) => {
+    if(value) {
+      this.setState(produce(draft => {
+        draft.relevantWorkOutside.push(work)
+      }))
+    } else {
+      //remove the work from relevant work
+      this.setState(produce(draft => {
+        draft.relevantWorkOutside = draft.relevantWorkOutside.filter(w => w.positionTitle != work.positionTitle)
+      }))
+    }
+  };
+
+  onClickRelativeTraining = (value, training) => {
+    if(value) {
+      this.setState(produce(draft => {
+        draft.relevantTraining.push(_.omit(training, ['dataSource']))
+      }))
+    } else {
+      //remove the training from relevant training
+      this.setState(produce(draft => {
+        draft.relevantTraining = draft.relevantTraining.filter(t => t.training.trainingvalue != training.training.value)
+      }))
+    }
   };
 
   render() {
-    console.log(this.state.evaluationData);
+    console.log(this.state.relevantTraining)
 
     const jobsTitleBar =
       <div className={univStyles.titleBar + ' ' + univStyles.fullWidth}>
@@ -429,7 +471,7 @@ class Applicants extends Component {
                                   evaluation.personaldatasheet.workExperienceWithinCoa.map(w => {
                                     return (
                                       <div style={{marginLeft: 5}}>
-                                        <Checkbox toggle={() => {}}/>
+                                        <Checkbox toggle={v => this.onClickRelativeWorkInsideCoa(v, w)}/>
                                         <div style={{marginLeft: 1}}>
                                           <p>
                                             <strong>{ w.positionTitle }</strong>
@@ -472,7 +514,7 @@ class Applicants extends Component {
                                   evaluation.personaldatasheet.workExperienceOutsideCoa.slice(0).reverse().map(w => {
                                     return (
                                       <div style={{marginLeft: 5}}>
-                                        <Checkbox toggle={() => {}}/>
+                                        <Checkbox toggle={v => this.onClickRelativeWorkOutsideCoa(v, w)}/>
                                         <div style={{marginLeft: 1}}>
                                           <p>
                                             <strong>{ w.positionTitle }</strong>
@@ -515,7 +557,7 @@ class Applicants extends Component {
                                   evaluation.personaldatasheet.trainingsAttended.map(t => {
                                     return (
                                       <div style={{marginLeft: 5}}>
-                                        <Checkbox toggle={() => {}}/>
+                                        <Checkbox toggle={v => this.onClickRelativeTraining(v, t  )}/>
                                         <div style={{marginLeft: 1}}>
                                           <p>
                                             <strong>{ t.training.label }</strong>

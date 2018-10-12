@@ -113,7 +113,14 @@ class Applications extends Component {
               onClick={() => this.onClickJob(app.jobid, app.jobopportunityid)}
               className={styles.application}>
               <div className={styles.iconContainer}>
-                <p className={`${styles.label} ${styles.green}`}>SUBMITTED</p>
+                <div className={styles.labelContainer}>
+                  <p className={`${styles.label} ${styles.green}`}>{ app.numberofapplicants } APPLICANTS</p>
+                  {
+                    parseInt(app.isstarted, 10) === 1 ?
+                      <p className={`${styles.label} ${styles.blue}`}>STARTED</p> :
+                      null
+                  }
+                </div>
                 <ReactSVG path={jobIcon} svgStyle={{fill: '#4688FF', height: 60}}/>
               </div>
               <div className={styles.bottom}>
