@@ -5,6 +5,7 @@ import * as actions from '../actions/ui/actions';
 
 const initialState = {
   showAvatarDropdown: false,
+  showNotificationDropdown: false,
   blockNavigation: false,
   blockNavigationMessage: '',
   toasts: [],

@@ -15,6 +15,10 @@ import Toaster from '../toaster/toaster';
 import './layout.scss';
 
 class Layout extends Component {
+  componentDidMount = () => {
+
+  };
+
   render() {
     const rootComponent = this.props.mode === 1 ?
       <PrivateRoute

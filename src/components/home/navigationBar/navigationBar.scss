@@ -81,8 +81,10 @@
     z-index: 1;
 
     .profileTab {
-      margin-left: 20px;
+      margin-left: 30px;
       position: relative;
+      display: flex;
+      align-items: center;
     }
   }
 }

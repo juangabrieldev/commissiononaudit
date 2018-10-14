@@ -7,6 +7,7 @@ import slug from 'slugify';
 import styles from './navigationBar.scss';
 
 import Avatar from '../avatar/avatar';
+import Notification from '../notification/notification';
 
 import logo from '../../../assets/landingPage/appIcon.svg';
 
@@ -117,6 +118,9 @@ class NavigationBar extends Component {
           {tabs}
         </div>
         <div className={styles.profileTabs}>
+          <div ref="notification" className={styles.profileTab}>
+            <Notification onClick={() => {}}/>
+          </div>
           <div ref="avatar" className={styles.profileTab}>
             <Avatar onClick={this.props.toggleAvatarDropdown} />
           </div>

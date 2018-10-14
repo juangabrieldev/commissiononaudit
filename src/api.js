@@ -29,6 +29,7 @@ export const evaluations = {
 export const jobs = {
   create: rootUrl + '/jobs/',
   view: rootUrl + '/jobs/',
+  educationType: rootUrl + '/jobs/education-type/'
 };
 
 export const documents = {

@@ -1,0 +1,33 @@
+@import "../../layout/variables";
+
+.dropdown {
+  position: absolute;
+  right: 0;
+  top: 50px;
+  box-shadow: 0 2px 4px 0 rgba(0,0,0,0.05);
+
+  .triangle {
+    width: 10px;
+    height: 10px;
+    transform: rotate(45deg);
+    position: absolute;
+    top: -5px;
+    border-radius: 2px;
+    background: white;
+    border-left: solid 1px $border-color;
+    border-top: solid 1px $border-color
+  }
+}
+
+.notification {
+  display: flex;
+  position: relative;
+  align-items: center;
+  cursor: pointer;
+
+  &:hover {
+    img {
+      opacity: .4 !important;
+    }
+  }
+}

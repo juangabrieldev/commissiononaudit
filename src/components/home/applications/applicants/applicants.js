@@ -1,14 +1,15 @@
 import React, {Component, Fragment} from 'react';
-import { withRouter, Link, Switch, Route } from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
 import connect from "react-redux/es/connect/connect";
 import axios from 'axios';
 import produce from 'immer';
-import {Container, Row, Col, setConfiguration} from "react-grid-system";
+import {Col, Container, Row, setConfiguration} from "react-grid-system";
 import _ from 'lodash';
 import moment from "moment";
 import ReactToPrint from "react-to-print";
+import fileExtension from 'file-extension';
 
-import { applications, evaluations, documents } from "../../../../api";
+import { applications, documents, evaluations, jobs } from "../../../../api";
 
 import univStyles from "../../styles.scss";
 import styles from "./styles.scss";
@@ -24,6 +25,8 @@ import diploma from '../../../../assets/ui/diploma.svg';
 import eligibility from '../../../../assets/ui/eligibility.svg';
 import logo from '../../../../assets/logo.png';
 import mortarBoard from '../../../../assets/ui/mortarboard.svg';
+import next from '../../../../assets/ui/right.svg';
+import previous from '../../../../assets/ui/left.svg';
 
 setConfiguration({ gutterWidth: 15 });
 
@@ -61,6 +64,9 @@ class Applicants extends Component {
         }
       }],
 
+      jobQualifications: null,
+      educationTypes: [],
+
       hasStartedEvaluation: false,
       evaluationIsDone: false,
 
@@ -69,6 +75,13 @@ class Applicants extends Component {
       showModal: false,
       currentNumberOfDoc: 0,
       documentUrl: null,
+      documentName: null,
+      documentKeys: [
+        'diploma', 'swornStatement', 'workExperience',
+        'applicationLetter', 'performanceRatings1', 'performanceRatings2',
+        'trainingCertificate', 'workAssignmentHistory', 'positionDescriptionForm',
+        'memorandumOfRecommendation'
+      ],
 
       approved: [{}],
       rejected: [{}],
@@ -85,9 +98,23 @@ class Applicants extends Component {
         }
       }],
 
+      relevantCollege: null,
       relevantWorkInside: [],
       relevantWorkOutside: [],
       relevantTraining: [],
+
+      relevantWorkYearsTotal: 0,
+      relevantWorkInsideYears: {
+        sentence: '0 years',
+        duration: 0
+      },
+      relevantWorkOutsideYears: {
+        sentence: '0 years',
+        duration: 0
+      },
+      relevantTrainingHours: {
+        duration: 0
+      },
 
       height: {
         education: null,
@@ -120,13 +147,43 @@ class Applicants extends Component {
   };
 
   handleClickOutside = e => {
-    if (this.refs.preview && !this.refs.preview.contains(e.target)) {
-      document.body.style.overflow = "visible";
+    if(this.state.currentNumberOfDoc === 0) {
+      if (
+        ( this.refs.preview && !this.refs.preview.contains(e.target) ) &&
+        ( this.refs.next && !this.refs.next.contains(e.target) )
+      ) {
+        document.body.style.overflow = "visible";
 
-      this.setState({
-        showModal: false,
-        documentUrl: null
-      })
+        this.setState({
+          showModal: false,
+          documentUrl: null
+        })
+      }
+    } else if(this.state.currentNumberOfDoc === 9) {
+      if (
+        ( this.refs.preview && !this.refs.preview.contains(e.target) ) &&
+        ( this.refs.previous && !this.refs.previous.contains(e.target) )
+      ) {
+        document.body.style.overflow = "visible";
+
+        this.setState({
+          showModal: false,
+          documentUrl: null
+        })
+      }
+    } else {
+      if (
+        ( this.refs.previous && !this.refs.previous.contains(e.target) ) &&
+        ( this.refs.preview && !this.refs.preview.contains(e.target) ) &&
+        ( this.refs.next && !this.refs.next.contains(e.target) )
+      ) {
+        document.body.style.overflow = "visible";
+
+        this.setState({
+          showModal: false,
+          documentUrl: null
+        })
+      }
     }
   };
 
@@ -150,39 +207,91 @@ class Applicants extends Component {
           draft.rankingList = res.data.rankingList;
           draft.rejected = res.data.rejected;
           draft.evaluationData = res.data.data;
-
-          isDone = res.data.isDone;
         }), () => {
+          if(res.data.rankingList.length > 0) {
+            isDone = true
+          }
+
+          this.fetchJob(jobId);
+
           this.setState(produce(draft => {
             draft.evaluationIsDone = isDone;
-          }), () => {
-            this.setState(produce(draft => {
-              //checks if evaluation is already done before setting height
-              if(!isDone) {
-                draft.height.education = this.refs.pdsEducation.clientHeight > this.refs.jobEducation.clientHeight ?
-                  this.refs.pdsEducation.clientHeight : this.refs.jobEducation.clientHeight;
-
-                draft.height.eligibility = this.refs.pdsEligibility.clientHeight > this.refs.jobEligibility.clientHeight ?
-                  this.refs.pdsEligibility.clientHeight : this.refs.jobEligibility.clientHeight;
-
-                draft.height.workExperience = this.refs.workExperienceInside.clientHeight + this.refs.workExperienceOutside.clientHeight + 18
-              }
-            }))
-          });
+          }))
         })
       })
   };
 
-  onDocumentClick = (url) => {
-    this.setState({showModal: true}, () => {
-      axios.get(documents.get + url.replace('https://anonfile.com/', ''))
-        .then(res => {
-          document.body.style.overflow = "hidden";
+  setHeight = () => {
+    if(!this.state.evaluationIsDone && this.state.jobQualifications) {
+      this.setState(produce(draft => {
+        //checks if evaluation is already done before setting height
+        draft.height.education = this.refs.pdsEducation.clientHeight > this.refs.jobEducation.clientHeight ?
+          this.refs.pdsEducation.clientHeight : this.refs.jobEducation.clientHeight;
 
-          this.setState({
-            documentUrl: res.data.remoteUrl
-          })
+        draft.height.eligibility = this.refs.pdsEligibility.clientHeight > this.refs.jobEligibility.clientHeight ?
+          this.refs.pdsEligibility.clientHeight : this.refs.jobEligibility.clientHeight;
+
+        draft.height.workExperience = this.refs.workExperienceInside.clientHeight + this.refs.workExperienceOutside.clientHeight + 18
+      }));
+    }
+  };
+
+  //fetch the requirements of job
+  fetchJob = jobId => {
+    axios.get(jobs.view + jobId)
+      .then(res => {
+        this.setState(produce(draft => {
+          draft.jobQualifications = res.data.data.qualifications
+        }), () => {
+          this.setHeight();
+          this.fetchEducationType(jobId)
         })
+      })
+  };
+
+  fetchEducationType = id => {
+    axios.get(jobs.educationType + id)
+      .then(res => {
+        this.setState({
+          educationTypes: res.data.data
+        })
+      })
+  };
+
+  //on previous click on document modal
+  onPreviousClick = () => {
+    const currentNumberOfDoc = this.state.currentNumberOfDoc - 1;
+    const documentName =  _.upperFirst(_.lowerCase(this.state.documentKeys[currentNumberOfDoc]));
+    const documentUrl = this.state.evaluationData[this.state.currentNumberOfApplicant - 1].details.files[this.state.documentKeys[currentNumberOfDoc]].localFilePath;
+
+    this.setState({
+      documentUrl,
+      documentName,
+      currentNumberOfDoc
+    });
+  };
+
+  //on next click on document modal
+  onNextClick = () => {
+    const currentNumberOfDoc = this.state.currentNumberOfDoc + 1;
+    const documentName =  _.upperFirst(_.lowerCase(this.state.documentKeys[currentNumberOfDoc]));
+    const documentUrl = this.state.evaluationData[this.state.currentNumberOfApplicant - 1].details.files[this.state.documentKeys[currentNumberOfDoc]].localFilePath;
+
+    this.setState({
+      documentUrl,
+      documentName,
+      currentNumberOfDoc
+    });
+  };
+
+  onDocumentClick = (url, containerName, i) => {
+    this.setState({
+      showModal: true,
+      documentUrl: url,
+      documentName: containerName,
+      currentNumberOfDoc: i
+    }, () => {
+      document.body.style.overflow = "hidden"
     })
 
     // this.setState({
@@ -239,16 +348,95 @@ class Applicants extends Component {
     this.forceUpdate();
   };
 
+  computeRelevantWorkInsideYears = () => {
+    let momentsFrom = this.state.relevantWorkInside.map(work => moment(work.from));
+    momentsFrom = moment.min(momentsFrom);
+
+    let momentsTo = this.state.relevantWorkInside.map(work => {
+      if(work.to) {
+        return moment(work.to)
+      } else {
+        return moment();
+      }
+    });
+    momentsTo = moment.max(momentsTo);
+
+    const duration = momentsTo.diff(momentsFrom, 'years');
+
+    const years = momentsTo.diff(momentsFrom, 'year');
+    momentsFrom.add(years, 'years');
+
+    const months = momentsTo.diff(momentsFrom, 'months');
+
+    let sentence = `${years > 0 ? years : ''} ${years > 0 ? `year${years > 1 ? 's' : ''}` : ''} ${months > 0 ? `${years > 0 ? 'and' : ''} ${months} month${months > 1 ? 's' : ''}` : ''}`;
+    sentence = (sentence === '  ' ? '0 years' : sentence);
+
+    this.setState(produce(draft => {
+      draft.relevantWorkInsideYears.duration = duration;
+      draft.relevantWorkInsideYears.sentence = sentence
+    }), this.computeRelevantWorkYearsTotal);
+  };
+
+  computeRelevantWorkOutsideYears = () => {
+    let momentsFrom = this.state.relevantWorkOutside.map(work => moment(work.from));
+    momentsFrom = moment.min(momentsFrom);
+
+    let momentsTo = this.state.relevantWorkOutside.map(work => {
+      if(work.to) {
+        return moment(work.to)
+      } else {
+        return moment();
+      }
+    });
+    momentsTo = moment.max(momentsTo);
+
+    const duration = momentsTo.diff(momentsFrom, 'years');
+
+    const years = momentsTo.diff(momentsFrom, 'year');
+    momentsFrom.add(years, 'years');
+
+    const months = momentsTo.diff(momentsFrom, 'months');
+
+    let sentence = `${years > 0 ? years : ''} ${years > 0 ? `year${years > 1 ? 's' : ''}` : ''} ${months > 0 ? `${years > 0 ? 'and' : ''} ${months} month${months > 1 ? 's' : ''}` : ''}`;
+    sentence = (sentence === '  ' ? '0 years' : sentence);
+
+    this.setState(produce(draft => {
+      draft.relevantWorkOutsideYears.duration = duration;
+      draft.relevantWorkOutsideYears.sentence = sentence;
+    }), this.computeRelevantWorkYearsTotal);
+  };
+
+  computeRelevantWorkYearsTotal = () => {
+
+    this.setState(produce(draft => {
+      draft.relevantWorkYearsTotal = this.state.relevantWorkInsideYears.duration + this.state.relevantWorkOutsideYears.duration
+    }))
+  };
+
+  computeRelevantTrainingYears = () => {
+    let hours = 0;
+
+    this.state.relevantTraining.forEach(training => hours += training.hours);
+
+    this.setState(produce(draft => {
+      draft.relevantTrainingHours.duration = hours;
+    }));
+  };
+
+  onClickRelevantCollege = (value, college) => {
+    console.log(value, college)
+  };
+
   onClickRelativeWorkInsideCoa = (value, work) => {
     if(value) {
       this.setState(produce(draft => {
         draft.relevantWorkInside.push(work)
-      }))
+      }), this.computeRelevantWorkInsideYears)
     } else {
       //remove the work from relevant work
       this.setState(produce(draft => {
         draft.relevantWorkInside = draft.relevantWorkInside.filter(w => w.positionTitle != work.positionTitle)
-      }))
+      }), this.computeRelevantWorkInsideYears)
     }
   };
 
@@ -256,12 +444,12 @@ class Applicants extends Component {
     if(value) {
       this.setState(produce(draft => {
         draft.relevantWorkOutside.push(work)
-      }))
+      }), this.computeRelevantWorkOutsideYears)
     } else {
       //remove the work from relevant work
       this.setState(produce(draft => {
         draft.relevantWorkOutside = draft.relevantWorkOutside.filter(w => w.positionTitle != work.positionTitle)
-      }))
+      }), this.computeRelevantWorkOutsideYears)
     }
   };
 
@@ -269,21 +457,24 @@ class Applicants extends Component {
     if(value) {
       this.setState(produce(draft => {
         draft.relevantTraining.push(_.omit(training, ['dataSource']))
-      }))
+      }), this.computeRelevantTrainingYears)
     } else {
       //remove the training from relevant training
       this.setState(produce(draft => {
-        draft.relevantTraining = draft.relevantTraining.filter(t => t.training.trainingvalue != training.training.value)
-      }))
+        draft.relevantTraining = draft.relevantTraining.filter(t => {
+          return t.training.value !== training.training.value
+        })
+      }), this.computeRelevantTrainingYears)
     }
   };
 
   render() {
-    console.log(this.state.relevantTraining)
-
     const jobsTitleBar =
       <div className={univStyles.titleBar + ' ' + univStyles.fullWidth}>
         <p>Application for { this.state.employees[0].jobtitle }</p>
+        <p className={univStyles.label}>
+          9 applicants
+        </p>
         <div onClick={this.openContext} className={styles.generate}>
           <div />
           <div />
@@ -333,13 +524,13 @@ class Applicants extends Component {
     if(this.state.hasStartedEvaluation && this.state.evaluationData != null) {
       const files = this.state.evaluationData[this.state.currentNumberOfApplicant - 1].details.files;
 
-      Object.keys(files).forEach(key => {
+      Object.keys(files).forEach((key, i) => {
         const containerName = _.upperFirst(_.lowerCase(key));
 
         const con = (
           <Col key={key} xs={2} style={{marginTop: 15}}>
             <div
-              onClick={() => this.onDocumentClick(files[key].remoteFilePath)}
+              onClick={() => this.onDocumentClick(files[key].localFilePath, containerName, i)}
               className={styles.uploadContainer}>
               <div className={styles.iconContainer}>
                 <div className={styles.validity}>
@@ -358,13 +549,328 @@ class Applicants extends Component {
     }
 
     const evaluationWindow = () => {
-      const e = this.state.evaluationData.map((evaluation, i) => {
-        if(i === this.state.currentNumberOfApplicant - 1) {
+      const pdsEducationCollege = evaluation => {
+        const course =  evaluation.personaldatasheet.educationalBackground.college.basicEducationDegreeCourse.label;
+        const nameOfSchool =  evaluation.personaldatasheet.educationalBackground.college.nameOfSchool;
+        const from = moment(evaluation.personaldatasheet.educationalBackground.college.periodOfAttendance.from).format('YYYY');
+        const to = moment(evaluation.personaldatasheet.educationalBackground.college.periodOfAttendance.to).format('YYYY');
+
+        const isCustom = this.state.educationTypes.includes(2);
+
+        return (
+          <div className={styles.valid}>
+            {
+              isCustom ?
+                <Checkbox toggle={v => this.onClickRelevantCollege(v, evaluation.personaldatasheet.educationalBackground.college)}/> :
+                <img src={mortarBoard} height={20} alt=""/>
+            }
+            <div>
+              <p>
+                Studied <strong>{ course }</strong> at <span>{ nameOfSchool }</span>
+              </p>
+              <p style={{opacity: .8, marginTop: 1}}>({ from } - { to })</p>
+            </div>
+          </div>
+        )
+      };
+
+      const pdsEducationSecondary = evaluation => {
+        const nameOfSchool =  evaluation.personaldatasheet.educationalBackground.secondary.nameOfSchool;
+        const from = moment(evaluation.personaldatasheet.educationalBackground.secondary.periodOfAttendance.from).format('YYYY');
+        const to = moment(evaluation.personaldatasheet.educationalBackground.secondary.periodOfAttendance.to).format('YYYY');
+
+        return (
+          <div style={{marginLeft: 4}}>
+            <img src={diploma} height={16} alt=""/>
+            <div>
+              <p>
+                Went to <span>{ nameOfSchool }</span>
+              </p>
+              <p style={{opacity: .8, marginTop: 1}}>({ from } - { to })</p>
+            </div>
+          </div>
+        )
+      };
+
+      const pdsEducationElementary = evaluation => {
+        const nameOfSchool =  evaluation.personaldatasheet.educationalBackground.elementary.nameOfSchool;
+        const from = moment(evaluation.personaldatasheet.educationalBackground.elementary.periodOfAttendance.from).format('YYYY');
+        const to = moment(evaluation.personaldatasheet.educationalBackground.elementary.periodOfAttendance.to).format('YYYY');
+
+        return (
+          <div style={{marginLeft: 4}}>
+            <img src={diploma} height={16} alt=""/>
+            <div>
+              <p>
+                Went to <span>{ nameOfSchool }</span>
+              </p>
+              <p style={{opacity: .8, marginTop: 1}}>({ from } - { to })</p>
+            </div>
+          </div>
+        )
+      };
+
+      const pdsWorkExperience = evaluation => {
+        const yearsOfExperience = this.state.jobQualifications ? this.state.jobQualifications.yearsOfExperience : 0;
+        return (
+          <Fragment>
+            <div ref="workExperienceInside">
+              <p className={styles.annotation}>
+                Relevant work experience - Inside Commission on Audit &nbsp;
+                <span style={{fontWeight: 400}}>(Check those that apply)</span>
+              </p>
+              <div
+                className={
+                  styles.summary + (this.state.relevantWorkYearsTotal >= yearsOfExperience ? ' ' + styles.summaryValid : '')
+                }>
+                <img src={calendar} alt=""/>
+                <p><span>{this.state.relevantWorkInsideYears.sentence}</span> of total relevant work
+                  experience inside COA</p>
+              </div>
+              {
+                evaluation.personaldatasheet.workExperienceWithinCoa !== undefined ?
+                  evaluation.personaldatasheet.workExperienceWithinCoa.map(w => {
+                    return (
+                      <div style={{marginLeft: 5}}>
+                        <Checkbox toggle={v => this.onClickRelativeWorkInsideCoa(v, w)}/>
+                        <div style={{marginLeft: 1}}>
+                          <p>
+                            <strong>{w.positionTitle}</strong>
+                          </p>
+                          <p style={{marginTop: 2}}>{w.officeName}</p>
+                          <p
+                            style={{
+                              opacity: .8,
+                              marginTop: 2
+                            }}>
+                            (
+                            {
+                              moment(w.from).format('MMMM DD, YYYY')
+                            } - &nbsp;
+                            {
+                              w.to !== undefined ?
+                                moment(w.to).format('MMMM DD, YYYY') :
+                                'Present'
+                            }
+                            )
+                          </p>
+                        </div>
+                      </div>
+                    )
+                  }) :
+                  null
+              }
+            </div>
+            <div ref="workExperienceOutside">
+              <p className={styles.annotation}>
+                Relevant work experience - Outside Commission on Audit &nbsp;
+                <span style={{fontWeight: 400}}>(Check those that apply)</span>
+              </p>
+              <div
+                className={
+                  styles.summary + (this.state.relevantWorkYearsTotal >= yearsOfExperience ? ' ' + styles.summaryValid : '')
+                }>
+                <img src={calendar} alt=""/>
+                <p><span>{this.state.relevantWorkOutsideYears.sentence}</span> of total relevant work
+                  experience outside COA</p>
+              </div>
+              {
+                evaluation.personaldatasheet.workExperienceOutsideCoa !== undefined ?
+                  evaluation.personaldatasheet.workExperienceOutsideCoa.slice(0).reverse().map(w => {
+                    return (
+                      <div style={{marginLeft: 5}}>
+                        <Checkbox toggle={v => this.onClickRelativeWorkOutsideCoa(v, w)}/>
+                        <div style={{marginLeft: 1}}>
+                          <p>
+                            <strong>{w.positionTitle}</strong>
+                          </p>
+                          <p style={{marginTop: 2}}>{w.companyName}</p>
+                          <p
+                            style={{
+                              opacity: .8,
+                              marginTop: 2
+                            }}>
+                            (
+                            {
+                              moment(w.from).format('MMMM DD, YYYY')
+                            } - &nbsp;
+                            {
+                              w.to !== undefined ?
+                                moment(w.to).format('MMMM DD, YYYY') :
+                                'Present'
+                            }
+                            )
+                          </p>
+                        </div>
+                      </div>
+                    )
+                  }) :
+                  null
+              }
+            </div>
+          </Fragment>
+        )
+      };
+
+      const pdsTraining = evaluation => {
+        if(this.state.jobQualifications) {
+          return (
+            <div ref="training">
+              <p className={styles.annotation}>
+                Relevant training &nbsp;
+                <span style={{fontWeight: 400}}>(Check those that apply)</span>
+              </p>
+              <div
+                className={
+                  styles.summary +
+                  (
+                    this.state.relevantTrainingHours.duration >= this.state.jobQualifications.hoursOfTraining ?
+                      ' ' + styles.summaryValid :
+                      ''
+                  )
+                }>
+                <img src={clock} alt=""/>
+                <p>Total of <span>{this.state.relevantTrainingHours.duration}</span> hours relevant training
+                </p>
+              </div>
+              {
+                evaluation.personaldatasheet.trainingsAttended !== undefined ?
+                  evaluation.personaldatasheet.trainingsAttended.map(t => {
+                    return (
+                      <div style={{marginLeft: 5}}>
+                        <Checkbox toggle={v => this.onClickRelativeTraining(v, t)}/>
+                        <div style={{marginLeft: 1}}>
+                          <p>
+                            <strong>{t.training.label}</strong>
+                          </p>
+                          <p style={{opacity: .8, marginTop: 1}}>{t.hours} hours</p>
+                          <p style={{
+                            opacity: .8,
+                            marginTop: 1
+                          }}>{moment(t.date).format('MMMM DD, YYYY')}</p>
+                        </div>
+                      </div>
+                    )
+                  }) :
+                  null
+              }
+            </div>
+          )
+        }
+      };
+
+      const jobEducation = () => {
+        if(this.state.jobQualifications) {
+          return (
+            <div
+              ref="jobEducation"
+              style={{
+                height: this.state.height.education,
+              }}>
+              <p className={styles.annotation}>Education</p>
+              {
+                this.state.jobQualifications ?
+                  this.state.jobQualifications.education.map(edu => {
+                    return (
+                      <div>
+                        <img src={mortarBoard} height={20} alt=""/>
+                        <div>
+                          <p>
+                            <strong>{ edu.label }</strong>
+                          </p>
+                        </div>
+                      </div>
+                    )
+                  }) :
+                  null
+              }
+              <div className={styles.dotDotDot}/>
+            </div>
+          )
+        }
+      };
+
+      const jobEligibility = () => {
+        if(this.state.jobQualifications) {
+          const eligibilities = this.state.jobQualifications.eligibility.map(el => {
+            return (
+              <div style={{marginLeft: 4}}>
+                <img src={eligibility} height={18} style={{opacity: 1}} alt=""/>
+                <div style={{marginLeft: -4}}>
+                  <p>
+                    <strong>{ el.label }</strong>
+                  </p>
+                  <p>&nbsp;</p>
+                </div>
+              </div>
+            )
+          });
+
+          return (
+            <div
+              ref="jobEligibility"
+              style={{
+                height: this.state.height.eligibility
+              }}>
+              <p className={styles.annotation}>Eligibility</p>
+              { eligibilities }
+            </div>
+          )
+        }
+      };
+
+      const jobWorkExperience = () => {
+        if(this.state.jobQualifications) {
+          return (
+            <div
+              style={{
+                height: this.state.height.workExperience
+              }}
+            >
+              <p className={styles.annotation}>
+                Relevant working experience
+              </p>
+              <div className={styles.summary}>
+                <img src={calendar} alt=""/>
+                <p><span>{ this.state.jobQualifications.yearsOfExperience }</span> years of relevant experience is required</p>
+              </div>
+              <div
+                style={{
+                  height: `calc(100% - 92px)`
+                }}
+                className={styles.dotDotDot}/>
+            </div>
+          )
+        }
+      };
+
+      const jobTraining = () => {
+        if(this.state.jobQualifications) {
+          return (
+            <div>
+              <p className={styles.annotation}>
+                Relevant training
+              </p>
+              <div className={styles.summary}>
+                <img src={clock} alt=""/>
+                <p>Total of <span>{ this.state.jobQualifications.hoursOfTraining }</span> hours is required</p>
+              </div>
+              <div
+                style={{
+                  height: `calc(100% - 95px)`
+                }}
+                className={styles.dotDotDot}/>
+            </div>
+          )
+        }
+      };
+
+      return this.state.evaluationData.map((evaluation, i) => {
+        if (i === this.state.currentNumberOfApplicant - 1) {
           return (
             <Fragment key={i}>
-              { bottomBar }
+              {bottomBar}
               <div className={univStyles.main}>
-                <div className={univStyles.pageMainNew + ' ' + univStyles.top} />
                 <div className={univStyles.pageMain}>
                   <div className={univStyles.form} style={{marginBottom: 200}}>
                     <div className={univStyles.header}>
@@ -373,7 +879,7 @@ class Applicants extends Component {
                         <span style={{fontWeight: 700}}>
                           {
                             ' ' + evaluation.firstname +
-                            ( evaluation.middleinitial != null ? ' ' + evaluation.middleinitial + '.' : '' ) +
+                            (evaluation.middleinitial != null ? ' ' + evaluation.middleinitial + '.' : '') +
                             ' ' + evaluation.lastname
                           }
                         </span>
@@ -387,46 +893,22 @@ class Applicants extends Component {
                             <div
                               ref="pdsEducation"
                               style={{
-                                height: this.state.height.education
+                                height: this.state.height.education,
                               }}>
                               <p className={styles.annotation}>Education</p>
                               {
                                 evaluation.personaldatasheet.educationalBackground.college.nameOfSchool ?
-                                  <div>
-                                    <img src={mortarBoard} height={20} alt=""/>
-                                    <div>
-                                      <p>
-                                        Studied <strong>Bachelor of Science in Accountancy</strong> at <span>Polytechnic University of the Philippines</span>
-                                      </p>
-                                      <p style={{opacity: .8, marginTop: 1}}>(2015 - 2019)</p>
-                                    </div>
-                                  </div> :
+                                  pdsEducationCollege(evaluation) :
                                   null
                               }
                               {
                                 evaluation.personaldatasheet.educationalBackground.secondary.nameOfSchool ?
-                                  <div style={{marginLeft: 4}}>
-                                    <img src={diploma} height={16} alt=""/>
-                                    <div>
-                                      <p>
-                                        Went to <span>Ramon Magsaysay High School</span>
-                                      </p>
-                                      <p style={{opacity: .8, marginTop: 1}}>(2011 - 2015)</p>
-                                    </div>
-                                  </div> :
+                                  pdsEducationSecondary(evaluation) :
                                   null
                               }
                               {
                                 evaluation.personaldatasheet.educationalBackground.elementary.nameOfSchool ?
-                                  <div style={{marginLeft: 4}}>
-                                    <img src={diploma} height={16} alt=""/>
-                                    <div>
-                                      <p>
-                                        Went to <span>Moises Salvador Elementary School</span>
-                                      </p>
-                                      <p style={{opacity: .8, marginTop: 1}}>(2006 - 2006)</p>
-                                    </div>
-                                  </div> :
+                                  pdsEducationElementary(evaluation) :
                                   null
                               }
                               <div className={styles.dotDotDot}/>
@@ -445,7 +927,7 @@ class Applicants extends Component {
                                       evaluation.personaldatasheet.civilServiceEligibility.map(c => {
                                         return (
                                           <p>
-                                            <strong>{ c.label }</strong>
+                                            <strong>{c.label}</strong>
                                           </p>
                                         )
                                       }) :
@@ -457,192 +939,20 @@ class Applicants extends Component {
                                 </div>
                               </div>
                             </div>
-                            <div ref="workExperienceInside">
-                              <p className={styles.annotation}>
-                                Relevant work experience - Inside Commission on Audit &nbsp;
-                                <span style={{fontWeight: 400}}>(Check those that apply)</span>
-                              </p>
-                              <div className={styles.summary}>
-                                <img src={calendar} alt=""/>
-                                <p><span>3</span> years of total relevant work experience inside COA</p>
-                              </div>
-                              {
-                                evaluation.personaldatasheet.workExperienceWithinCoa != undefined ?
-                                  evaluation.personaldatasheet.workExperienceWithinCoa.map(w => {
-                                    return (
-                                      <div style={{marginLeft: 5}}>
-                                        <Checkbox toggle={v => this.onClickRelativeWorkInsideCoa(v, w)}/>
-                                        <div style={{marginLeft: 1}}>
-                                          <p>
-                                            <strong>{ w.positionTitle }</strong>
-                                          </p>
-                                          <p style={{marginTop: 2}}>{ w.officeName }</p>
-                                          <p
-                                            style={{
-                                              opacity: .8,
-                                              marginTop: 2
-                                            }}>
-                                            (
-                                              {
-                                                moment(w.from).format('YYYY')
-                                              } - &nbsp;
-                                              {
-                                                w.to != undefined ?
-                                                  moment(w.to).format('YYYY') :
-                                                  'Present'
-                                              }
-                                            )
-                                          </p>
-                                        </div>
-                                      </div>
-                                    )
-                                  }) :
-                                  null
-                              }
-                            </div>
-                            <div ref="workExperienceOutside">
-                              <p className={styles.annotation}>
-                                Relevant work experience - Outside Commission on Audit &nbsp;
-                                <span style={{fontWeight: 400}}>(Check those that apply)</span>
-                              </p>
-                              <div className={styles.summary}>
-                                <img src={calendar} alt=""/>
-                                <p><span>3</span> years of total relevant work experience outside COA</p>
-                              </div>
-                              {
-                                evaluation.personaldatasheet.workExperienceOutsideCoa != undefined ?
-                                  evaluation.personaldatasheet.workExperienceOutsideCoa.slice(0).reverse().map(w => {
-                                    return (
-                                      <div style={{marginLeft: 5}}>
-                                        <Checkbox toggle={v => this.onClickRelativeWorkOutsideCoa(v, w)}/>
-                                        <div style={{marginLeft: 1}}>
-                                          <p>
-                                            <strong>{ w.positionTitle }</strong>
-                                          </p>
-                                          <p style={{marginTop: 2}}>{ w.companyName }</p>
-                                          <p
-                                            style={{
-                                              opacity: .8,
-                                              marginTop: 2
-                                            }}>
-                                            (
-                                            {
-                                              moment(w.from).format('YYYY')
-                                            } - &nbsp;
-                                            {
-                                              w.to != undefined ?
-                                                moment(w.to).format('YYYY') :
-                                                'Present'
-                                            }
-                                            )
-                                          </p>
-                                        </div>
-                                      </div>
-                                    )
-                                  }) :
-                                  null
-                              }
-                            </div>
-                            <div ref="training">
-                              <p className={styles.annotation}>
-                                Relevant training &nbsp;
-                                <span style={{fontWeight: 400}}>(Check those that apply)</span>
-                              </p>
-                              <div className={styles.summary}>
-                                <img src={clock} alt=""/>
-                                <p>Total of <span>8</span> hours relevant training</p>
-                              </div>
-                              {
-                                evaluation.personaldatasheet.trainingsAttended != undefined ?
-                                  evaluation.personaldatasheet.trainingsAttended.map(t => {
-                                    return (
-                                      <div style={{marginLeft: 5}}>
-                                        <Checkbox toggle={v => this.onClickRelativeTraining(v, t  )}/>
-                                        <div style={{marginLeft: 1}}>
-                                          <p>
-                                            <strong>{ t.training.label }</strong>
-                                          </p>
-                                          <p style={{opacity: .8, marginTop: 1}}>{ t.hours } hours</p>
-                                          <p style={{opacity: .8, marginTop: 1}}>{ moment(t.date).format('MMMM DD, YYYY') }</p>
-                                        </div>
-                                      </div>
-                                    )
-                                  }) :
-                                  null
-                              }
-                            </div>
+                            { pdsWorkExperience(evaluation) }
+                            { pdsTraining(evaluation) }
                           </div>
                           <div>
-                            <div
-                              ref="jobEducation"
-                              style={{
-                                height: this.state.height.education,
-                              }}>
-                              <p className={styles.annotation}>Education</p>
-                              <div>
-                                <img src={mortarBoard} height={20} alt=""/>
-                                <div>
-                                  <p>
-                                    <strong>Bachelor of Science in Accountancy</strong>
-                                  </p>
-                                </div>
-                              </div>
-                              <div className={styles.dotDotDot}/>
-                            </div>
-                            <div
-                              ref="jobEligibility"
-                              style={{
-                                height: this.state.height.eligibility
-                              }}>
-                              <p className={styles.annotation}>Eligibility</p>
-                              <div style={{marginLeft: 4}}>
-                                <img src={eligibility} height={18} style={{opacity: 1}} alt=""/>
-                                <div style={{marginLeft: -4}}>
-                                  <p>
-                                    <strong>RA 1080 (CPA)</strong>
-                                  </p>
-                                  <p>&nbsp;</p>
-                                </div>
-                              </div>
-                            </div>
-                            <div
-                              style={{
-                                height: this.state.height.workExperience
-                              }}
-                            >
-                              <p className={styles.annotation}>
-                                Relevant working experience
-                              </p>
-                              <div className={styles.summary}>
-                                <img src={calendar} alt=""/>
-                                <p><span>3</span> years of relevant experience is required</p>
-                              </div>
-                              <div
-                                style={{
-                                  height: `calc(100% - 92px)`
-                                }}
-                                className={styles.dotDotDot}/>
-                            </div>
-                            <div>
-                              <p className={styles.annotation}>
-                                Relevant training
-                              </p>
-                              <div className={styles.summary}>
-                                <img src={clock} alt=""/>
-                                <p>Total of <span>8</span> hours is required</p>
-                              </div>
-                              <div
-                                style={{
-                                  height: `calc(100% - 95px)`
-                                }}
-                                className={styles.dotDotDot}/>
-                            </div>
+                            { jobEducation() }
+                            { jobEligibility() }
+                            { jobWorkExperience() }
+                            { jobTraining() }
                           </div>
                         </div>
                         <p className={styles.annotation}>DOCUMENTS</p>
                         <Container fluid style={{padding: 0, marginTop: '-7px'}}>
                           <Row>
-                            { documentsContainer }
+                            {documentsContainer}
                           </Row>
                         </Container>
                       </div>
@@ -653,32 +963,55 @@ class Applicants extends Component {
             </Fragment>
           )
         } else return null
-      });
-
-      return e
+      })
     };
 
-    const documentsModal = (
-      <div className={styles.modal}>
-        <div>
-          PREVIOUS
+    const documentsModal = () => {
+      const url = `${localStorage.getItem('ngrokUrl')}documents/${this.state.documentUrl}`;
+
+      return (
+        <div className={styles.modal}>
+          <div>
+            {
+              this.state.currentNumberOfDoc > 0 ?
+                <div onClick={this.onPreviousClick} className={styles.navigation} ref="previous">
+                  <img src={previous} height={30} alt=""/>
+                </div> :
+                null
+            }
+          </div>
+          <div className={styles.preview} ref="preview">
+            <div className={styles.documentName}>
+              <p>{ this.state.documentName }</p>
+              <p>{ this.state.evaluationData[this.state.currentNumberOfApplicant - 1].details.files[this.state.documentKeys[this.state.currentNumberOfDoc]].localFilePath }</p>
+            </div>
+            {
+              this.state.documentUrl != null ?
+                fileExtension(url) === 'jpg' ?
+                  <div className={styles.imagePreview}>
+                    <img src={url} alt=""/>
+                  </div> :
+                  <iframe
+                    src={'https://view.officeapps.live.com/op/embed.aspx?src=' + url}
+                    width='100%' height='100%' style={{boxSizing: 'border-box'}} frameBorder='0'>This is an embedded <a target='_blank' href='http://office.com'>Microsoft
+                    Office</a> document, powered by <a target='_blank' href='http://office.com/webapps'>Office Online</a>.
+                  </iframe>
+                :
+                null
+            }
+          </div>
+          <div>
+            {
+              this.state.currentNumberOfDoc < this.state.documentKeys.length - 1 ?
+                <div onClick={this.onNextClick} className={styles.navigation} ref="next">
+                  <img src={next} height={30} alt=""/>
+                </div> :
+                null
+            }
+          </div>
         </div>
-        <div className={styles.preview} ref="preview">
-          {
-            this.state.documentUrl != null ?
-              <iframe
-                src={'https://view.officeapps.live.com/op/embed.aspx?src=' + this.state.documentUrl}
-                width='100%' height='100%' style={{boxSizing: 'border-box'}} frameBorder='0'>This is an embedded <a target='_blank' href='http://office.com'>Microsoft
-                Office</a> document, powered by <a target='_blank' href='http://office.com/webapps'>Office Online</a>.
-              </iframe> :
-              null
-          }
-        </div>
-        <div>
-          NEXT
-        </div>
-      </div>
-    );
+      )
+    };
 
     const listOfApplicantsReportRow = this.state.employees.map(emp => {
       return (
@@ -1014,7 +1347,7 @@ class Applicants extends Component {
         {
           this.state.showModal ?
             <Portal>
-              { documentsModal }
+              { documentsModal() }
             </Portal> :
             null
         }
