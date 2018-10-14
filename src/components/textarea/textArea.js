@@ -71,6 +71,7 @@ class TextArea extends PureComponent {
             null
         }
         <textarea
+          autoFocus={this.props.autoFocus}
           value={this.props.value}
           ref="textarea"
           onChange={e => this.onChangeHandler(e)}

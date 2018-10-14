@@ -17,6 +17,7 @@ import styles from "./styles.scss";
 import Button from "../../../button/button";
 import Checkbox from '../../../checkBox/checkBox';
 import Portal from "../../../portal/portal";
+import TextArea from '../../../textarea/textArea';
 
 import calendar from '../../../../assets/ui/calendar.svg';
 import check from "../../../../assets/ui/check.svg";
@@ -115,6 +116,9 @@ class Applicants extends Component {
       relevantTrainingHours: {
         duration: 0
       },
+
+      showRemarksModal: false,
+      remarks: [],
 
       height: {
         education: null,
@@ -311,20 +315,39 @@ class Applicants extends Component {
       })
   };
 
-  onReject = () => {
-    this.setState(produce(draft => {
-      draft.rejected.push(this.state.evaluationData[this.state.currentNumberOfApplicant - 1]);
-    }), () => {
-      window.scrollTo(0, 0);
+  onChangeRemarks = e => {
+    const value = e.target.value;
 
-      if(this.state.currentNumberOfApplicant < this.state.evaluationData.length) {
-        this.setState(produce(draft => {
-          draft.currentNumberOfApplicant++
-        }))
-      } else {
-        this.saveEvaluation();
-      }
-    })
+    this.setState(produce(draft => {
+      draft.remarks[this.state.remarks.length - 1] = value
+    }))
+  };
+
+  onClickRejectCancel = () => {
+    this.setState(produce(draft => {
+      draft.showRemarksModal = false;
+      draft.remarks.pop();
+    }), () => console.log(this.state.remarks))
+  };
+
+  onReject = () => {
+    // this.setState(produce(draft => {
+    //   draft.rejected.push(this.state.evaluationData[this.state.currentNumberOfApplicant - 1]);
+    // }), () => {
+    //   window.scrollTo(0, 0);
+    //
+    //   if(this.state.currentNumberOfApplicant < this.state.evaluationData.length) {
+    //     this.setState(produce(draft => {
+    //       draft.currentNumberOfApplicant++
+    //     }))
+    //   } else {
+    //     this.saveEvaluation();
+    //   }
+    // })
+    this.setState(produce(draft => {
+      draft.showRemarksModal = true;
+      draft.remarks.push('');
+    }), () => console.log(this.state.remarks))
   };
 
   onAccept = () => {
@@ -558,7 +581,7 @@ class Applicants extends Component {
         const isCustom = this.state.educationTypes.includes(2);
 
         return (
-          <div className={styles.valid}>
+          <div>
             {
               isCustom ?
                 <Checkbox toggle={v => this.onClickRelevantCollege(v, evaluation.personaldatasheet.educationalBackground.college)}/> :
@@ -955,6 +978,10 @@ class Applicants extends Component {
                             {documentsContainer}
                           </Row>
                         </Container>
+                        <p className={styles.annotation}>NATURE OF WORK</p>
+                        <div style={{marginTop: 8}}>
+                          <TextArea name="Nature of work"/>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1008,6 +1035,31 @@ class Applicants extends Component {
                 </div> :
                 null
             }
+          </div>
+        </div>
+      )
+    };
+
+    const remarksModal = () => {
+      return (
+        <div className={styles.remarksModal}>
+          <div className={styles.form}>
+            <div className={styles.header}>
+              <p>Are you sure you want to dismiss this applicant?</p>
+            </div>
+            <div className={styles.formBody} style={{width: 600}}>
+              <div style={{padding: 15}}>
+                <TextArea
+                  value={this.state.remarks[this.state.remarks.length - 1]}
+                  autoFocus
+                  name="Remarks"
+                  onChangeHandler={this.onChangeRemarks} />
+              </div>
+              <div className={styles.footer}>
+                <Button onClick={this.onClickRejectCancel} name="CANCEL" classNames={['cancel']}/>
+                <Button name="PROCEED" classNames={['tertiary']}/>
+              </div>
+            </div>
           </div>
         </div>
       )
@@ -1348,6 +1400,13 @@ class Applicants extends Component {
           this.state.showModal ?
             <Portal>
               { documentsModal() }
+            </Portal> :
+            null
+        }
+        {
+          this.state.showRemarksModal ?
+            <Portal>
+              { remarksModal() }
             </Portal> :
             null
         }

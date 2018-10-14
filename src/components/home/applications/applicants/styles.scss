@@ -262,7 +262,7 @@ p.annotation {
     top: 0;
     left: 0;
     width: 100%;
-    background: rgba(0, 0, 0, .6);
+    background: rgba(0, 0, 0, .4);
     opacity: 0;
     transition: opacity ease-in .1s;
     padding: 20px;
@@ -297,6 +297,21 @@ p.annotation {
       }
     }
   }
+}
+
+.remarksModal {
+  z-index: 4;
+  background: rgba(0, 0, 0, .8);
+  box-sizing: border-box;
+  width: 100%;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 50px 0;
 }
 
 .demo {
@@ -361,6 +376,52 @@ p.annotation {
       &:hover {
         background: $primary-color;
         color: white
+      }
+    }
+  }
+}
+
+.form {
+  background: white;
+
+  &:not(:first-child) {
+    margin-top: 15px;
+  }
+
+  .header {
+    border: 1px solid $border-color;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+
+    > p {
+      font-weight: 600;
+      font-size: 18px;
+      margin: 0 12px;
+
+      &.goBack {
+        font-weight: 400;
+        font-size: 14px;
+      }
+    }
+  }
+
+  .formBody {
+    border: 1px solid $border-color;
+    border-top: none;
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+
+    .footer {
+      padding: 12px;
+      display: flex;
+      border-top: solid 1px $border-color;
+      justify-content: flex-end;
+
+      > input:first-child {
+        margin-right: 12px;
       }
     }
   }
