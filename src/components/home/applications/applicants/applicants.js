@@ -120,6 +120,8 @@ class Applicants extends Component {
       showRemarksModal: false,
       remarks: [],
 
+      natureOfWork: '',
+
       height: {
         education: null,
         training: null,
@@ -127,6 +129,8 @@ class Applicants extends Component {
         workExperience: null
       }
     }
+
+    this.rankingListRaw = [];
   }
 
   componentDidMount = () => {
@@ -308,7 +312,9 @@ class Applicants extends Component {
       jobId: this.props.match.params.jobId,
       jobOpportunityId: this.props.match.params.jobOpportunityId,
       approved: this.state.approved,
-      rejected: this.state.rejected
+      rejected: this.state.rejected,
+      rankingListRaw: this.rankingListRaw,
+      remarks: this.state.remarks
     })
       .then(() => {
         this.fetchEvaluation(this.props.match.params.jobId, this.props.match.params.jobOpportunityId)
@@ -330,20 +336,24 @@ class Applicants extends Component {
     }), () => console.log(this.state.remarks))
   };
 
+  onClickRejectSave = () => {
+    this.setState(produce(draft => {
+      draft.rejected.push(this.state.evaluationData[this.state.currentNumberOfApplicant - 1]);
+      draft.showRemarksModal = false;
+    }), () => {
+      window.scrollTo(0, 0);
+
+      if(this.state.currentNumberOfApplicant < this.state.evaluationData.length) {
+        this.setState(produce(draft => {
+          draft.currentNumberOfApplicant++
+        }))
+      } else {
+        this.saveEvaluation();
+      }
+    })
+  };
+
   onReject = () => {
-    // this.setState(produce(draft => {
-    //   draft.rejected.push(this.state.evaluationData[this.state.currentNumberOfApplicant - 1]);
-    // }), () => {
-    //   window.scrollTo(0, 0);
-    //
-    //   if(this.state.currentNumberOfApplicant < this.state.evaluationData.length) {
-    //     this.setState(produce(draft => {
-    //       draft.currentNumberOfApplicant++
-    //     }))
-    //   } else {
-    //     this.saveEvaluation();
-    //   }
-    // })
     this.setState(produce(draft => {
       draft.showRemarksModal = true;
       draft.remarks.push('');
@@ -351,8 +361,45 @@ class Applicants extends Component {
   };
 
   onAccept = () => {
+    const applicant = { ...this.state.evaluationData[this.state.currentNumberOfApplicant - 1] };
+
+    applicant.relevant = {
+      relevantCollege: this.state.relevantCollege,
+      relevantWorkInside: this.state.relevantWorkInside,
+      relevantWorkOutside: this.state.relevantWorkOutside,
+      relevantTraining: this.state.relevantTraining,
+
+      relevantWorkYearsTotal: this.state.relevantWorkYearsTotal,
+      relevantWorkInsideYears: this.state.relevantWorkInsideYears,
+      relevantWorkOutsideYears: this.state.relevantWorkOutsideYears,
+      relevantTrainingHours: this.state.relevantTrainingHours,
+
+      natureOfWork: this.state.natureOfWork
+    };
+
+    this.rankingListRaw.push(applicant);
+
     this.setState(produce(draft => {
       draft.approved.push(this.state.evaluationData[this.state.currentNumberOfApplicant - 1]);
+      draft.relevantCollege = null;
+      draft.relevantWorkInside = [];
+      draft.relevantWorkOutside = [];
+      draft.relevantTraining = [];
+
+      draft.relevantWorkYearsTotal = 0;
+      draft.relevantWorkInsideYears = {
+        sentence: '0 years',
+        duration: 0
+      };
+      draft.relevantWorkOutsideYears = {
+        sentence: '0 years',
+        duration: 0
+      };
+      draft.relevantTrainingHours = {
+        duration: 0
+      };
+
+      draft.natureOfWork = '';
     }), () => {
       window.scrollTo(0, 0);
 
@@ -491,6 +538,12 @@ class Applicants extends Component {
     }
   };
 
+  onChangeNatureOfWork = e => {
+    const value = e.target.value;
+
+    this.setState({natureOfWork: value})
+  };
+
   render() {
     const jobsTitleBar =
       <div className={univStyles.titleBar + ' ' + univStyles.fullWidth}>
@@ -524,13 +577,48 @@ class Applicants extends Component {
         </div>
       </div>;
 
-    const applications = this.state.employees.map((employee, i) => {
-      return (
-        <div key={i}>
-          <p>{employee.firstname} {employee.middleinitial != null ? employee.middleinitial + '.' : ''} {employee.lastname}</p>
-        </div>
-      )
-    });
+    const applications = () => {
+      if(this.state.evaluationIsDone) {
+        return (
+          <Fragment>
+            {
+              this.state.approved.map((employee, i) => {
+                return (
+                  <div key={i}>
+                    <p>{employee.firstname} {employee.middleinitial != null ? employee.middleinitial + '.' : ''} {employee.lastname}</p>
+                    <p className={`${styles.status} ${styles.qualified}`}>QUALIFIED</p>
+                  </div>
+                )
+              })
+            }
+            {
+              this.state.rejected.map((employee, i) => {
+                return (
+                  <div key={i}>
+                    <p>{employee.firstname} {employee.middleinitial != null ? employee.middleinitial + '.' : ''} {employee.lastname}</p>
+                    <p className={`${styles.status} ${styles.notQualified}`}>NOT QUALIFIED</p>
+                  </div>
+                )
+              })
+            }
+          </Fragment>
+        )
+      } else {
+        return (
+          <Fragment>
+            {
+              this.state.employees.map((employee, i) => {
+                return (
+                  <div key={i}>
+                    <p>{employee.firstname} {employee.middleinitial != null ? employee.middleinitial + '.' : ''} {employee.lastname}</p>
+                  </div>
+                )
+              })
+            }
+          </Fragment>
+        )
+      }
+    };
 
     const bottomBar =
       <div
@@ -556,8 +644,16 @@ class Applicants extends Component {
               onClick={() => this.onDocumentClick(files[key].localFilePath, containerName, i)}
               className={styles.uploadContainer}>
               <div className={styles.iconContainer}>
-                <div className={styles.validity}>
-                  <img src={check} height={16} alt=""/>
+                <div
+                  style={{
+                    height: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent:'center'
+                  }}>
+                  <p className={styles.fileType + ` ${fileExtension(files[key].localFilePath)}`}>
+                    { '.' + fileExtension(files[key].localFilePath) }
+                  </p>
                 </div>
               </div>
               <div className={styles.bottom}>
@@ -979,8 +1075,11 @@ class Applicants extends Component {
                           </Row>
                         </Container>
                         <p className={styles.annotation}>NATURE OF WORK</p>
-                        <div style={{marginTop: 8}}>
-                          <TextArea name="Nature of work"/>
+                        <div style={{marginTop: 12}}>
+                          <TextArea
+                            onChangeHandler={this.onChangeNatureOfWork}
+                            value={this.state.natureOfWork}
+                            name="Nature of work"/>
                         </div>
                       </div>
                     </div>
@@ -1057,7 +1156,7 @@ class Applicants extends Component {
               </div>
               <div className={styles.footer}>
                 <Button onClick={this.onClickRejectCancel} name="CANCEL" classNames={['cancel']}/>
-                <Button name="PROCEED" classNames={['tertiary']}/>
+                <Button onClick={this.onClickRejectSave} name="PROCEED" classNames={['tertiary']}/>
               </div>
             </div>
           </div>
@@ -1442,7 +1541,7 @@ class Applicants extends Component {
                   </div>
                   <div className={univStyles.formBody} style={{padding: 15}}>
                     <div className={styles.applicantsContainer}>
-                      { applications }
+                      { applications() }
                     </div>
                   </div>
                 </div>

@@ -11,6 +11,10 @@ import Dropdown from '../dropdown/dropdown';
 
 import notification from '../../../assets/ui/notification.svg';
 
+import { events, initializeSocket } from "../../../socket";
+
+import { notifications } from '../../../api';
+
 class Notification extends Component {
   state = {
     hasUrl: false,
@@ -31,6 +35,15 @@ class Notification extends Component {
     //       })
     //     }
     //   });
+
+    const socket = initializeSocket();
+
+    socket.on(events.notifications, this.fetch)
+  };
+
+  fetch = () => {
+    axios.get(notifications.new + this.props.employeeId)
+      .then(res => {})
   };
 
   componentWillMount = () => {
@@ -115,6 +128,7 @@ class Notification extends Component {
 const mapStateToProps = state => {
   return {
     showNotificationDropdown: state.ui.showNotificationDropdown,
+    employeeId: state.authentication.employeeId
   }
 };
 

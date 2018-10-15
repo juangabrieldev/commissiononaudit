@@ -13,9 +13,32 @@
 
     padding: 15px;
     background: darken(#fff, 2);
+    display: flex;
 
     p {
       margin: 0;
+    }
+
+    .status {
+      margin-right: 0;
+      margin-left: auto;
+      border-radius: 4px;
+      border: solid 1px;
+      padding: 4px;
+      font-size: 12px;
+      font-weight: 600;
+
+      &.qualified {
+        border-color: $valid-color;
+        background: transparentize($valid-color, .9);
+        color: darken($valid-color, 5)
+      }
+
+      &.notQualified {
+        border-color: $error;
+        background: transparentize($error, .95);
+        color: darken($error, 5)
+      }
     }
   }
 }
@@ -187,6 +210,39 @@ p.annotation {
       top: 10px;
       right: 10px;
       visibility: hidden;
+    }
+
+    .fileType {
+      font-size: 25px;
+      font-weight: 600;
+      border: solid 2px;
+      border-radius: 4px;
+      padding: 4px 8px;
+
+      &:global(.jpg) {
+        border-color: #f5c621;
+        color: #f5c621;
+      }
+
+      &:global(.doc) {
+        border-color: $primary-color;
+        color: $primary-color;
+      }
+
+      &:global(.docx) {
+        border-color: $primary-color;
+        color: $primary-color;
+      }
+
+      &:global(.xlsx) {
+        border-color: $valid-color;
+        color: $valid-color;
+      }
+
+      &:global(.xls) {
+        border-color: $valid-color;
+        color: $valid-color;
+      }
     }
   }
 

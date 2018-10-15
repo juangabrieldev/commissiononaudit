@@ -35,7 +35,11 @@ class Announcements extends Component {
             </React.Fragment> :
             <React.Fragment>
               <p>Announcements</p>
-              <Button onClick={this.onCreate} classNames={['primary']} name="+  POST NEW ANNOUNCEMENT"/>
+              {
+                this.props.role === 1 ?
+                  <Button onClick={this.onCreate} classNames={['primary']} name="+  POST NEW ANNOUNCEMENT"/> :
+                  null
+              }
             </React.Fragment>
         }
       </div>;

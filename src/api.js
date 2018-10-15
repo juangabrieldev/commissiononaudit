@@ -23,7 +23,11 @@ export const applications = {
 export const evaluations = {
   create: rootUrl + '/evaluations/',
   get: rootUrl + '/evaluations/',
-  update: rootUrl + '/evaluations/update/'
+  update: rootUrl + '/evaluations/update/',
+  divisionChief: rootUrl + '/evaluations/division-chief/',
+  hrEvaluator: rootUrl + '/evaluations/hr-evaluator/',
+  getHrEvaluators: rootUrl + '/evaluations/get-hr-evaluators/',
+  sendToHrEvaluators: rootUrl + '/evaluations/send-to-hr-evaluators/',
 };
 
 export const jobs = {
@@ -43,6 +47,10 @@ export const jobOpportunities = {
   root: rootUrl + '/job-opportunities/',
   view: rootUrl + '/job-opportunities/view/', //view a job opportunity
   evaluators: rootUrl + '/job-opportunities/evaluators/', //for react-select
+};
+
+export const notifications = {
+  new: rootUrl + '/notifications/new/', //get new notifications by employee id
 };
 
 export const office = {

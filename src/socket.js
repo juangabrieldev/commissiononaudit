@@ -10,5 +10,6 @@ export const events = {
   office: 'OFFICE',
   systemLogs: 'SYSTEM_LOGS',
   qualificationStandards: 'QUALIFICATION_STANDARDS',
-  employees: 'EMPLOYEES'
+  employees: 'EMPLOYEES',
+  notifications: 'NOTIFICATIONS'
 };

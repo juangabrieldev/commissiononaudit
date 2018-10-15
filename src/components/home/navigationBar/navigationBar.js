@@ -25,9 +25,14 @@ class NavigationBar extends Component {
           break;
         }
 
-        case 3:
-        case 4: {
+        case 3: {
           this.state = {tabs: ['Applications']};
+          break;
+        }
+
+        case 4:
+        case 5: {
+          this.state = {tabs: ['Evaluations']};
           break;
         }
 
@@ -53,6 +58,12 @@ class NavigationBar extends Component {
 
           case 3: {
             this.props.history.push('/applications');
+            break;
+          }
+
+          case 4:
+          case 5: {
+            this.props.history.push('/evaluations');
             break;
           }
 
@@ -118,9 +129,13 @@ class NavigationBar extends Component {
           {tabs}
         </div>
         <div className={styles.profileTabs}>
-          <div ref="notification" className={styles.profileTab}>
-            <Notification onClick={() => {}}/>
-          </div>
+          {
+            this.props.role === 2 ?
+              <div ref="notification" className={styles.profileTab}>
+                <Notification onClick={() => {}}/>
+              </div> :
+              null
+          }
           <div ref="avatar" className={styles.profileTab}>
             <Avatar onClick={this.props.toggleAvatarDropdown} />
           </div>

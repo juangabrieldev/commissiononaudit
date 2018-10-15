@@ -156,7 +156,6 @@ class Applications extends Component {
                 </Container> :
                 <p style={{margin: 0, textAlign: 'center', fontSize: 14}}>There are no past applications yet.</p>
             }
-
           </div>
         </Fragment>
       )

@@ -9,6 +9,7 @@ import DeleteConfirmationModal from '../confirmationModal/deleteConfirmationModa
 import NavigationBar from './navigationBar/navigationBar';
 import Announcements from './announcements/announcements';
 import Applications from './applications/applications';
+import Evaluations from './evaluations/evaluations';
 import Maintenance from './maintenance/maintenance';
 import NavigationModal from '../navigationModal/navigationModal';
 import SideBarRight from './sideBarRight/sideBarRight';
@@ -41,6 +42,7 @@ class Home extends Component {
             <Route path="/announcements" component={Announcements}/>
             <Route path="/maintenance" component={Maintenance}/>
             <Route path="/applications" component={Applications}/>
+            <Route path="/evaluations" component={Evaluations}/>
           </Switch>
         </div>
         {
