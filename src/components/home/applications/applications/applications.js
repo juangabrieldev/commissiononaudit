@@ -1,17 +1,15 @@
 import React, {Component, Fragment} from 'react';
-import { withRouter, Link, Switch, Route } from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
 import connect from "react-redux/es/connect/connect";
 import axios from 'axios';
-import { Container, Row, Col, setConfiguration } from 'react-grid-system';
+import {Col, Container, Row, setConfiguration} from 'react-grid-system';
 import ReactSVG from 'react-svg';
 import produce from 'immer';
 
 import univStyles from '../../styles.scss'
 import styles from './styles.scss';
 
-import { applications } from "../../../../api";
-
-import files from '../../../../assets/ui/files.svg';
+import {applications} from "../../../../api";
 import jobIcon from '../../../../assets/ui/jobs.svg';
 
 setConfiguration({ gutterWidth: 15 });
@@ -21,7 +19,7 @@ class Applications extends Component {
     hasLoaded: false,
 
     applicant: {
-      applicants: []
+      applications: []
     },
     evaluator: {
       currentApplications: [],
@@ -34,6 +32,7 @@ class Applications extends Component {
     switch(this.props.role) {
       //applicant
       case 2:
+        this.applicantFetch();
         break;
 
       //byClusterEvaluator
@@ -49,6 +48,17 @@ class Applications extends Component {
 
   onClickJob = (jobId, jobOpportunityId) => {
     this.props.history.push(`/applications/applicants/${jobId}/${jobOpportunityId}`);
+  };
+
+  applicantFetch = () => {
+    axios.get(applications.overview + this.props.employeeId)
+      .then(res => {
+        console.log(res.data.data);
+
+        this.setState(produce(draft => {
+          draft.applicant.applications = res.data.data
+        }))
+      })
   };
 
   evaluatorFetch = () => {
@@ -161,11 +171,32 @@ class Applications extends Component {
       )
     };
 
+    const applicantApplications = () => {
+      return this.state.applicant.applications.map(app => {
+        return (
+          <Col key={app.token} xs={2} style={{marginTop: 15}}>
+            <div
+              onClick={() => this.props.history.push(`/applications/${app.token}`)}
+              className={styles.application}>
+              <div className={styles.iconContainer}>
+                <div className={styles.labelContainer}>
+                </div>
+                <ReactSVG path={jobIcon} svgStyle={{fill: '#4688FF', height: 60}}/>
+              </div>
+              <div className={styles.bottom}>
+                <p>Applications for {app.jobtitle}</p>
+              </div>
+            </div>
+          </Col>
+        )
+      });
+    };
+
     //switcher component to switch between roles
     const switcher = () => {
       switch(this.props.role) {
         case 2:
-          return null;
+          return applicantApplications();
         case 3:
           return byClusterEvaluatorApplications()
       }

@@ -16,7 +16,7 @@ export const applications = {
   create: rootUrl + '/applications/',
   view: rootUrl + '/applications/',
   overview: rootUrl + '/applications/overview/',
-  applicants: rootUrl + '/applications/applicants/',
+  applicants: rootUrl + '/applications/',
   evaluators: rootUrl + '/applications/evaluator/',
 };
 
@@ -26,6 +26,7 @@ export const evaluations = {
   update: rootUrl + '/evaluations/update/',
   divisionChief: rootUrl + '/evaluations/division-chief/',
   hrEvaluator: rootUrl + '/evaluations/hr-evaluator/',
+  hrEvaluatorView: rootUrl + '/evaluations/hr-evaluator/view/',
   getHrEvaluators: rootUrl + '/evaluations/get-hr-evaluators/',
   sendToHrEvaluators: rootUrl + '/evaluations/send-to-hr-evaluators/',
 };

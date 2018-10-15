@@ -1,0 +1,13 @@
+@import "../../../layout/variables";
+
+.titleBarLabel {
+  margin-right: 0;
+  margin-left: auto;
+  border-radius: 4px;
+  padding: 4px;
+  font-size: 12px !important;
+  font-weight: 600;
+  border: 1px solid $valid-color;
+  background: transparentize($valid-color, .9);
+  color: darken($valid-color, 5)
+}

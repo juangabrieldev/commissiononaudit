@@ -100,7 +100,7 @@ class Notification extends Component {
     return (
       <Fragment>
         <div onClick={this.onClick} className={styles.notification}>
-          <p>2</p>
+          {/*<p>2</p>*/}
           <img src={notification} height={20} style={{opacity: .3}} alt=""/>
         </div>
         <TransitionGroup component={null}>

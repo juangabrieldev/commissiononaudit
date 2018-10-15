@@ -117,6 +117,11 @@ class Applications extends Component {
       positionTitle: null,
       submittedTo: null,
       dateSubmitted: null
+    },
+
+    evaluationHasStarted: {
+      byClusterEvaluatorName: null,
+      dateOfStartOfEvaluation: null
     }
   };
 
@@ -126,6 +131,10 @@ class Applications extends Component {
     axios.get(applications.view + token + `?applicantId=${this.props.employeeId}`)
       .then(res => {
         const data = res.data.data;
+
+        console.log(data);
+
+        console.log(moment(data.dateofevaluation).format('MMMM DD YYYY h:mm'));
 
         this.setState(produce(draft => {
           draft.applicationTitle = data.applicationTitle;
@@ -137,9 +146,17 @@ class Applications extends Component {
           draft.applicationSubmitted.submittedTo = data.byClusterEvaluatorName;
           draft.applicationSubmitted.dateSubmitted = data.dateofsubmission;
 
+          //set second point
+          draft.evaluationHasStarted.byClusterEvaluatorName = data.byClusterEvaluatorName;
+          draft.evaluationHasStarted.dateOfStartOfEvaluation = data.dateofevaluation;
+
           //if the application has been already submitted
           if(!!data.dateofsubmission) {
             draft.isApplicationSubmitted = true
+          }
+
+          if(!!data.dateofevaluation) {
+            draft.hasEvaluationStarted = true
           }
         }));
       })
@@ -375,7 +392,27 @@ class Applications extends Component {
         </div>
         <div className={styles.row}>
           <p style={{opacity: .5}}>Date submitted:</p>
-          <p>{ moment(this.state.applicationSubmitted.dateSubmitted).calendar() }</p>
+          <p>
+            { moment(this.state.applicationSubmitted.dateSubmitted).format('MMMM DD, YYYY') + ' at ' +
+            moment(this.state.applicationSubmitted.dateSubmitted).format('h:mm A')
+            }
+          </p>
+        </div>
+      </ReactTooltip>;
+
+    const evaluationHasStartedTooltip =
+      <ReactTooltip className={styles.tooltip} offset={{bottom: 10}} place="bottom" id="evaluation" effect="solid">
+        <div className={styles.row}>
+          <p style={{opacity: .5}}>By-cluster evaluator:</p>
+          <p>{this.state.evaluationHasStarted.byClusterEvaluatorName}</p>
+        </div>
+        <div className={styles.row}>
+          <p style={{opacity: .5}}>Date submitted:</p>
+          <p>
+            { moment(this.state.evaluationHasStarted.dateOfStartOfEvaluation).format('MMMM DD, YYYY') + ' at ' +
+            moment(this.state.evaluationHasStarted.dateOfStartOfEvaluation).format('h:mm A')
+            }
+          </p>
         </div>
       </ReactTooltip>;
 
@@ -396,18 +433,19 @@ class Applications extends Component {
             <div className={styles.timelineContainer}>
               <div className={styles.timeline}>
                 <div className={styles.circle + ' ' + styles.blue} />
-                <div className={styles.line + ' ' + styles.blue}/>
+                <div className={styles.line + (this.state.hasEvaluationStarted ? ` ${styles.blue}` : '')}/>
                 <div className={styles.circle + (this.state.hasEvaluationStarted ? ` ${styles.blue}` : '')} />
                 <div className={styles.line}/>
                 <div className={styles.circle + (this.state.isComplete ? ` ${styles.blue}` : '')} />
               </div>
               <div className={styles.textContainer}>
                 <p data-event='click focus' data-tip="" data-for="documents" className={styles.black}>Application submitted</p>
-                <p className={this.state.hasEvaluationStarted ? styles.black : ''}>Evaluation has started</p>
+                <p data-event='click focus' data-tip="" data-for="evaluation" className={this.state.hasEvaluationStarted ? styles.black : ''}>Evaluation has started</p>
                 <p className={this.state.isComplete ? styles.black : ''}>Approval</p>
               </div>
             </div>
             { applicationSubmittedTooltip }
+            { evaluationHasStartedTooltip }
           </div>
         </div>
       </div>;
