@@ -21,7 +21,7 @@ class NavigationBar extends Component {
       switch(this.props.role) {
         case 1:
         case 2: {
-          this.state = {tabs: ['Announcements', 'Applications']};
+          this.state = {tabs: ['Announcements', 'Applications', 'My files']};
           break;
         }
 
@@ -129,13 +129,6 @@ class NavigationBar extends Component {
           {tabs}
         </div>
         <div className={styles.profileTabs}>
-          {
-            this.props.role === 2 ?
-              <div ref="notification" className={styles.profileTab}>
-                <Notification onClick={() => {}}/>
-              </div> :
-              null
-          }
           <div ref="avatar" className={styles.profileTab}>
             <Avatar onClick={this.props.toggleAvatarDropdown} />
           </div>

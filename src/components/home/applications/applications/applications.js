@@ -53,8 +53,6 @@ class Applications extends Component {
   applicantFetch = () => {
     axios.get(applications.overview + this.props.employeeId)
       .then(res => {
-        console.log(res.data.data);
-
         this.setState(produce(draft => {
           draft.applicant.applications = res.data.data
         }))
@@ -172,7 +170,7 @@ class Applications extends Component {
     };
 
     const applicantApplications = () => {
-      return this.state.applicant.applications.map(app => {
+      const applications = this.state.applicant.applications.map(app => {
         return (
           <Col key={app.token} xs={2} style={{marginTop: 15}}>
             <div
@@ -190,6 +188,20 @@ class Applications extends Component {
           </Col>
         )
       });
+
+      return (
+        <div>
+          {
+            this.state.applicant.applications.length > 0 ?
+              <Container fluid style={{padding: 0, marginTop: '-15px'}}>
+                <Row>
+                  { applications }
+                </Row>
+              </Container> :
+              <p style={{margin: 0, textAlign: 'center', fontSize: 14}}>You have no applications yet.</p>
+          }
+        </div>
+      )
     };
 
     //switcher component to switch between roles

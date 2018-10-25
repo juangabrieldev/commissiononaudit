@@ -11,7 +11,14 @@ const datePicker = props => {
   return (
     <div style={{position: 'relative', ...props.style}}>
       <label
-        className={props.selected != null ? styles.shown : ''}>
+        className={
+          props.selected != null && !props.showLabel ?
+            styles.shown : (
+              props.showLabel ?
+                styles.showLabel :
+                ''
+            )
+        }>
         {props.placeholder}
       </label>
       <DatePicker
@@ -24,7 +31,7 @@ const datePicker = props => {
         selected={selected}
         minDate={props.minDate}
         maxDate={props.maxDate}
-        placeholderText={props.placeholder}
+        placeholderText={!props.showLabel ? props.placeholder : null}
         onChange={props.onChange}/>
     </div>
   );

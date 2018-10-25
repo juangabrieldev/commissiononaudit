@@ -18,5 +18,11 @@
       background: white;
       z-index: 1;
     }
+
+    &.showLabel {
+      top: -22px;
+      margin-left: -1px;
+      font-weight: 600
+    }
   }
 }

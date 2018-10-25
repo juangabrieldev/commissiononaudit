@@ -445,7 +445,11 @@ class Applications extends Component {
               </div>
             </div>
             { applicationSubmittedTooltip }
-            { evaluationHasStartedTooltip }
+            {
+              this.state.hasEvaluationStarted ?
+                evaluationHasStartedTooltip :
+                null
+            }
           </div>
         </div>
       </div>;

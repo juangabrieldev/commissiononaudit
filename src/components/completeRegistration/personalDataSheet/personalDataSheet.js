@@ -166,19 +166,6 @@ class PersonalDataSheet extends PureComponent {
       draft.personalInformation.dateOfBirth = o;
     }))
   };
-
-  onChangeGender = o => {
-    this.setState(produce(draft => {
-      draft.personalInformation.sex = o
-    }))
-  };
-
-  onChangeCivilStatus = o => {
-    console.log(o);
-    this.setState(produce(draft => {
-      draft.personalInformation.civilStatus = o
-    }))
-  };
   //endregion
 
   //region familyBackground

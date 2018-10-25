@@ -7,10 +7,13 @@ import ReactNoUnmountHide from 'react-no-unmount-hide';
 
 import DeleteConfirmationModal from '../confirmationModal/deleteConfirmationModal';
 import NavigationBar from './navigationBar/navigationBar';
+
 import Announcements from './announcements/announcements';
 import Applications from './applications/applications';
 import Evaluations from './evaluations/evaluations';
 import Maintenance from './maintenance/maintenance';
+import MyFiles from './myFiles/myFiles';
+
 import NavigationModal from '../navigationModal/navigationModal';
 import SideBarRight from './sideBarRight/sideBarRight';
 import NotFound from '../notFound/notFound';
@@ -41,6 +44,7 @@ class Home extends Component {
           <Switch>
             <Route path="/announcements" component={Announcements}/>
             <Route path="/maintenance" component={Maintenance}/>
+            <Route path="/my-files" component={MyFiles}/>
             <Route path="/applications" component={Applications}/>
             <Route path="/evaluations" component={Evaluations}/>
           </Switch>

@@ -106,7 +106,11 @@ class Input extends PureComponent {
         className={style}
         style={{border, width}}>
         <label
-          className={this.state.value.length > 0 ? styles.shown : ''}
+          className={
+            this.state.value.length > 0 && !this.props.showLabel ? styles.shown : (
+              this.props.showLabel ? styles.showLabel : ''
+            )
+          }
           style={{
             color: this.props.type === 'password' && this.props.passwordStrength && this.state.value.length > 0 ?
               this.state.borderColor :
@@ -137,7 +141,7 @@ class Input extends PureComponent {
           type={this.state.show ? 'text' : this.props.type}
           maxLength={this.props.maxLength}
           id={this.props.name}
-          placeholder={this.props.name}
+          placeholder={this.props.showLabel ? '' : this.props.name}
           pattern={this.props.pattern}
           value={this.state.value}/>
         {

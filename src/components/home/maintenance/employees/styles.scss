@@ -1,0 +1,51 @@
+@import "../../../layout/variables";
+
+.row {
+  display: flex;
+  box-sizing: border-box;
+
+  p {
+    margin: 0;
+  }
+
+  .rowTitleContainer {
+    width: 33%;
+    padding: 15px;
+
+    p {
+      font-size: 16px;
+      font-weight: 600;
+      opacity: .8;
+    }
+  }
+
+  .fieldsContainer {
+    flex: 1;
+    padding: 38px 15px;
+
+    > div {
+      margin: 0;
+
+      &:not(:first-child) {
+        margin-top: 45px
+      }
+    }
+
+    .row {
+      display: flex;
+      border: none;
+
+      > div {
+        flex: 1;
+
+        &:not(:last-child) {
+          margin-right: 15px
+        }
+      }
+    }
+  }
+
+  &:not(:last-child) {
+    border-bottom: solid 1px lighten($border-color, 3);
+  }
+}

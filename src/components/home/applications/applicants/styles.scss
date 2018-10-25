@@ -375,6 +375,10 @@ p.annotation {
   border-collapse:collapse;
   padding:5px;
   margin: 0 auto;
+
+  p {
+    color: black;
+  }
 }
 .demo th {
   border: 1px solid #C0C0C0;
@@ -480,5 +484,20 @@ p.annotation {
         margin-right: 12px;
       }
     }
+  }
+}
+
+.reportAuthentication {
+  margin-top: 100px;
+
+  p {
+    color: black;
+    margin: 0;
+    font-size: 14px
+  }
+
+  .row {
+    display: flex;
+    justify-content: space-between;
   }
 }

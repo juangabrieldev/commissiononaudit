@@ -13,7 +13,7 @@ class Select extends PureComponent {
         borderRadius: 2,
         background: state.isDisabled? '#f0f0f0' : 'white',
         minHeight: 40,
-        borderColor: state.isFocused ? '#aaaaaa' : '#e1e1e1',
+        borderColor: state.isFocused ? '#aaaaaa' : '#d7d7d7',
         boxShadow: 'none',
       }
     },
@@ -21,7 +21,7 @@ class Select extends PureComponent {
       ...base,
       fontWeight: 400,
       fontSize: 14,
-      opacity: .8
+      opacity: this.props.showLabel ? 0 : .8
     }),
     menu: (base, state) => {
       return {
@@ -29,7 +29,7 @@ class Select extends PureComponent {
         zIndex: 2,
         borderRadius: 2,
         border: 'solid 1px',
-        borderColor: state.isFocused ? '#aaaaaa' : '#d7d7d7',
+        borderColor: state.isFocused ? '#9b9b9b' : '#d7d7d7',
         boxShadow: 'none'
       }
     },
@@ -56,9 +56,19 @@ class Select extends PureComponent {
       show = this.props.value != null;
     }
 
+    if(this.props.showLabel) {
+      show = true
+    }
+
     return (
       <div className={styles.select} style={{...this.props.customStyles}}>
-        <span className={show ? styles.shown: ''}>{this.props.placeholder}</span>
+        <span
+          className={
+            show ? styles.shown + ` ${this.props.showLabel ? styles.showLabel : ''}`: ''}>
+          {
+            this.props.placeholder
+          }
+        </span>
         {
           this.props.isCreatable ?
             <Creatable

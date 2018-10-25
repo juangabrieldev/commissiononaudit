@@ -42,6 +42,17 @@
       background: white;
       z-index: 0;
     }
+
+    &.showLabel {
+      font-size: 13px;
+      font-weight: 600;
+      top: -22px;
+      margin-left: -1px;
+      padding: 0;
+      opacity: 1;
+      background: white;
+      z-index: 0;
+    }
   }
 
   .characterLimit {

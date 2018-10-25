@@ -15,4 +15,14 @@ label {
     background: white;
     z-index: 1;
   }
+
+  &.showLabel {
+    font-size: 13px;
+    top: -22px;
+    font-weight: 600;
+    opacity: 1;
+    background: white;
+    z-index: 1;
+    margin-left: -3px;
+  }
 }

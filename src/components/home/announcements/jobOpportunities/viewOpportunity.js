@@ -3,6 +3,8 @@ import axios from 'axios';
 import parse from 'html-react-parser';
 import moment from 'moment';
 import ReactSVG from "react-svg";
+import { withRouter } from 'react-router-dom';
+import stringQuery from 'stringquery';
 
 import NotFoundEnabler from '../../../notFound/notFoundEnabler';
 import Portal from '../../../portal/portal';
@@ -39,11 +41,17 @@ class viewOpportunity extends Component {
             hasLoaded: true,
           })
         }
+
+        const { jobid } =  stringQuery(this.props.location.search);
+
+        if(jobid) {
+          this.refs[jobid].click()
+        }
       })
   };
 
   componentDidMount = () => {
-    this.fetch()
+    this.fetch();
   };
 
   onClickOpenJob = (jobId, evaluatorEmployeeId) => {
@@ -80,7 +88,7 @@ class viewOpportunity extends Component {
         return (
           <div className={styles.openJobs} key={i}>
             <p>{job.label}</p>
-            <div className={styles.viewJob} onMouseDown={() => this.onClickOpenJob(job.value, job.evaluator.value)}>
+            <div className={styles.viewJob} ref={job.value} onClick={() => this.onClickOpenJob(job.value, job.evaluator.value)}>
               <p>VIEW</p>
             </div>
           </div>
@@ -187,4 +195,4 @@ const mapStateToProps = state => {
   }
 };
 
-export default connect(mapStateToProps)(viewOpportunity);
+export default withRouter(connect(mapStateToProps)(viewOpportunity));

@@ -345,3 +345,51 @@
     }
   }
 }
+
+.hr {
+  height: 1px;
+  width: 100%;
+  margin: 15px 0;
+  background: $border-color;
+}
+
+.workExperience {
+  margin: 0;
+
+  > div {
+    margin: 0;
+
+    &:not(:first-child) {
+      margin-top: 15px;
+    }
+  }
+}
+
+.trainingsAttended {
+  margin: 0;
+  display: flex;
+
+  > div {
+    margin: 0;
+    flex-grow: 1;
+
+    &:not(:last-child) {
+      margin-right: 15px;
+    }
+  }
+}
+
+.trainingsAttended {
+  > div {
+    flex-basis: 0;
+  }
+}
+
+.remove, .addMore {
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.addMore {
+  color: $primary-color;
+}

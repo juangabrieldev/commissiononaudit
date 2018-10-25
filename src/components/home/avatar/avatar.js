@@ -4,6 +4,7 @@ import SVG from 'react-svg';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import axios from 'axios';
+import hexRgb from 'hex-rgb';
 
 import styles from './avatar.scss';
 
@@ -90,14 +91,20 @@ class Avatar extends Component {
   };
 
   render() {
+    const { red, green, blue } = (!this.state.hasUrl ? hexRgb(this.props.imageUrl.color) : {});
+
     return (
       <Aux>
         <div ref="bad" onClick={e => this.props.onClick(e)} className={styles.avatarContainer}>
-          <div className={styles.avatar} style={{background: (!this.state.hasUrl ? this.props.imageUrl.color : '')}}>
+          <div
+            className={styles.avatar}
+            style={{
+              background: (!this.state.hasUrl ? `rgba(${red}, ${green}, ${blue}, .15)` : '')
+            }}>
             {
               this.state.hasUrl ?
                 <img src={publicFolder.images + this.state.imageUrl} height={30} alt=""/> :
-                <p>{this.props.firstName.charAt(0) + this.props.lastName.charAt(0)}</p>
+                <p style={{color: this.props.imageUrl.color}}>{this.props.firstName.charAt(0) + this.props.lastName.charAt(0)}</p>
             }
             <div className={styles.online}/>
           </div>
@@ -121,14 +128,18 @@ class Avatar extends Component {
                   <div className={styles.dropdown}>
                     <div className={styles.title}>
                       <div className={styles.left}>
-                        <div className={styles.avatarBig} style={{background: (!this.state.hasUrl ? this.props.imageUrl.color : '')}}>
+                        <div
+                          className={styles.avatarBig}
+                          style={{
+                            background: (!this.state.hasUrl ? `rgba(${red}, ${green}, ${blue}, .15)` : '')
+                          }}>
                           <div className={styles.change}>
                             <p>Change picture</p>
                           </div>
                           {
                             this.state.hasUrl ?
                               <img src={publicFolder.images + this.state.imageUrl} height={60} alt=""/> :
-                              <p>{this.props.firstName.charAt(0) + this.props.lastName.charAt(0)}</p>
+                              <p style={{color: this.props.imageUrl.color}}>{this.props.firstName.charAt(0) + this.props.lastName.charAt(0)}</p>
                           }
                         </div>
                       </div>

@@ -4,7 +4,7 @@ import _ from 'lodash';
 import produce from 'immer';
 import moment from 'moment';
 import axios from 'axios';
-import { withRouter } from 'react-router-dom';
+import {Link, withRouter} from 'react-router-dom';
 
 import styles from './styles.scss';
 
@@ -59,7 +59,6 @@ class viewOpportunityModal extends Component {
 
     this.setState({isSalaryGradeQualified: (jobSalaryGrade - mySalaryGrade) <= 5}, () => {
       this.compareEducation();
-      console.log(this.state);
     });
 
     // const ranges = [[6, 9], [9, 11], [11, 15], [15, 18], [18, 22]];
@@ -87,6 +86,10 @@ class viewOpportunityModal extends Component {
 
     switch(educationQualification[0].value) {
       case 29: {
+        if(educationalBackground.secondary.periodOfAttendance.from && educationalBackground.secondary.periodOfAttendance.from) {
+          this.setState({isEducationQualified: true}, this.compareEligibility)
+        }
+
         break;
       }
 
@@ -124,8 +127,6 @@ class viewOpportunityModal extends Component {
     trainingsAttended.forEach(a => {
       currentTrainingHours += a.hours;
     });
-
-    console.log(currentTrainingHours);
 
     this.setState({
       currentTrainingHours,
@@ -288,6 +289,12 @@ class viewOpportunityModal extends Component {
             </div>
             <div className={styles.buttonContainer}>
               <p>* On the left side is your current data</p>
+              <div>
+                <Link to={`/my-files/personal-data-sheet?jobopportunityid=${this.props.match.params.id}&jobid=${this.props.data.jobInformation.jobid}`}>
+                  Update PDS
+                </Link>
+                <span>or</span>
+              </div>
               <Button
                 onClick={this.onClickSubmitButton}
                 disabled={this.state.isSubmitDisabled}

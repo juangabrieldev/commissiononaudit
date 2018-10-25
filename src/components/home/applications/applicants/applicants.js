@@ -89,7 +89,9 @@ class Applicants extends Component {
       rankingList: [{
         details: {
           ratings: {
-            average: "dasdasd"
+            average: "0.000",
+            first: "0",
+            second: "0"
           },
         },
         personaldatasheet: {
@@ -1217,6 +1219,116 @@ class Applicants extends Component {
           { listOfApplicantsReportRow }
           </tbody>
         </table>
+        <div className={styles.reportAuthentication}>
+          <div className={styles.row}>
+            <div style={{display: 'flex'}}>
+              <div>
+                <p>Prepared by:</p>
+              </div>
+              <div style={{marginLeft: 10}}>
+                <p style={{
+                  borderBottom: 'solid 1px black',
+                  width: 120,
+                  textAlign: 'center',
+                  paddingBottom: 2
+                }}>
+                  Culiat Taliuc
+                </p>
+                <p style={{
+                  textAlign: 'center',
+                  marginTop: 5
+                }}>
+                  <strong>Evaluator</strong>
+                </p>
+              </div>
+            </div>
+            <div style={{display: 'flex'}}>
+              <div>
+                <p>Reviewed by:</p>
+              </div>
+              <div style={{marginLeft: 10}}>
+                <p style={{
+                  borderBottom: 'solid 1px black',
+                  width: 120,
+                  textAlign: 'center',
+                  paddingBottom: 2
+                }}>
+                  &nbsp;
+                </p>
+              </div>
+            </div>
+            <div style={{display: 'flex'}}>
+              <div>
+                <p>Certified correct:</p>
+              </div>
+              <div style={{marginLeft: 10}}>
+                <p style={{
+                  borderBottom: 'solid 1px black',
+                  width: 120,
+                  textAlign: 'center',
+                  paddingBottom: 2
+                }}>
+                  &nbsp;
+                </p>
+              </div>
+            </div>
+          </div>
+          <div
+            className={styles.row}
+            style={{
+              justifyContent: 'space-around',
+              marginTop: 40
+            }}>
+            <div>
+              <p style={{
+                borderBottom: 'solid 1px black',
+                width: 150,
+                textAlign: 'center',
+                paddingBottom: 2
+              }}>
+                &nbsp;
+              </p>
+              <p style={{
+                textAlign: 'center',
+                marginTop: 5
+              }}>
+                <strong>Sector Head</strong>
+              </p>
+            </div>
+            <div>
+              <p style={{
+                borderBottom: 'solid 1px black',
+                width: 150,
+                textAlign: 'center',
+                paddingBottom: 2
+              }}>
+                &nbsp;
+              </p>
+              <p style={{
+                textAlign: 'center',
+                marginTop: 5
+              }}>
+                <strong>Director</strong>
+              </p>
+            </div>
+            <div>
+              <p style={{
+                borderBottom: 'solid 1px black',
+                width: 150,
+                textAlign: 'center',
+                paddingBottom: 2
+              }}>
+                &nbsp;
+              </p>
+              <p style={{
+                textAlign: 'center',
+                marginTop: 5
+              }}>
+                <strong>Director</strong>
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     );
 
@@ -1299,8 +1411,132 @@ class Applicants extends Component {
           { listOfQualifiedAndNotQualifiedReportRow2 }
           </tbody>
         </table>
+        <div className={styles.reportAuthentication}>
+          <div className={styles.row}>
+            <div style={{display: 'flex'}}>
+              <div>
+                <p>Prepared by:</p>
+              </div>
+              <div style={{marginLeft: 10}}>
+                <p style={{
+                  borderBottom: 'solid 1px black',
+                  width: 120,
+                  textAlign: 'center',
+                  paddingBottom: 2
+                }}>
+                  Culiat Taliuc
+                </p>
+                <p style={{
+                  textAlign: 'center',
+                  marginTop: 5
+                }}>
+                  <strong>Evaluator</strong>
+                </p>
+              </div>
+            </div>
+            <div style={{display: 'flex'}}>
+              <div>
+                <p>Reviewed by:</p>
+              </div>
+              <div style={{marginLeft: 10}}>
+                <p style={{
+                  borderBottom: 'solid 1px black',
+                  width: 120,
+                  textAlign: 'center',
+                  paddingBottom: 2
+                }}>
+                  &nbsp;
+                </p>
+              </div>
+            </div>
+            <div style={{display: 'flex'}}>
+              <div>
+                <p>Certified correct:</p>
+              </div>
+              <div style={{marginLeft: 10}}>
+                <p style={{
+                  borderBottom: 'solid 1px black',
+                  width: 120,
+                  textAlign: 'center',
+                  paddingBottom: 2
+                }}>
+                  &nbsp;
+                </p>
+              </div>
+            </div>
+          </div>
+          <div
+            className={styles.row}
+            style={{
+              justifyContent: 'space-around',
+              marginTop: 40
+            }}>
+            <div>
+              <p style={{
+                borderBottom: 'solid 1px black',
+                width: 150,
+                textAlign: 'center',
+                paddingBottom: 2
+              }}>
+                &nbsp;
+              </p>
+              <p style={{
+                textAlign: 'center',
+                marginTop: 5
+              }}>
+                <strong>Sector Head</strong>
+              </p>
+            </div>
+            <div>
+              <p style={{
+                borderBottom: 'solid 1px black',
+                width: 150,
+                textAlign: 'center',
+                paddingBottom: 2
+              }}>
+                &nbsp;
+              </p>
+              <p style={{
+                textAlign: 'center',
+                marginTop: 5
+              }}>
+                <strong>Director</strong>
+              </p>
+            </div>
+            <div>
+              <p style={{
+                borderBottom: 'solid 1px black',
+                width: 150,
+                textAlign: 'center',
+                paddingBottom: 2
+              }}>
+                &nbsp;
+              </p>
+              <p style={{
+                textAlign: 'center',
+                marginTop: 5
+              }}>
+                <strong>Director</strong>
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     );
+
+    const birthdates = [
+      'January 16, 1990',
+      'November 27, 1994',
+      'December 1, 1991',
+      'February 6, 1991',
+      'January 29, 1994',
+      'May 5, 1993',
+      'April 29, 1990',
+      'March 15, 1992',
+      'October 15, 1994',
+      'November 28, 1994',
+      'January 14, 1990'
+    ];
 
     const byClusterEvaluatorRankingListRow = this.state.rankingList.map((emp, i) => {
       return (
@@ -1314,23 +1550,139 @@ class Applicants extends Component {
               }
             </strong>
           </td>
-          <td>&nbsp;</td>
-          <td>{ emp.personaldatasheet.workExperienceWithinCoa[0].positionTitle }</td>
-          <td>{ this.state.employees[0].jobtitle }</td>
-          <td style={{padding: 0}}>
-
+          <td>
+            <p>
+              <strong>{ birthdates[i] }</strong>
+            </p>
           </td>
-          <td><strong>RA 1080 (CPA)</strong></td>
-          <td></td>
+          <td>
+            <p style={{fontSize: 14}}>
+              <strong>{ emp.personaldatasheet.workExperienceWithinCoa[0].positionTitle }</strong>
+            </p>
+          </td>
+          <td>
+            <p style={{fontSize: 14}}>
+              <strong>{ this.state.employees[0].jobtitle }</strong>
+            </p>
+          </td>
           <td style={{padding: 0}}>
-            <div style={{display: 'flex', justifyContent: 'space-around'}}>
-              <p>{ emp.details.ratings.first }</p>
-              <p>{ emp.details.ratings.second }</p>
-              {/*<p>{ emp.details.ratings.average.substring(0, 4) }</p>*/}
+            <div style={{
+              width: '100%',
+              display: 'flex'
+            }}>
+              <div style={{
+                width: '50%',
+                boxSizing: 'border-box',
+                borderRight: '1px solid #C0C0C0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                  <p style={{fontSize: 10}}>
+                    <strong>Bachelor of Science in Accountancy</strong>
+                  </p>
+                </div>
+              </div>
+              <div style={{
+                width: '50%',
+              }}>
+                <p>&nbsp;</p>
+              </div>
             </div>
           </td>
-          <td>&nbsp;</td>
-          <td>{ i + 1 }</td>
+          <td>
+            <p style={{fontSize: 12}}>
+              <strong>RA 1080 (CPA)</strong>
+            </p>
+          </td>
+          <td style={{padding: 0}}>
+            <div style={{
+              width: '100%',
+              display: 'flex'
+            }}>
+              <div style={{
+                width: '50%',
+                boxSizing: 'border-box',
+                borderRight: '1px solid #C0C0C0',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                flexDirection: 'column'
+              }}>
+                <p style={{fontSize: 10}}>
+                  <strong>
+                    Accounting training
+                  </strong>
+                </p>
+              </div>
+              <div style={{
+                width: '50%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}>
+                <p><strong>8</strong></p>
+              </div>
+            </div>
+          </td>
+          <td style={{padding: 0}}>
+            {/*</div>*/}
+            <div style={{
+              width: '100%',
+              display: 'flex'
+            }}>
+              <div style={{
+                width: 'calc(100% / 3)',
+                boxSizing: 'border-box',
+                borderRight: '1px solid #C0C0C0'
+              }}>
+                <p><strong>{ emp.details.ratings.first }</strong></p>
+              </div>
+              <div style={{
+                width: 'calc(100% / 3)',
+                boxSizing: 'border-box',
+                borderRight: '1px solid #C0C0C0'
+              }}>
+                <p><strong>{ emp.details.ratings.second }</strong></p>
+              </div>
+              <div style={{
+                width: 'calc(100% / 3)'
+              }}>
+                <p><strong>{ emp.details.ratings.average.substring(0, 4) }</strong></p>
+              </div>
+            </div>
+          </td>
+          <td style={{padding: 0}}>
+            <div style={{
+              width: '100%',
+              display: 'flex'
+            }}>
+              <div style={{
+                width: '50%',
+                boxSizing: 'border-box',
+                borderRight: '1px solid #C0C0C0'
+              }}>
+                <p style={{fontSize: 10}}>
+                  &nbsp;
+                </p>
+              </div>
+              <div style={{
+                width: '50%',
+              }}>
+                <p style={{fontSize: 10}}>
+                  <strong>
+                    {
+                      emp.relevant ?
+                        emp.relevant.relevantWorkInsideYears.sentence :
+                        ''
+                    }
+                    </strong>
+                </p>
+              </div>
+            </div>
+          </td>
+          <td style={{padding: 0}}><p><strong>{ i + 1 }</strong></p></td>
         </tr>
       )
     });
@@ -1346,10 +1698,7 @@ class Applicants extends Component {
           <br/>
           as of { moment().format('MMMM DD, YYYY') }
         </p>
-        <table className={styles.demo}>
-          {/*<tbody>*/}
-          {/*{ rankingListReportRow }*/}
-          {/*</tbody>*/}
+        <table className={styles.demo} cellSpacing={0} cellPadding={0}>
           <tbody>
             <tr>
               <td colSpan={2}>
@@ -1409,11 +1758,30 @@ class Applicants extends Component {
                     </td>
                   </tr>
                   <tr>
-                    <td style={{border: 'none', borderRight: 'solid 1px #C0C0C0'}}>
-                      Basic / Honors
-                    </td>
-                    <td style={{border: 'none'}}>
-                      Master's / Honors
+                    <td style={{
+                      border: 'none',
+                      padding: 0
+                    }}>
+                      <div style={{
+                        width: '100%',
+                        display: 'flex'
+                      }}>
+                        <div style={{
+                          width: '50%',
+                          boxSizing: 'border-box',
+                          borderRight: '1px solid #C0C0C0'
+                        }}>
+                          <p>Basic / Honors</p>
+                        </div>
+                        <div style={{
+                          width: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          <p>Master's / Honors</p>
+                        </div>
+                      </div>
                     </td>
                   </tr>
                 </table>
@@ -1431,11 +1799,30 @@ class Applicants extends Component {
                     </td>
                   </tr>
                   <tr>
-                    <td style={{border: 'none', borderRight: 'solid 1px #C0C0C0'}}>
-                      Title <br/> of training
-                    </td>
-                    <td style={{border: 'none'}}>
-                      No. of hours
+                    <td style={{
+                      border: 'none',
+                      padding: 0
+                    }}>
+                      <div style={{
+                        width: '100%',
+                        display: 'flex'
+                      }}>
+                        <div style={{
+                          width: '50%',
+                          boxSizing: 'border-box',
+                          borderRight: '1px solid #C0C0C0'
+                        }}>
+                          <p>Title of training</p>
+                        </div>
+                        <div style={{
+                          width: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          <p>No. <br/> of hours</p>
+                        </div>
+                      </div>
                     </td>
                   </tr>
                 </table>
@@ -1452,14 +1839,37 @@ class Applicants extends Component {
                     </td>
                   </tr>
                   <tr>
-                    <td style={{border: 'none', borderRight: 'solid 1px #C0C0C0'}}>
-                      1st <br/> sem. June
-                    </td>
-                    <td style={{border: 'none', borderRight: 'solid 1px #C0C0C0'}}>
-                      2nd <br/> sem. Dec
-                    </td>
-                    <td style={{border: 'none'}}>
-                      Average
+                    <td style={{
+                      border: 'none',
+                      padding: 0
+                    }}>
+                      <div style={{
+                        width: '100%',
+                        display: 'flex'
+                      }}>
+                        <div style={{
+                          width: 'calc(100% / 3)',
+                          boxSizing: 'border-box',
+                          borderRight: '1px solid #C0C0C0'
+                        }}>
+                          <p>1st sem. June</p>
+                        </div>
+                        <div style={{
+                          width: 'calc(100% / 3)',
+                          boxSizing: 'border-box',
+                          borderRight: '1px solid #C0C0C0'
+                        }}>
+                          <p>2nd sem. Dec.</p>
+                        </div>
+                        <div style={{
+                          width: 'calc(100% / 3)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          <p>Average</p>
+                        </div>
+                      </div>
                     </td>
                   </tr>
                 </table>
@@ -1471,16 +1881,35 @@ class Applicants extends Component {
                       border: 'none',
                       borderBottom: 'solid 1px #C0C0C0'
                     }}
-                        colSpan={2}>
+                        colSpan={3}>
                       Tie breaker
                     </td>
                   </tr>
                   <tr>
-                    <td style={{border: 'none', borderRight: 'solid 1px #C0C0C0'}}>
-                      Merit
-                    </td>
-                    <td style={{border: 'none', borderRight: 'solid 1px #C0C0C0'}}>
-                      Length of <br/> service
+                    <td style={{
+                      border: 'none',
+                      padding: 0
+                    }}>
+                      <div style={{
+                        width: '100%',
+                        display: 'flex'
+                      }}>
+                        <div style={{
+                          width: '50%',
+                          boxSizing: 'border-box',
+                          borderRight: '1px solid #C0C0C0'
+                        }}>
+                          <p>Merit</p>
+                        </div>
+                        <div style={{
+                          width: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          <p>Length of service</p>
+                        </div>
+                      </div>
                     </td>
                   </tr>
                 </table>
@@ -1490,6 +1919,119 @@ class Applicants extends Component {
             { byClusterEvaluatorRankingListRow }
           </tbody>
         </table>
+        <div className={styles.reportAuthentication} style={{padding: '0 150px'}}>
+          <div className={styles.row}>
+            <div style={{display: 'flex'}}>
+              <div>
+                <p>Prepared by:</p>
+              </div>
+              <div style={{marginLeft: 10}}>
+                <p style={{
+                  borderBottom: 'solid 1px black',
+                  width: 120,
+                  textAlign: 'center',
+                  paddingBottom: 2
+                }}>
+                  Culiat Taliuc
+                </p>
+                <p style={{
+                  textAlign: 'center',
+                  marginTop: 5
+                }}>
+                  <strong>Evaluator</strong>
+                </p>
+              </div>
+            </div>
+            <div style={{display: 'flex'}}>
+              <div>
+                <p>Reviewed by:</p>
+              </div>
+              <div style={{marginLeft: 10}}>
+                <p style={{
+                  borderBottom: 'solid 1px black',
+                  width: 120,
+                  textAlign: 'center',
+                  paddingBottom: 2
+                }}>
+                  &nbsp;
+                </p>
+              </div>
+            </div>
+            <div style={{display: 'flex'}}>
+              <div>
+                <p>Certified correct:</p>
+              </div>
+              <div style={{marginLeft: 10}}>
+                <p style={{
+                  borderBottom: 'solid 1px black',
+                  width: 120,
+                  textAlign: 'center',
+                  paddingBottom: 2
+                }}>
+                  &nbsp;
+                </p>
+              </div>
+            </div>
+          </div>
+          <p style={{marginTop: 40}}>
+            Date evaluated: <strong>October 25, 2018</strong>
+          </p>
+          <div
+            className={styles.row}
+            style={{
+              justifyContent: 'space-around',
+              marginTop: 40
+            }}>
+            <div>
+              <p style={{
+                borderBottom: 'solid 1px black',
+                width: 150,
+                textAlign: 'center',
+                paddingBottom: 2
+              }}>
+                &nbsp;
+              </p>
+              <p style={{
+                textAlign: 'center',
+                marginTop: 5
+              }}>
+                <strong>Sector Head</strong>
+              </p>
+            </div>
+            <div>
+              <p style={{
+                borderBottom: 'solid 1px black',
+                width: 150,
+                textAlign: 'center',
+                paddingBottom: 2
+              }}>
+                &nbsp;
+              </p>
+              <p style={{
+                textAlign: 'center',
+                marginTop: 5
+              }}>
+                <strong>Director</strong>
+              </p>
+            </div>
+            <div>
+              <p style={{
+                borderBottom: 'solid 1px black',
+                width: 150,
+                textAlign: 'center',
+                paddingBottom: 2
+              }}>
+                &nbsp;
+              </p>
+              <p style={{
+                textAlign: 'center',
+                marginTop: 5
+              }}>
+                <strong>Director</strong>
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     );
 

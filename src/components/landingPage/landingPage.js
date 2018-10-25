@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import DocumentTitle from 'react-document-title';
 import { connect } from 'react-redux';
+import hexRgb from 'hex-rgb';
 
 import CheckBox from "../checkBox/checkBox";
 import Input from '../input/input';
@@ -109,49 +110,61 @@ class LandingPage extends Component {
     const recents = JSON.parse(localStorage.getItem('recents'));
     const RecentsComponent = () => {
       if(recents != null) {
-        return recents.map((recent, i, a) => (
-          <Fragment key={i}>
-            <div className={styles.recent}>
-              <div onClick={() => this.removeRecent(i, recents)} className={styles.recentClose}>
-                <img src={close} height={8} alt=""/>
+        return recents.map((recent, i, a) => {
+          const { red, green, blue } = hexRgb(recent.imageUrl.color);
+
+          return (
+            <Fragment key={i}>
+              <div className={styles.recent}>
+                <div onClick={() => this.removeRecent(i, recents)} className={styles.recentClose}>
+                  <img src={close} height={8} alt=""/>
+                </div>
+                <div onClick={() => this.onRecentClickHandler(recent.employeeId, recent.firstName, recent.lastName, recent.imageUrl)} className={styles.recentAvatar}>
+                  {
+                    recent.imageUrl.hasUrl ?
+                      <img src={publicFolder.images + recent.imageUrl.url} height={155} alt=""/> :
+                      <div
+                        className={styles.recentAvatarInitials}
+                        style={{
+                          background: `rgba(${red}, ${green}, ${blue}, .15)`,
+                          height: 155,
+                          width: 155
+                        }}>
+                        <p
+                          style={{color: recent.imageUrl.color}}
+                          className={styles.initials}>
+                          {
+                            recent.firstName.charAt(0)}{recent.lastName.charAt(0)
+                          }
+                        </p>
+                      </div>
+                  }
+                </div>
+                <p className={styles.recentName}>{recent.firstName}</p>
               </div>
-              <div onClick={() => this.onRecentClickHandler(recent.employeeId, recent.firstName, recent.lastName, recent.imageUrl)} className={styles.recentAvatar}>
-                {
-                  recent.imageUrl.hasUrl ?
-                    <img src={publicFolder.images + recent.imageUrl.url} height={155} alt=""/> :
-                    <div
-                      className={styles.recentAvatarInitials}
-                      style={{
-                        background: recent.imageUrl.color,
-                        height: 155,
-                        width: 155
-                      }}>
-                      <p className={styles.initials}>{recent.firstName.charAt(0)}{recent.lastName.charAt(0)}</p>
+              {
+                i === a.length - 1 && a.length === 1 ?
+                  <Link to="/get-started/login">
+                    <div className={styles.addAccount}>
+                      <div className={styles.iconContainer}>
+                        <div className={styles.vertical} />
+                        <div className={styles.horizontal} />
+                      </div>
+                      <p>Add account</p>
                     </div>
-                }
-              </div>
-              <p className={styles.recentName}>{recent.firstName}</p>
-            </div>
-            {
-              i === a.length - 1 && a.length === 1 ?
-                <Link to="/get-started/login">
-                  <div className={styles.addAccount}>
-                    <div className={styles.iconContainer}>
-                      <div className={styles.vertical} />
-                      <div className={styles.horizontal} />
-                    </div>
-                    <p>Add account</p>
-                  </div>
-                </Link> :
-                null
-            }
-            {
-              a.length > 1
-            }
-          </Fragment>
-        ))
+                  </Link> :
+                  null
+              }
+              {
+                a.length > 1
+              }
+            </Fragment>
+          )
+        })
       }
     };
+
+    const { red, green, blue } = this.state.quickLogin.imageUrl.color ? hexRgb(this.state.quickLogin.imageUrl.color) : { };
 
     const quickLogin = (
       <div className={styles.quickLogin}>
@@ -169,11 +182,17 @@ class LandingPage extends Component {
                       <div
                         className={styles.recentAvatarInitials}
                         style={{
-                          background: this.state.quickLogin.imageUrl.color,
+                          background: this.state.quickLogin.imageUrl.color ? `rgba(${red}, ${green}, ${blue}, .15)` : null,
                           height: 155,
                           width: 155
                         }}>
-                        <p className={styles.initials}>{this.state.quickLogin.firstName.charAt(0)}{this.state.quickLogin.lastName.charAt(0)}</p>
+                        <p
+                          style={{color: this.state.quickLogin.imageUrl.color}}
+                          className={styles.initials}>
+                          {
+                            this.state.quickLogin.firstName.charAt(0)}{this.state.quickLogin.lastName.charAt(0)
+                          }
+                        </p>
                       </div>
                   }
                 </div>
