@@ -1,0 +1,80 @@
+@import "../../../layout/variables";
+
+.fileContainer {
+  &:not(:first-child) {
+    margin-top: 15px;
+  }
+
+  padding: 15px;
+  border: solid 1px $border-color;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+
+  p {
+    margin: 0;
+    line-height: 1.4;
+
+    &.uploadContainerName {
+      font-weight: 600;
+      font-size: 16px
+    }
+
+    &.metaData {
+      font-size: 14px;
+      font-weight: 600;
+      opacity: .5;
+      display: inline;
+      margin-right: 4px
+    }
+  }
+
+  input[type="button"] {
+    margin-right: 0;
+    margin-left: auto
+  }
+
+  input[type="file"] {
+    display: none
+  }
+
+  .iconContainer {
+    height: 50px;
+    width: 50px;
+    margin-right: 15px;
+    border: solid 1px rgb(230, 230, 230);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .fileType {
+    font-size: 14px;
+    font-weight: 600;
+
+    &:global(.jpg) {
+      border-color: #f5c621;
+      color: #f5c621;
+    }
+
+    &:global(.doc) {
+      border-color: $primary-color;
+      color: $primary-color;
+    }
+
+    &:global(.docx) {
+      border-color: $primary-color;
+      color: $primary-color;
+    }
+
+    &:global(.xlsx) {
+      border-color: $valid-color;
+      color: $valid-color;
+    }
+
+    &:global(.xls) {
+      border-color: $valid-color;
+      color: $valid-color;
+    }
+  }
+}

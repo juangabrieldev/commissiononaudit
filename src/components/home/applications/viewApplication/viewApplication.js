@@ -132,8 +132,6 @@ class Applications extends Component {
       .then(res => {
         const data = res.data.data;
 
-        console.log(data);
-
         console.log(moment(data.dateofevaluation).format('MMMM DD YYYY h:mm'));
 
         this.setState(produce(draft => {

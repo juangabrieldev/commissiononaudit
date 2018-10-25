@@ -18,6 +18,7 @@ export const applications = {
   overview: rootUrl + '/applications/overview/',
   applicants: rootUrl + '/applications/',
   evaluators: rootUrl + '/applications/evaluator/',
+  files: rootUrl + '/applications/files/'
 };
 
 export const evaluations = {
